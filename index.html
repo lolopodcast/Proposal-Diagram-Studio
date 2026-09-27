@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDS · Proposal Diagram Studio 研究提案圖產生器</title>
+<meta name="description" content="Interactive SVG generator for research proposals (RP) and course Term Projects (TP) — Prof. Shihmin Lo, NCNU IBS">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter','Noto Sans TC','sans-serif'], serif: ['Merriweather','Noto Serif TC','serif'] } } } };</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.7/babel.min.js"></script>
+<style>
+@keyframes fadeInUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
+.animate-fade-in { animation: fadeInUp 0.5s ease-out forwards; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
+header, footer, button, [role="button"], .ui-decoration { -webkit-user-select: none; user-select: none; }
+input, textarea, select { -webkit-user-select: text; user-select: text; }
+html, body { margin: 0; }
+body { background: #f4f4f4; }
+html.dark body { background: #121212; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+/* ---------- Front-end protection (Domain lock · iframe busting · smart right-click) ---------- */
+(function(){
+  var ALLOWED = ['lolopodcast.github.io','localhost','127.0.0.1'];
+  var REDIRECT = 'https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo';
+  var okHost = location.protocol === 'file:' || ALLOWED.some(function(d){ return location.hostname === d || location.hostname.endsWith('.'+d); });
+  if (!okHost) {
+    document.body.innerHTML = '<div style="text-align:center;padding:60px;font-family:sans-serif"><h1>Access Denied</h1><p>This resource is not authorised on this domain.</p></div>';
+    window.__PDS_BLOCKED = true;
+    setTimeout(function(){ location.href = REDIRECT; }, 3000);
+    return;
+  }
+  if (window.self !== window.top) {
+    try { window.top.location.href = window.self.location.href; }
+    catch(e) { document.body.innerHTML = '<div style="text-align:center;padding:60px;font-family:sans-serif"><h1>Frame Blocked</h1><p>This content cannot be embedded.</p></div>'; window.__PDS_BLOCKED = true; }
+  }
+  var toast = function(){ if (window.__pdsCopyright) window.__pdsCopyright(); };
+  document.addEventListener('contextmenu', function(e){
+    var sel = (window.getSelection() || '').toString().trim();
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (sel.length > 0 || tag === 'input' || tag === 'textarea') return true;
+    e.preventDefault(); toast();
+  });
+  document.addEventListener('keydown', function(e){
+    var k = (e.key || '').toLowerCase();
+    if (e.key === 'F12' || (e.ctrlKey && k === 'u') || (e.ctrlKey && e.shiftKey && ['i','j','c'].indexOf(k) >= 0)) { e.preventDefault(); toast(); }
+  });
+  document.addEventListener('dragstart', function(e){ if (e.target.tagName === 'IMG' || (e.target.closest && e.target.closest('svg'))) e.preventDefault(); });
+})();
+</script>
+<script>
+/* ============================================================
+   TEMPLATES — Proposal Diagram Studio
+   Each template: roles (column, colour, badge, perLane, terms),
+   groups (frames), nodes, edges, glossary, guide.
+   ============================================================ */
+const T = (zhTitle, zhItems, enTitle, enItems) => ({
+  zh: { title: zhTitle, items: zhItems },
+  en: { title: enTitle, items: enItems }
+});
+
+const TEMPLATES = {
+  /* ---------------- RP · Quantitative ---------------- */
+  rp_quant: {
+    id: 'rp_quant', short: 'RP-Quant',
+    name: { zh: 'RP 研究提案・量化', en: 'RP Proposal · Quantitative' },
+    nodeW: 232, columns: 4, gapX: 90, rowGap: 96, grid: true, prefix: 'H', signs: true, defaultEdgeKind: 'main',
+    legendTitle: { zh: '研究假說', en: 'Hypotheses' },
+    title: { zh: '研究架構圖', en: 'Research Framework' },
+    subtitle: { zh: '研究生姓名 · 指導教授 · 日期', en: 'Student · Advisor · Date' },
+    lanes: { enabled: false },
+    encrypted: true, /* nodes, edges and example glossary are decrypted after the access code is entered */
+    roles: [
+      { id: 'iv',   col: 0, row: 1, color: '#004030', fill: '#E6F0EC', zh: '自變數', en: 'Independent Variable', terms: ['iv', 'construct', 'operationalization'] },
+      { id: 'mod',  col: 2, row: 0, color: '#7C3AED', fill: '#F3EEFF', zh: '調節變數', en: 'Moderator', terms: ['moderator'] },
+      { id: 'med',  col: 1, row: 1, color: '#B45309', fill: '#FEF3E2', zh: '中介變數', en: 'Mediator', terms: ['mediator'] },
+      { id: 'dv',   col: 3, row: 1, color: '#1D4ED8', fill: '#EAF1FF', zh: '依變數', en: 'Dependent Variable', terms: ['dv', 'hypothesis'] },
+      { id: 'ctrl', col: 3, row: 2, color: '#64748B', fill: '#F1F5F9', zh: '控制變數', en: 'Control Variables', terms: ['control'] }
+    ],
+    groups: [],
+    nodes: [],
+    edges: [],
+    glossary: {
+      iv: { zh: ['自變數', '研究者認為會影響其他變數的前因變數，在架構圖中通常放在最左側。'], en: ['Independent Variable', 'The antecedent presumed to influence other variables; usually placed on the left of the framework.'] },
+      dv: { zh: ['依變數', '研究想要解釋或預測的結果變數。'], en: ['Dependent Variable', 'The outcome the study seeks to explain or predict.'] },
+      mediator: { zh: ['中介變數', '解釋自變數「如何」或「為何」影響依變數的中間機制（X → M → Y）。'], en: ['Mediator', 'The mechanism explaining how or why X affects Y (X → M → Y).'] },
+      moderator: { zh: ['調節變數', '改變自變數與依變數之間關係強度或方向的變數；在圖中以箭頭指向關係線表示。'], en: ['Moderator', 'A variable that changes the strength or direction of the X–Y relationship; drawn as an arrow pointing at the relationship line.'] },
+      control: { zh: ['控制變數', '可能影響依變數、但不是研究焦點的變數；納入分析以排除其干擾。'], en: ['Control Variable', 'A variable that may affect the outcome but is not the focus; included to rule out its influence.'] },
+      hypothesis: { zh: ['研究假說 H', '對變數之間關係的可檢驗陳述，通常標示方向（+／−）。'], en: ['Hypothesis (H)', 'A testable statement about the relationship between variables, usually with a direction (+/−).'] },
+      construct: { zh: ['構念', '無法直接觀察的抽象概念，需以多個題項或指標衡量。'], en: ['Construct', 'An abstract concept that cannot be observed directly and is measured with several items or indicators.'] },
+      operationalization: { zh: ['操作型定義', '把構念轉換為可測量指標的具體方式，例如量表題項。'], en: ['Operationalisation', 'How a construct is turned into measurable indicators, such as scale items.'] }
+    },
+    guide: {
+      zh: ['量化研究架構圖呈現變數之間的假說關係。', '建議步驟：① 先確定依變數（想解釋的結果）；② 再放入自變數，以及中介、調節變數；③ 每一條編號連線都要在圖下方寫出完整的假說敘述，並標示正向或負向；④ 控制變數以虛線框呈現。', '調節效果的畫法：按「新增連線」，起點點選調節變數，終點直接點選被調節的那條連線。'],
+      en: ['A quantitative research framework shows the hypothesised relationships between variables.', 'Suggested steps: (1) fix the dependent variable first; (2) add the independent variable, then mediators and moderators; (3) every numbered link needs a full hypothesis statement below the diagram, marked positive or negative; (4) control variables use a dashed box.', 'To draw a moderating effect: click Connect, choose the moderator as the source, then click the relationship line it moderates as the target.']
+    }
+  },
+
+  /* ---------------- RP · Qualitative ---------------- */
+  rp_qual: {
+    id: 'rp_qual', short: 'RP-Qual',
+    name: { zh: 'RP 研究提案・質性', en: 'RP Proposal · Qualitative' },
+    nodeW: 232, columns: 3, gapX: 100, grid: true, prefix: 'P', signs: false, defaultEdgeKind: 'main',
+    legendTitle: { zh: '研究命題', en: 'Propositions' },
+    title: { zh: '概念架構圖', en: 'Conceptual Framework' },
+    subtitle: { zh: '研究生姓名 · 指導教授 · 日期', en: 'Student · Advisor · Date' },
+    lanes: { enabled: false },
+    roles: [
+      { id: 'lens',    col: 0, row: 0, color: '#004030', fill: '#E6F0EC', zh: '理論視角', en: 'Theoretical Lens', terms: ['lens', 'framework'] },
+      { id: 'context', col: 0, row: 2, color: '#64748B', fill: '#F1F5F9', zh: '情境脈絡', en: 'Context', terms: ['context', 'sampling'] },
+      { id: 'concept', col: 1, color: '#B45309', fill: '#FEF3E2', zh: '核心概念', en: 'Core Concept', terms: ['framework', 'proposition', 'thematic'] },
+      { id: 'rq',      col: 2, row: 1, color: '#1D4ED8', fill: '#EAF1FF', zh: '研究問題', en: 'Research Question', terms: ['rq', 'qualitative'] }
+    ],
+    groups: [],
+    nodes: [
+      { k: 'lens', role: 'lens', text: T('動態能力觀點', ['感知、掌握、重組三項能力', '解釋組織如何因應環境變動'], 'Dynamic Capabilities View', ['Sensing, seizing and reconfiguring', 'Explains how organisations respond to change']) },
+      { k: 'context', role: 'context', text: T('台灣中小企業導入生成式 AI', ['南投地區製造業', '2025–2026 年導入期'], 'Generative AI Adoption in Taiwanese SMEs', ['Manufacturers in Nantou', 'Adoption period 2025–2026']) },
+      { k: 'c1', role: 'concept', row: 0, text: T('感知機會', ['主管如何察覺 AI 的應用機會'], 'Sensing', ['How managers notice AI opportunities']) },
+      { k: 'c2', role: 'concept', row: 1, text: T('掌握機會', ['資源投入與試行決策'], 'Seizing', ['Resource commitment and pilot decisions']) },
+      { k: 'c3', role: 'concept', row: 2, text: T('重組資源', ['流程與分工的調整'], 'Reconfiguring', ['Adjusting processes and division of labour']) },
+      { k: 'rq', role: 'rq', text: T('研究問題', ['RQ1 中小企業如何感知並掌握生成式 AI 的機會？', 'RQ2 導入過程中，組織如何重組流程與分工？'], 'Research Questions', ['RQ1 How do SMEs sense and seize generative AI opportunities?', 'RQ2 How do they reconfigure processes and roles during adoption?']) }
+    ],
+    edges: [
+      { k: 'f1', from: 'n:lens', to: 'n:c1', kind: 'flow' },
+      { k: 'f2', from: 'n:context', to: 'n:c3', kind: 'flow' },
+      { k: 'p1', from: 'n:c1', to: 'n:c2', kind: 'main', text: { zh: '主管對 AI 機會的感知程度，會影響企業是否投入資源試行。', en: 'How strongly managers sense AI opportunities shapes whether the firm commits resources to pilots.' } },
+      { k: 'p2', from: 'n:c2', to: 'n:c3', kind: 'main', text: { zh: '試行經驗越具體，企業越可能重組流程與分工。', en: 'The more concrete the pilot experience, the more likely the firm is to reconfigure processes and roles.' } },
+      { k: 'f3', from: 'n:c3', to: 'n:rq', kind: 'flow' }
+    ],
+    glossary: {
+      qualitative: { zh: ['質性研究', '透過訪談、觀察、文件等資料理解現象的意義與過程，重視脈絡與深度。'], en: ['Qualitative Research', 'Understands the meaning and process of a phenomenon through interviews, observation and documents, valuing context and depth.'] },
+      framework: { zh: ['概念架構', '說明研究關注的核心概念及其可能關聯，作為資料蒐集與分析的指引，而不是待檢驗的模型。'], en: ['Conceptual Framework', 'Sets out the core concepts and their possible links to guide data collection and analysis; not a model to be tested.'] },
+      proposition: { zh: ['命題 P', '對概念之間關係的初步主張，在研究中探索與修正，不以統計檢定為目的。'], en: ['Proposition (P)', 'A tentative claim about how concepts relate, explored and refined during the study rather than statistically tested.'] },
+      lens: { zh: ['理論視角', '研究者用來觀察與詮釋現象的理論角度。'], en: ['Theoretical Lens', 'The theoretical angle used to observe and interpret the phenomenon.'] },
+      context: { zh: ['情境脈絡', '現象發生的時空、產業與組織環境，是質性研究解讀資料的基礎。'], en: ['Context', 'The time, place, industry and organisational setting of the phenomenon; the basis for interpreting qualitative data.'] },
+      rq: { zh: ['研究問題 RQ', '研究要回答的核心問題，多以「如何」「為何」提問。'], en: ['Research Question (RQ)', 'The core question the study answers, usually framed as how or why.'] },
+      sampling: { zh: ['立意抽樣', '依研究目的，刻意挑選資訊豐富的個案或受訪者。'], en: ['Purposive Sampling', 'Deliberately selecting information-rich cases or interviewees for the research purpose.'] },
+      thematic: { zh: ['主題分析', '對訪談或文本資料編碼，歸納出反覆出現的主題。'], en: ['Thematic Analysis', 'Coding interview or text data to identify recurring themes.'] }
+    },
+    guide: {
+      zh: ['質性概念架構圖呈現研究關注的概念及其可能關聯，用來引導資料蒐集與分析。', '建議步驟：① 寫下理論視角與情境脈絡；② 列出 3～5 個核心概念；③ 用編號連線（P1、P2…）標示你想探索的命題，並在圖下方寫出完整敘述；④ 以流程箭頭連到研究問題。'],
+      en: ['A qualitative conceptual framework shows the concepts the study attends to and how they may relate, guiding data collection and analysis.', 'Suggested steps: (1) state the theoretical lens and context; (2) list 3–5 core concepts; (3) mark the propositions to explore with numbered links (P1, P2…) and write them out below the diagram; (4) connect to the research questions with flow arrows.']
+    }
+  },
+
+  /* ---------------- TP · PMCS 1151 ---------------- */
+  tp_pmcs: {
+    id: 'tp_pmcs', short: 'TP-PMCS',
+    name: { zh: 'TP 期末專案・PMCS 1151', en: 'TP Term Project · PMCS 1151' },
+    nodeW: 226, columns: 7, gapX: 62, prefix: 'AQ', signs: false, defaultEdgeKind: 'main',
+    legendTitle: { zh: '分析問題（AQ）', en: 'Analysis Questions (AQ)' },
+    title: { zh: 'PM／PjM 職缺 K/S/A 分析晨報 Agent：分析架構圖', en: 'PM/PjM Job K/S/A Morning-Brief Agent: Analysis Framework' },
+    subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · W9 提案', en: 'PMCS-EMI 1151 · Group __ · W9 Proposal' },
+    lanes: { enabled: true, max: 3 },
+    laneNames: [
+      { zh: '比較列 A｜台灣・半導體', en: 'Row A | Taiwan · Semiconductors' },
+      { zh: '比較列 B｜海外・同產業', en: 'Row B | Overseas · Same industry' },
+      { zh: '比較列 C', en: 'Row C' }
+    ],
+    roles: [
+      { id: 'scope',  col: 0, badge: '1', perLane: true, color: '#004030', fill: '#E6F0EC', zh: '① 可設定範圍', en: '① Configurable Scope', terms: ['theme_config', 'lanes', 'pmvariants', 'aq'] },
+      { id: 'source', col: 1, badge: '2', color: '#0F766E', fill: '#E3F4F1', zh: '② 資料來源與法遵', en: '② Sources & Compliance', terms: ['sources', 'robots', 'ratelimit', 'pii'] },
+      { id: 'jd',     col: 2, badge: '3', color: '#1D4ED8', fill: '#EAF1FF', zh: '③ JD 解析', en: '③ JD Parsing', terms: ['jd', 'fields104'] },
+      { id: 'axes',   col: 2, badge: '4', color: '#1D4ED8', fill: '#EAF1FF', zh: '④ 兩軸判斷', en: '④ Two-Axis Judgement', terms: ['pm', 'pjm', 'seniority'] },
+      { id: 'k',      col: 3, badge: 'K', perLane: true, color: '#B45309', fill: '#FEF3E2', zh: '⑤ 知識 K', en: '⑤ Knowledge K', terms: ['ksa', 'k'] },
+      { id: 's',      col: 3, badge: 'S', perLane: true, color: '#B45309', fill: '#FEF3E2', zh: '⑤ 技能 S', en: '⑤ Skills S', terms: ['s'] },
+      { id: 'a',      col: 3, badge: 'A', perLane: true, color: '#B45309', fill: '#FEF3E2', zh: '⑤ 態度 A', en: '⑤ Attitude A', terms: ['a'] },
+      { id: 'ai',     col: 3, badge: '★', perLane: true, color: '#7C3AED', fill: '#F3EEFF', zh: '⑤ ★ AI 職能', en: '⑤ ★ AI Competency', terms: ['aicf'] },
+      { id: 'role6',  col: 4, badge: '6', perLane: true, color: '#9D174D', fill: '#FCEEF4', zh: '⑥ 職位與職能對照', en: '⑥ Role & Competency Mapping', terms: ['po', 'pl', 'pcc', 'pdma', 'npd'] },
+      { id: 'pay',    col: 5, badge: '7', perLane: true, color: '#A16207', fill: '#FEF9E7', zh: '⑦ 薪酬與職涯', en: '⑦ Pay & Career', terms: ['salary'] },
+      { id: 'brief',  col: 6, badge: '8', color: '#004030', fill: '#F7F1E8', zh: '⑧ 晨報輸出', en: '⑧ Morning-Brief Output', terms: ['business_rules', 'degradation', 'heartbeat'] },
+      { id: 'perf',   col: 6, badge: '9', color: '#64748B', fill: '#F8FAFC', zh: '⑨（選配）企業／產業績效', en: '⑨ (Optional) Firm / Industry Performance', terms: ['etf'] }
+    ],
+    groups: [
+      { id: 'ksa', roles: ['k', 's', 'a', 'ai'],
+        label: { zh: '⑤ K/S/A 抽取 · ksa_taxonomy.md', en: '⑤ K/S/A Extraction · ksa_taxonomy.md' },
+        note: { zh: '品質閘：「無法判定」> 30% → 修改關鍵字表', en: 'Quality gate: "undecidable" > 30% → revise keyword list' } }
+    ],
+    nodes: [
+      { k: 'scope', role: 'scope', lane: 0, tag: 'theme_config.md',
+        text: T('可設定範圍', ['產業／企業：半導體・聯發科', '職務關鍵字：PM、PdM、PjM、PCC、TPM', '地區：台灣・新竹'], 'Configurable Scope', ['Industry / company: Semiconductors · MediaTek', 'Job keywords: PM, PdM, PjM, PCC, TPM', 'Region: Taiwan · Hsinchu']) },
+      { k: 'source', role: 'source', lane: -1, tag: 'sources.md', variant: 'auto',
+        variants: {
+          auto: T('資料來源與法遵', ['台灣就業通職缺開放資料（data.gov.tw）', '允許擷取的企業徵才頁', 'robots.txt／服務條款檢查', '速率限制＋退避重試', '個資遮蔽'], 'Sources & Compliance', ['Taiwan Jobs open data (data.gov.tw)', 'Company career pages that permit crawling', 'robots.txt / Terms of Service check', 'Rate limiting + exponential backoff', 'PII masking']),
+          semi: T('資料來源與法遵', ['組員將 JD 貼入共用表單', '每則保留原始連結', 'Agent 每日彙整與分析', '個資遮蔽'], 'Sources & Compliance', ['Members paste JDs into a shared form', 'Original link kept for every entry', 'Agent consolidates and analyses daily', 'PII masking'])
+        } },
+      { k: 'jd', role: 'jd', lane: -1, tag: '104 · JDKS M4',
+        text: T('JD 解析', ['結構化 6 欄 → 規則對應：年資、學歷、科系、語言、工具、技能', '自由文字 2 欄 → 語意判讀：其他條件、工作內容', '管理責任欄 → 預測「對下」象限'], 'JD Parsing', ['6 structured fields → rule mapping: experience, education, major, language, tools, skills', '2 free-text fields → semantic reading: other conditions, job duties', 'Management-responsibility field → predicts the "downward" quadrant']) },
+      { k: 'axes', role: 'axes', lane: -1, tag: 'JDKS M2–M3',
+        text: T('兩軸判斷', ['軸一 管理對象：PM（產品）vs PjM（專案）', '軸二 層級：7 階（Product Specialist → CPO）', '層級訊號：年資、管理責任、職責動詞'], 'Two-Axis Judgement', ['Axis 1 object: PM (product) vs PjM (project)', 'Axis 2 seniority: 7 rungs (Product Specialist → CPO)', 'Signals: experience, management duty, duty verbs']) },
+      { k: 'k', role: 'k', lane: 0, text: T('知識', ['學歷、科系、產業基本知識', '可由結構化欄位以規則判定'], 'Knowledge', ['Degree, major, industry fundamentals', 'Rule-based from structured fields']) },
+      { k: 's', role: 's', lane: 0, text: T('技能', ['年資、工具、語言、證照', '「S 有證據」：可驗證'], 'Skills', ['Experience, tools, languages, certificates', '"S has evidence": verifiable']) },
+      { k: 'a', role: 'a', lane: 0, text: T('態度', ['四象限：對上／對下／對內／對外', '多以形容詞出現在自由文字', '文本層次上不可觀察：「A 沒有證據」'], 'Attitude', ['Four quadrants: upward / downward / inward / outward', 'Mostly adjectives in free text', 'Unobservable at text level: "A has no evidence"']) },
+      { k: 'ai', role: 'ai', lane: 0, text: T('AI 職能', ['JD 中與 AI 相關的 K／S／A 標記為 ★', '對照 AICF，讓各職缺的抽取精細程度一致'], 'AI Competency', ['AI-related K/S/A in a JD are marked ★', 'Cross-check with AICF for consistent granularity']) },
+      { k: 'role6', role: 'role6', lane: 0, tag: 'W6 PMA · Coggle',
+        text: T('職位與職能對照', ['角色辨識：PM／PO／PL／PCC', 'PDMA 七大領域：策略 20%、PI 管理 20%、PI 流程 15%、PDD 工具 15%、產品組合 10%、市場研究 10%、文化團隊領導 10%', 'NPD Stage-Gate：3 階段 6 步驟'], 'Role & Competency Mapping', ['Role identification: PM / PO / PL / PCC', 'PDMA 7 areas: Strategy 20%, PI Management 20%, PI Process 15%, PDD Tools 15%, Portfolio 10%, Market Research 10%, Culture, Teams & Leadership 10%', 'NPD Stage-Gate: 3 phases, 6 stages']) },
+      { k: 'pay', role: 'pay', lane: 0, tag: 'W8 CSA',
+        text: T('薪酬與職涯', ['薪酬區間（月薪／年薪）', '福利型態：股權分紅／彈性遠距／穩定保障', '職涯路徑：依軸二層級晉升'], 'Pay & Career', ['Pay range (monthly / annual)', 'Benefit type: equity & bonus / flexible & remote / stability', 'Career path: progression along Axis 2']) },
+      { k: 'brief', role: 'brief', lane: -1, tag: 'business_rules.md',
+        text: T('晨報輸出', ['新增職缺（今日）', '累積統計：職缺數、K/S/A 出現頻率', '趨勢變化：週／月比較', '400–600 字，每則附原始連結', '降級時標示「今日來源不可用」'], 'Morning-Brief Output', ['New postings (today)', 'Cumulative stats: posting count, K/S/A frequency', 'Trend changes: week / month comparison', '400–600 words, original link for every item', 'Degraded runs labelled "source unavailable today"']) },
+      { k: 'perf', role: 'perf', lane: -1, tag: 'W17–18', optional: true,
+        text: T('（選配）企業／產業績效', ['個股與相關 ETF', '與職缺數量、薪酬水準的關聯'], '(Optional) Firm / Industry Performance', ['Shares and related ETFs', 'Link to posting volume and pay levels']) }
+    ],
+    edges: [
+      { k: 'f1', from: 'n:scope', to: 'n:source', kind: 'flow' },
+      { k: 'f2', from: 'n:source', to: 'n:jd', kind: 'flow' },
+      { k: 'f3', from: 'n:jd', to: 'n:axes', kind: 'flow' },
+      { k: 'f4', from: 'n:axes', to: 'g:ksa:0', kind: 'flow' },
+      { k: 'f5', from: 'g:ksa:0', to: 'n:role6', kind: 'flow' },
+      { k: 'f6', from: 'n:role6', to: 'n:pay', kind: 'flow' },
+      { k: 'f7', from: 'n:pay', to: 'n:brief', kind: 'flow' },
+      { k: 'q1', from: 'n:scope', to: 'n:ai', kind: 'main', text: { zh: '不同比較列（例如國內與國外）的 PM／PjM 職缺，對 AI 職能的要求有何差異？', en: 'How do AI competency requirements differ across comparison rows (e.g., domestic vs overseas PM/PjM postings)?' } },
+      { k: 'q2', from: 'n:axes', to: 'n:pay', kind: 'main', text: { zh: '職缺層級（軸二）與薪酬區間之間有什麼關係？', en: 'How does seniority (Axis 2) relate to the pay range?' } },
+      { k: 'q3', from: 'n:a', to: 'n:role6', kind: 'main', text: { zh: 'JD 列出的態度要求真的篩得出來嗎？它究竟在哪一關才被檢驗？', en: 'Can the attitudes listed in a JD actually be screened, and at which stage are they really examined?' } },
+      { k: 'q4', from: 'n:pay', to: 'n:perf', kind: 'main', text: { zh: '企業的經營績效（個股／ETF）與其薪酬水準是否一致？', en: "Is the firm's operating performance (shares / ETFs) consistent with its pay level?" } }
+    ],
+    glossary: {
+      theme_config: { zh: ['theme_config.md 範圍設定檔', 'KB 四個檔案之一，鎖定產業／企業、職務關鍵字與地區；換產業只要改這個檔案，不必改程式。'], en: ['theme_config.md', 'One of the four KB files. It locks industry/company, job keywords and region; switching industry means editing this file, not the code.'] },
+      lanes: { zh: ['比較列', '圖中的一條水平列代表一組檢索範圍，最多 3 列，用來並排比較，例如國內與國外。'], en: ['Comparison Row', 'Each horizontal row is one search scope; up to three rows sit side by side for comparison, e.g. domestic vs overseas.'] },
+      pmvariants: { zh: ['職稱變體', 'PdM／PDM 等同 PM；PJM／PCC 等同 PjM；RPM、TPM、OPM 是 PjM 的變體。職稱不能盡信，要看工作內容。'], en: ['Job-title Variants', 'PdM/PDM = PM; PJM/PCC = PjM; RPM, TPM and OPM are PjM variants. Titles cannot be trusted; read the duties.'] },
+      aq: { zh: ['分析問題 AQ', 'TP 版的「假說」：標在連線上，說明兩個節點之間要回答的問題，並自動編號列在圖下方。'], en: ['Analysis Question (AQ)', 'The TP counterpart of a hypothesis: written on a link, stating what the two nodes should answer, auto-numbered below the diagram.'] },
+      sources: { zh: ['sources.md 來源清單', '記錄資料來源、存取方式與備援來源；可以用 vibe coding 增減來源，不必改寫程式。'], en: ['sources.md', 'Lists data sources, access methods and fallbacks; sources can be added or removed by vibe coding without rewriting code.'] },
+      robots: { zh: ['robots.txt／服務條款', '網站宣告自動存取規則的檔案與使用條款；明確禁止時改用備援來源，不以技術手段規避。'], en: ['robots.txt / Terms of Service', "A site's declared rules for automated access; where access is forbidden, switch to a fallback source rather than circumvent it."] },
+      ratelimit: { zh: ['速率限制與退避重試', '控制請求頻率，失敗時逐步拉長等待時間，避免造成對方網站負擔。'], en: ['Rate Limiting & Backoff', 'Controls request frequency and lengthens the wait after each failure, so the source server is not burdened.'] },
+      pii: { zh: ['個資遮蔽', '不蒐集、不儲存、不呈現個人資料；來源若含聯絡人姓名、電話、Email，須先遮蔽。'], en: ['PII Masking', 'Do not collect, store or display personal data; mask contact names, phone numbers and emails before processing.'] },
+      jd: { zh: ['JD 職務說明', '企業刊登職缺時對工作內容、條件與待遇的描述，是 K/S/A 抽取的原始資料。'], en: ['Job Description (JD)', 'The posted description of duties, requirements and pay; the raw data for K/S/A extraction.'] },
+      fields104: { zh: ['104 欄位結構', '6 個結構化欄位可用規則對應，2 個自由文字欄位需要語意判讀；欄位結構本身就是半套抽取規則。'], en: ['104 Field Structure', 'Six structured fields map by rule; two free-text fields need semantic reading. The field structure is itself half a rule set.'] },
+      pm: { zh: ['PM 產品經理', '管理「產品」：損益、生命週期、版本到 EOL。'], en: ['Product Manager (PM)', 'Manages a product: P&L, lifecycle, versions through EOL.'] },
+      pjm: { zh: ['PjM 專案經理', '管理有邊界的「專案」：時程、里程碑、交付物。'], en: ['Project Manager (PjM)', 'Manages a bounded project: schedule, milestones, deliverables.'] },
+      seniority: { zh: ['層級（軸二）', '七階：Product Specialist、Product Engineer、Junior PM、Senior PM、PM Director、VP／SVP、CPO。'], en: ['Seniority (Axis 2)', 'Seven rungs: Product Specialist, Product Engineer, Junior PM, Senior PM, PM Director, VP/SVP, CPO.'] },
+      ksa: { zh: ['職能 = f(K, S, A)', '職能是知識、技能、態度的函數，並對應到具體的 JD。'], en: ['Competency = f(K, S, A)', 'A competency is a function of Knowledge, Skills and Attitude, mapped onto a concrete JD.'] },
+      k: { zh: ['知識 K', '領域基礎，多可由學歷、科系等結構化欄位判定。'], en: ['Knowledge (K)', 'Domain foundations, mostly decidable from structured fields such as degree and major.'] },
+      s: { zh: ['技能 S', '有證據可驗證的能力，例如年資、工具、語言成績、證照。'], en: ['Skills (S)', 'Capabilities backed by evidence, such as years of experience, tools, language scores and certificates.'] },
+      a: { zh: ['態度 A', '缺乏可驗證證據，多以形容詞出現；分對上、對下、對內、對外四象限，在文本層次上不可觀察。'], en: ['Attitude (A)', 'No verifiable evidence; appears mostly as adjectives. Four quadrants (upward, downward, inward, outward); unobservable at text level.'] },
+      aicf: { zh: ['AICF AI 職能架構', 'W7 相鄰教材，用來對照 AI 相關職能，讓各職缺的抽取精細程度一致。'], en: ['AI Competency Framework (AICF)', 'The W7 adjacent material, used to cross-check AI-related competencies so extraction granularity stays consistent.'] },
+      po: { zh: ['PO 產品負責人', '軟體 Scrum 角色，負責需求與優先順序；在硬體組織中，這項功能分散到 PL、PCC 與部分 PM。'], en: ['Product Owner (PO)', 'The Scrum role owning requirements and priorities; in hardware organisations the function is split across PL, PCC and part of PM.'] },
+      pl: { zh: ['PL 專案負責人', 'Project Leader：硬體開發中負責跨部門協調與推動專案的角色。'], en: ['Project Leader (PL)', 'In hardware development, the role that coordinates across departments and drives the project.'] },
+      pcc: { zh: ['PCC 專案協調', 'Project/Program Coordinator：負責進度追蹤與執行控管。常見說法：PO ≈ PL（協調）＋ PCC（追蹤）＋ 部分 PM（價值判斷）。'], en: ['Project/Program Coordinator (PCC)', 'Tracks progress and controls execution. A common summary: PO ≈ PL (coordination) + PCC (tracking) + part of PM (value judgement).'] },
+      pdma: { zh: ['PDMA 知識體系', '產品開發與管理協會的七大知識領域；本課程以 Coggle 圖的權重為唯一依據。'], en: ['PDMA Body of Knowledge', "The seven knowledge areas of the Product Development and Management Association; this course uses the Coggle map's weightings as its sole source."] },
+      npd: { zh: ['NPD Stage-Gate 階段－關卡', '新產品開發分 3 階段 6 步驟（行銷、可行性、產品設計、工具、工程、上市），每一步都要通過關卡審查才能前進。'], en: ['NPD Stage-Gate', 'New product development in 3 phases and 6 stages (marketing, feasibility, product design, tooling, engineering, launch); each stage must pass a gate review.'] },
+      salary: { zh: ['薪酬與福利', '比較月薪區間與福利型態，例如股權分紅、彈性遠距或穩定保障。'], en: ['Pay & Benefits', 'Compare monthly pay ranges and benefit types, such as equity and bonuses, flexibility and remote work, or stability.'] },
+      business_rules: { zh: ['business_rules.md 呈現規範', '規定晨報字數、每則欄位與引用方式等輸出規則。'], en: ['business_rules.md', 'Sets the output rules: word count, fields per item and how sources are cited.'] },
+      degradation: { zh: ['降級模式', '主要來源失敗時改用備援；全部失敗仍照常出刊，並誠實標示「今日來源不可用」。'], en: ['Graceful Degradation', 'Falls back when the primary source fails; if all fail, the brief still ships, honestly labelled "source unavailable today".'] },
+      heartbeat: { zh: ['心跳排程', '每天固定時間（含時區）自動喚醒 Agent 執行；W16 驗收 D+1～D+3 連續三天無人值守的執行結果。'], en: ['Heartbeat Trigger', 'Wakes the agent at a fixed time each day (with time zone); W16 checks three unattended runs, D+1 to D+3.'] },
+      etf: { zh: ['企業績效與 ETF', '選配構面：職務 → 企業 → 薪酬 → 經營績效 → 個股與 ETF 的推論鏈（W17–18）。'], en: ['Firm Performance & ETFs', 'Optional dimension: the chain job → firm → pay → operating performance → shares and ETFs (W17–18).'] }
+    },
+    guide: {
+      zh: ['A 圖呈現晨報 Agent 的「分析邏輯」：從範圍設定一路到晨報輸出。節點下方的標籤對應 KB 檔案或課程週次。', '建議步驟：① 在①填入你們鎖定的產業、企業、職務關鍵字與地區；需要比較時，到「新增」分頁加入比較列（最多 3 列）。② 在②選擇資料來源模式：自動與半自動都是正式合格做法。③ 依 JDKS 教材完成③④⑤的 JD 拆解。④ 在⑥⑦對照職位、PDMA 與薪酬。⑤ 在⑧定義晨報內容，包含新增職缺、累積統計與趨勢變化。⑥ 在連線上寫出你們的分析問題（AQ），系統會自動編號並列在圖下方。', '完成後匯出 SVG 或 PNG，放進 W9 提案。'],
+      en: ['Diagram A shows the analysis logic of the morning-brief agent, from scope to output. The tag under each node points to a KB file or course week.', 'Suggested steps: (1) fill ① with your industry, company, job keywords and region; to compare, add comparison rows in the Add tab (up to three). (2) Choose the source mode in ②: both automatic and semi-automatic are fully acceptable. (3) Break the JD down through ③④⑤ following the JDKS material. (4) Map roles, PDMA and pay in ⑥⑦. (5) Define the brief in ⑧: new postings, cumulative stats and trends. (6) Write your analysis questions (AQ) on the links; they are numbered automatically and listed below the diagram.', 'When finished, export SVG or PNG for your W9 proposal.']
+    }
+  }
+};
+const TEMPLATE_ORDER = ['rp_quant', 'rp_qual', 'tp_pmcs'];
+
+/* ============================================================
+   TEMPLATES_B — Diagram B (flow): same keys as TEMPLATES
+   phases  : column bands (I-P-O) or row bands (thesis chapters)
+   band    : cross-cutting band along the bottom
+   shape   : step | decision | doc | terminal
+   main edges are drawn as numbered feedback loops (L1, L2 …)
+   ============================================================ */
+const B_SHAPES_GLOSS = {
+  shapes: { zh: ['節點形狀', '圓角矩形＝步驟；六角形＝判斷／品質閘；波浪底＝檔案或資料；膠囊形＝起點／終點。'], en: ['Node Shapes', 'Rounded box = step; hexagon = decision / quality gate; wavy bottom = file or data; capsule = start / end.'] },
+  loop: { zh: ['回饋迴路 L', '虛線弧形箭頭，表示結果會回頭影響前面的步驟；自動編號並列在圖下方。'], en: ['Feedback Loop (L)', 'A dashed curved arrow showing that a result feeds back to an earlier step; auto-numbered below the diagram.'] },
+  xref: { zh: ['跨圖對照（→ A）', '節點右下角的「→ A②」表示它對應 A 架構圖的哪一個節點，方便兩張圖互相對照。'], en: ['Cross-reference (→ A)', 'The "→ A②" mark on a node shows which node of Framework Diagram A it corresponds to.'] }
+};
+
+const TEMPLATES_B = {
+  /* ---------------- TP · PMCS 1151 · I-P-O system blueprint ---------------- */
+  tp_pmcs: {
+    id: 'tp_pmcs', short: 'TP-PMCS-B',
+    name: { zh: 'TP 期末專案・PMCS 1151', en: 'TP Term Project · PMCS 1151' },
+    nodeW: 212, gapX: 30, grid: true, rowGap: 150, topPad: 38, alignTop: true,
+    colShift: [0, 0, 44, 44, 88, 88],
+    prefix: 'L', signs: false, defaultEdgeKind: 'flow', mainStyle: 'loop', xref: true, defaultRole: 'subagent',
+    legendTitle: { zh: '回饋迴路（L）', en: 'Feedback Loops (L)' },
+    ownerTitle: { zh: '團隊角色分工（建議，可依組內分工調整）', en: 'Team Roles (suggested; adjust to your team)' },
+    title: { zh: 'PM／PjM 職缺 K/S/A 分析晨報 Agent：系統流程圖（I-P-O 藍圖）', en: 'PM/PjM Job K/S/A Morning-Brief Agent: System Flow (I-P-O Blueprint)' },
+    subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · W9 提案', en: 'PMCS-EMI 1151 · Group __ · W9 Proposal' },
+    lanes: { enabled: false },
+    phaseDir: 'col',
+    phases: [
+      { cols: [0, 1], color: '#004030', fill: '#F2F7F4', label: { zh: 'INPUT／INTENTION｜意圖與脈絡', en: 'INPUT / INTENTION | Intent & Context' }, out: { zh: '產出：高資訊密度的需求草稿', en: 'Output: a high-density requirements draft' } },
+      { cols: [2, 3], color: '#1D4ED8', fill: '#F3F7FF', label: { zh: 'PROCESS｜資料與工具', en: 'PROCESS | Data & Tools' }, out: { zh: '產出：結構化資料與初步晨報文案', en: 'Output: structured data and a first-draft brief' } },
+      { cols: [4, 5], color: '#B45309', fill: '#FFF9F0', label: { zh: 'OUTPUT & LOOP｜成果與心跳', en: 'OUTPUT & LOOP | Results & Heartbeat' }, out: { zh: '產出：自動運行且良好維護的 Agent', en: 'Output: an agent that runs itself and is well maintained' } }
+    ],
+    band: { roles: ['gov'], label: { zh: '治理層 Governance & Best Practices（橫貫三欄）', en: 'Governance & Best Practices (cuts across all three columns)' } },
+    owners: [
+      { id: 'butler', color: '#0F766E', zh: 'Butler 管家', en: 'Butler' },
+      { id: 'coach', color: '#7C3AED', zh: 'Coach 教練', en: 'Coach' },
+      { id: 'fetcher', color: '#0369A1', zh: 'Data Fetcher', en: 'Data Fetcher' },
+      { id: 'summarizer', color: '#BE185D', zh: 'AI Summarizer', en: 'AI Summarizer' },
+      { id: 'qadevops', color: '#A16207', zh: 'QA & DevOps', en: 'QA & DevOps' }
+    ],
+    roles: [
+      { id: 'airole',  col: 0, row: 0, shape: 'step', color: '#004030', fill: '#E6F0EC', zh: 'AI 角色', en: 'AI Role', terms: ['butler', 'coach'] },
+      { id: 'intent',  col: 1, row: 0, shape: 'step', color: '#004030', fill: '#E6F0EC', zh: '意圖工程', en: 'Intent Engineering', terms: ['sysprompt', 'dyncontext', 'context'] },
+      { id: 'kb',      col: 1, row: 0, shape: 'doc',  color: '#004030', fill: '#E6F0EC', zh: 'KB 檔案', en: 'KB Files', terms: ['kb', 'nocode'] },
+      { id: 'subagent', col: 2, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: 'Subagent', en: 'Subagent', terms: ['subagent', 'degradation'] },
+      { id: 'secret',  col: 2, row: 0, shape: 'doc',  color: '#1D4ED8', fill: '#EAF1FF', zh: '金鑰隔離', en: 'Key Isolation', terms: ['envkey'] },
+      { id: 'filter',  col: 3, row: 0, shape: 'decision', color: '#1D4ED8', fill: '#EAF1FF', zh: '輸入過濾', en: 'Input Filter', terms: ['injection'] },
+      { id: 'harness', col: 3, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: 'Harness 護欄', en: 'Harness Guardrail', terms: ['harness', 'sandbox', 'guardrails'] },
+      { id: 'gate',    col: 4, row: 0, shape: 'decision', color: '#B45309', fill: '#FEF3E2', zh: '品質閘', en: 'Quality Gate', terms: ['qa'] },
+      { id: 'deliver', col: 4, row: 0, shape: 'terminal', color: '#B45309', fill: '#FEF3E2', zh: '交付', en: 'Delivery', terms: ['push', 'degradation'] },
+      { id: 'handbook', col: 4, row: 0, shape: 'doc', color: '#B45309', fill: '#FEF3E2', zh: '說明檔', en: 'Handbook', terms: ['skillmd'] },
+      { id: 'ops',     col: 4, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: '部署維運', en: 'Operations', terms: ['devops'] },
+      { id: 'loopeng', col: 5, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: 'Loop 機制', en: 'Loop Mechanism', terms: ['heartbeat', 'react', 'qc', 'loop'] },
+      { id: 'gov',     row: 1, col: 0, w: 454, shape: 'step', color: '#475569', fill: '#F1F5F9', zh: '治理原則', en: 'Governance Principle', terms: ['injection', 'copyright', 'nocode'] }
+    ],
+    groups: [
+      { id: 'ai', roles: ['airole'], color: '#004030', label: { zh: 'AI 角色', en: 'AI Roles' } },
+      { id: 'pce', roles: ['intent', 'kb'], color: '#004030', label: { zh: '意圖工程三層', en: 'Prompt & Context Engineering' } },
+      { id: 'sub', roles: ['subagent'], color: '#1D4ED8', label: { zh: 'Subagent 團隊（併發分工）', en: 'Subagent Team (parallel)' } },
+      { id: 'har', roles: ['harness', 'filter'], color: '#1D4ED8', label: { zh: 'Harness 工程', en: 'Harness Engineering' } },
+      { id: 'qd', roles: ['gate'], color: '#B45309', label: { zh: '把關：QA', en: 'Quality Check' } },
+      { id: 'dl', roles: ['deliver', 'handbook'], color: '#B45309', label: { zh: '交付', en: 'Delivery' } },
+      { id: 'op', roles: ['ops'], color: '#B45309', label: { zh: '把關：DevOps', en: 'Operations' } },
+      { id: 'lp', roles: ['loopeng'], color: '#B45309', label: { zh: 'Loop Engineering', en: 'Loop Engineering' } }
+    ],
+    nodes: [
+      { k: 'butler', role: 'airole', owner: 'butler', text: T('管家 Butler', ['維護專案骨架、KB/ 與版本控管', '價值：一致性與可追溯性'], 'Butler', ['Maintains the project skeleton, KB/ and version control', 'Value: consistency and traceability']) },
+      { k: 'coach', role: 'airole', owner: 'coach', text: T('教練 Coach', ['確認商業意圖、引導思考邊界', '把模糊需求逼問成可驗收的規格'], 'Coach', ['Confirms business intent and sets thinking boundaries', 'Turns vague needs into testable specs']) },
+      { k: 'sysprompt', role: 'intent', owner: 'coach', text: T('System Prompt', ['第一層：穩定不變的角色', '例：「你是一位晨報總編輯」'], 'System Prompt', ['Layer 1: a stable role', 'e.g. "You are the editor-in-chief of a morning brief"']) },
+      { k: 'dyncontext', role: 'intent', owner: 'coach', text: T('Dynamic Context', ['第二層：每次不同的即時資訊', '今日日期、時區、當日檢索範圍'], 'Dynamic Context', ['Layer 2: live information that changes each run', "Today's date, time zone, today's search scope"]) },
+      { k: 'kb', role: 'kb', owner: 'butler', tag: 'KB/', xref: 'A①', text: T('Long-term KB', ['第三層：長期規範（改 .md 即可換主題）', 'theme_config.md：可設定範圍', 'business_rules.md：呈現規範', 'sources.md：來源清單與備援', 'ksa_taxonomy.md：K/S/A 分類'], 'Long-term KB', ['Layer 3: long-term rules (edit the .md to switch topic)', 'theme_config.md: configurable scope', 'business_rules.md: output rules', 'sources.md: sources and fallbacks', 'ksa_taxonomy.md: K/S/A taxonomy']) },
+      { k: 'fetcher', role: 'subagent', owner: 'fetcher', xref: 'A②', variant: 'auto',
+        variants: {
+          auto: T('Data Fetcher', ['併發抓取免費、合規的多源資料', '逾時、重試（有上限）、格式轉換', '主要來源失敗 → 依序改用備援來源'], 'Data Fetcher', ['Fetches free, compliant sources in parallel', 'Timeouts, capped retries, format conversion', 'Primary source fails → try fallbacks in order']),
+          semi: T('Data Fetcher', ['讀取組員貼入共用表單的 JD', '每則保留原始連結', '格式轉換、去除重複'], 'Data Fetcher', ['Reads the JDs members paste into a shared form', 'Original link kept for every entry', 'Format conversion and de-duplication'])
+        } },
+      { k: 'summarizer', role: 'subagent', owner: 'summarizer', xref: 'A③–⑦', text: T('AI Summarizer', ['JD 解析、兩軸判斷、K/S/A 抽取', '提煉觀點，撰寫 400–600 字晨報'], 'AI Summarizer', ['JD parsing, two-axis judgement, K/S/A extraction', 'Distils insights and writes a 400–600-word brief']) },
+      { k: 'envkey', role: 'secret', owner: 'fetcher', tag: '.env', text: T('.env 金鑰隔離', ['只放 .env（已加入 .gitignore）或平台 Secrets', '絕不放前端、Git、Prompt、Memory、KB', '本課程 TP 不得使用付費 API'], '.env Key Isolation', ['Only in .env (listed in .gitignore) or platform Secrets', 'Never in front-end code, Git, prompts, Memory or KB', 'Paid APIs are not allowed in this TP']) },
+      { k: 'toolapi', role: 'harness', owner: 'fetcher', text: T('Tool API Binding', ['以受控方式接上外部能力', '明確定義能呼叫什麼、不能呼叫什麼'], 'Tool API Binding', ['Connects external capabilities in a controlled way', 'States exactly what may and may not be called']) },
+      { k: 'sandbox', role: 'harness', owner: 'qadevops', text: T('Execution Sandbox', ['隔離的執行環境', '出錯或被誘導也波及不到主系統'], 'Execution Sandbox', ['An isolated runtime', 'Errors or manipulation cannot reach the main system']) },
+      { k: 'guardrails', role: 'harness', owner: 'qadevops', text: T('Security Guardrails', ['PII 個資遮蔽', '防暴卡槽：速率限制與資源上限'], 'Security Guardrails', ['PII masking', 'Circuit breakers: rate limits and resource caps']) },
+      { k: 'sanitize', role: 'filter', owner: 'fetcher', text: T('Input Sanitization', ['外部內容一律視為「資料」，不當作「指令」', '過濾指令式語句，防範 Prompt Injection'], 'Input Sanitization', ['External content is data, never instructions', 'Filters instruction-like text to block prompt injection']) },
+      { k: 'qa', role: 'gate', owner: 'qadevops', xref: 'A⑤', text: T('QA Tester', ['字數、格式、出處與原連結', '是否全文複製', '通過 → 送出；未通過 → QC Feedback'], 'QA Tester', ['Length, format, sources and original links', 'Any verbatim copying?', 'Pass → send; fail → QC Feedback']) },
+      { k: 'devops', role: 'ops', owner: 'qadevops', text: T('DevOps', ['部署雲端、託管 Cron 定時任務', '檢查排程觸發、憑證效期、日誌'], 'DevOps', ['Cloud deployment and hosted cron jobs', 'Checks triggers, credential expiry and logs']) },
+      { k: 'push', role: 'deliver', owner: 'summarizer', xref: 'A⑧', text: T('推播通知：晨報送達', ['每天 07:00 送達手機', '例如 LINE Messaging API、Email、Telegram', '降級時標示「今日來源不可用」'], 'Push Notification: Brief Delivered', ['Arrives on the phone at 07:00 daily', 'e.g. LINE Messaging API, email, Telegram', 'When degraded, labelled "source unavailable today"']) },
+      { k: 'skillmd', role: 'handbook', owner: 'butler', tag: 'SKILL.md', text: T('SKILL.md 自動化說明檔', ['把整套流程封裝成可重複執行的說明', '接手者不必重讀程式碼即可維護'], 'SKILL.md Automation Handbook', ['Packages the whole workflow as repeatable instructions', 'Successors can maintain it without rereading the code']) },
+      { k: 'qc', role: 'loopeng', owner: 'qadevops', text: T('QC Feedback', ['格式或字數未通過 → 自動退回重寫', '重寫上限 2–3 次，超過即降級輸出'], 'QC Feedback', ['Format or length fails → sent back for rewriting', '2–3 rewrites at most, then degrade the output']) },
+      { k: 'react', role: 'loopeng', owner: 'summarizer', text: T('ReAct Loop', ['思考 → 呼叫工具 → 觀察修正', '資料不足就再走一輪'], 'ReAct Loop', ['Think → call a tool → observe and adjust', 'Another round if the data are insufficient']) },
+      { k: 'heartbeat', role: 'loopeng', owner: 'qadevops', text: T('Heartbeat Trigger', ['每天 07:00 自動喚醒（含時區）', '重試有上限，並發送失敗通知', 'W16 驗收 D+1～D+3 無人值守'], 'Heartbeat Trigger', ['Wakes up at 07:00 daily (time zone set)', 'Capped retries with failure alerts', 'W16 checks D+1 to D+3, unattended']) },
+      { k: 'gov1', role: 'gov', col: 0, owner: 'fetcher', text: T('Prompt Injection 防禦', ['在 Harness 層過濾惡意指令', '每新增一個來源，同步檢視風險'], 'Prompt Injection Defence', ['Filter malicious instructions at the Harness layer', 'Review the risk every time a source is added']) },
+      { k: 'gov2', role: 'gov', col: 2, owner: 'qadevops', text: T('Copyright Claim 防衛', ['禁止全文複製，只做衍生摘要', '附出處與原連結；遵守 robots.txt 與服務條款', 'AI 生成內容須經人工審閱才發布'], 'Copyright Claim Defence', ['No verbatim copying; derivative summaries only', 'Cite sources with links; respect robots.txt and ToS', 'AI output is human-reviewed before release']) },
+      { k: 'gov3', role: 'gov', col: 4, owner: 'butler', text: T('無 Code 維護性', ['業務邏輯與程式解耦', '改 .md 即可維護；換產業只改 theme_config.md'], 'No-Code Maintainability', ['Business logic decoupled from code', 'Maintain by editing .md; switch industry via theme_config.md']) }
+    ],
+    edges: [
+      { k: 'f1', from: 'n:coach', to: 'n:sysprompt', kind: 'flow' },
+      { k: 'f2', from: 'n:butler', to: 'n:kb', kind: 'flow' },
+      { k: 'f3', from: 'n:kb', to: 'n:fetcher', kind: 'flow' },
+      { k: 'f4', from: 'n:fetcher', to: 'n:sanitize', kind: 'flow' },
+      { k: 'f5', from: 'n:sanitize', to: 'n:summarizer', kind: 'flow' },
+      { k: 'f6', from: 'n:summarizer', to: 'n:qa', kind: 'flow' },
+      { k: 'f7', from: 'n:qa', to: 'n:push', kind: 'flow', text: { zh: '通過', en: 'Pass' } },
+      { k: 'f8', from: 'n:qa', to: 'n:qc', kind: 'flow', text: { zh: '未通過', en: 'Fail' } },
+      { k: 'l1', from: 'n:heartbeat', to: 'n:fetcher', kind: 'main', text: { zh: 'Heartbeat：每天 07:00 喚醒 Agent，重新走一次完整流程；排程要寫明時區、重試上限與失敗通知。', en: 'Heartbeat: wakes the agent at 07:00 every day to run the whole flow again; state the time zone, retry cap and failure alerts.' } },
+      { k: 'l2', from: 'n:toolapi', to: 'n:summarizer', kind: 'main', text: { zh: 'ReAct：AI Summarizer 呼叫工具取得資料，觀察結果後判斷是否足夠，不足就再走一輪。', en: 'ReAct: the AI Summarizer calls a tool, observes the result, and runs another round if the data are insufficient.' } },
+      { k: 'l3', from: 'n:qc', to: 'n:summarizer', kind: 'main', text: { zh: 'Self-Correction：QA 未通過就退回重寫，上限 2–3 次；仍未通過則降級輸出並誠實標示缺漏，不整份停發。', en: 'Self-correction: a failed QA check sends the brief back for rewriting, 2–3 times at most; after that, degrade the output and label what is missing rather than skipping the brief.' } }
+    ],
+    glossary: Object.assign({
+      butler: { zh: ['管家 Butler', '負責維護專案骨架、KB/ 知識庫與版本控管的 AI 角色，價值在於一致性與可追溯性。'], en: ['Butler', 'The AI role that maintains the project skeleton, the KB/ folder and version control; its value is consistency and traceability.'] },
+      coach: { zh: ['教練 Coach', '負責確認商業意圖、引導思考邊界的 AI 角色，把模糊需求逼問成明確且可驗收的規格。'], en: ['Coach', 'The AI role that confirms business intent and sets thinking boundaries, turning vague needs into clear, testable specs.'] },
+      context: { zh: ['Context Window', '語言模型單次回應時看得見的內容範圍；模型並非「記得」過往對話，而是有人把內容重新放進本次輸入。'], en: ['Context Window', 'What the model can see in a single response; it does not "remember" past chats — the content is put back into this input.'] },
+      sysprompt: { zh: ['System Prompt', '意圖工程第一層，定義穩定不變的角色與輸出基調，例如「你是一位晨報總編輯」。'], en: ['System Prompt', 'Layer 1 of intent engineering: a stable role and tone, e.g. "You are the editor-in-chief of a morning brief".'] },
+      dyncontext: { zh: ['Dynamic Context', '意圖工程第二層，注入每次都不同的即時資訊，例如日期、時區、當日範圍與偏好。'], en: ['Dynamic Context', 'Layer 2 of intent engineering: live information that changes each run, such as date, time zone, scope and preferences.'] },
+      kb: { zh: ['Long-term KB', '意圖工程第三層，載入長期規範檔案；本 TP 共四個：theme_config、business_rules、sources、ksa_taxonomy。'], en: ['Long-term KB', 'Layer 3 of intent engineering: long-term rule files; this TP uses four — theme_config, business_rules, sources, ksa_taxonomy.'] },
+      subagent: { zh: ['Subagent 併發分工', 'Data Fetcher 專責抓資料，AI Summarizer 專責提煉與撰寫；分開後，出錯時能立刻判斷是抓錯還是摘壞。'], en: ['Subagents in Parallel', 'The Data Fetcher only fetches; the AI Summarizer only distils and writes. Splitting them shows at once whether an error came from fetching or summarising.'] },
+      harness: { zh: ['Harness Engineering', '源自「馬具」的比喻：讓模型能力被安全導引的裝置，包含工具綁定、執行沙箱與安全護欄三層。'], en: ['Harness Engineering', 'From the image of a horse harness: the gear that guides model power safely — tool binding, an execution sandbox and security guardrails.'] },
+      sandbox: { zh: ['Execution Sandbox', '隔離的執行環境，程式碼在受限空間中執行，即使出錯或被惡意誘導，也波及不到主系統與本機檔案。'], en: ['Execution Sandbox', 'An isolated runtime: code runs in a restricted space, so errors or manipulation cannot reach the main system or local files.'] },
+      guardrails: { zh: ['Security Guardrails', '包含 PII 個資遮蔽與防暴卡槽（速率限制與資源上限），避免個資外流，也避免失控的迴圈燒光額度。'], en: ['Security Guardrails', 'PII masking plus circuit breakers (rate limits and resource caps), preventing data leaks and runaway loops that burn through quotas.'] },
+      injection: { zh: ['Prompt Injection', '外部內容夾帶指令式語句、誘使模型忽略原有指示的攻擊；防禦關鍵是把抓回的內容一律視為資料，而非指令。'], en: ['Prompt Injection', 'An attack where external content carries instructions that make the model ignore its own; the defence is to treat fetched content as data, never as instructions.'] },
+      envkey: { zh: ['.env 金鑰隔離', 'API 金鑰只放本機 .env（已加入 .gitignore）或平台環境變數、Repo Secrets；一旦外洩，立刻撤銷並重新產生。'], en: ['.env Key Isolation', 'API keys live only in a local .env (listed in .gitignore) or platform variables / repo secrets; if leaked, revoke and regenerate at once.'] },
+      qa: { zh: ['QA Tester', '檢查內容本身：字數、排版、商業啟示、出處與原連結，以及是否有全文複製。'], en: ['QA Tester', 'Checks the content itself: length, layout, business insight, sources and links, and any verbatim copying.'] },
+      devops: { zh: ['DevOps', '檢查運行條件：部署是否成功、排程是否觸發、憑證是否過期、日誌是否有紀錄。'], en: ['DevOps', 'Checks the running conditions: deployment, scheduled triggers, credential expiry and logs.'] },
+      heartbeat: { zh: ['Heartbeat Trigger 心跳排程', '每天固定時間自動喚醒系統；要想清楚三件事：時區、有上限的重試、失敗通知。'], en: ['Heartbeat Trigger', 'Wakes the system at a fixed time each day; decide three things: time zone, capped retries and failure alerts.'] },
+      react: { zh: ['ReAct Loop', '思考 → 呼叫工具 → 觀察修正的循環，讓模型依觀察結果決定要不要再走一輪。'], en: ['ReAct Loop', 'The think → call a tool → observe cycle that lets the model decide whether another round is needed.'] },
+      qc: { zh: ['QC Feedback 與 Self-Correction', '格式或字數未達標就自動退回重寫，形成自我校正的閉迴路；必須設定重寫上限，避免死循環。'], en: ['QC Feedback & Self-Correction', 'Output that fails format or length checks is sent back for rewriting, closing the self-correction loop; a rewrite cap prevents endless loops.'] },
+      degradation: { zh: ['優雅降級', '來源失效時依序改用備援；全部失敗仍照常出刊，並誠實標示缺漏。不得無限重試，也不得整份停發。'], en: ['Graceful Degradation', 'When a source fails, try fallbacks in order; if all fail, still publish and label what is missing. No endless retries, no skipped brief.'] },
+      push: { zh: ['推播通知', '把「使用者主動去看」變成「成果主動抵達」。註：LINE Notify 已於 2025 年 3 月 31 日終止服務，可改用 LINE Messaging API、Email 或 Telegram。'], en: ['Push Notification', 'Turns "go and look" into "the result arrives". Note: LINE Notify ended on 31 March 2025; use the LINE Messaging API, email or Telegram instead.'] },
+      skillmd: { zh: ['SKILL.md', '把整套流程封裝成可重複執行的說明檔，功能像作業手冊，讓接手者不必重讀程式碼即可維護與重新部署。'], en: ['SKILL.md', 'Packages the whole workflow as repeatable instructions — an operations manual that lets successors maintain and redeploy without rereading the code.'] },
+      copyright: { zh: ['Copyright Claim 防衛', '禁止全文複製，只做衍生摘要並附出處與原連結；遵守 robots.txt 與服務條款，AI 生成內容須經人工審閱。'], en: ['Copyright Claim Defence', 'No verbatim copying: derivative summaries with sources and links; respect robots.txt and terms of service; AI output is human-reviewed.'] },
+      nocode: { zh: ['無 Code 維護性', '業務邏輯與程式解耦，改 .md 即可維護；它決定了「誰有權力改變這個系統」——懂業務的人。'], en: ['No-Code Maintainability', 'Business logic is decoupled from code, so editing .md maintains the system; it decides who can change the system — the people who know the business.'] }
+    }, B_SHAPES_GLOSS),
+    guide: {
+      zh: ['B 圖呈現晨報 Agent 的「系統流程」，骨架取自 IPOB 藍圖：左欄 INPUT／INTENTION 收斂意圖，中欄 PROCESS 處理資料與工具，右欄 OUTPUT & LOOP 把關、交付並每天自動喚醒；底部治理層橫貫三欄。', '建議步驟：① 先確認 KB 四個檔案與資料來源模式（自動／半自動）；② 逐一檢查每個節點的「負責角色」，圖下方會自動產生團隊分工表；③ 回饋迴路（虛線 L1、L2…）要寫明上限：重試幾次、重寫幾次、超過怎麼降級；④ 節點右下角的「→ A②」對應 A 架構圖，兩張圖的內容要一致。', '新增連線預設為流程箭頭；在右側把類型改為「回饋迴路」，就會變成編號的虛線弧形箭頭。'],
+      en: ['Diagram B shows the system flow of the morning-brief agent, built on the IPOB blueprint: INPUT / INTENTION shapes intent, PROCESS handles data and tools, OUTPUT & LOOP checks, delivers and wakes the agent daily; the governance band cuts across all three.', 'Suggested steps: (1) confirm the four KB files and the source mode (automatic / semi-automatic); (2) check the team role on every node — the team-role table below the diagram updates itself; (3) every feedback loop (dashed L1, L2 …) must state its limits: how many retries or rewrites, and how the output degrades after that; (4) the "→ A②" mark links a node to Framework Diagram A, so keep the two diagrams consistent.', 'New links are flow arrows by default; switch the type to Feedback Loop in the side panel to make a numbered dashed arc.']
+    }
+  },
+
+  /* ---------------- RP · Quantitative · research process (content encrypted) ---------------- */
+  rp_quant: {
+    id: 'rp_quant', short: 'RP-Quant-B',
+    name: { zh: 'RP 研究提案・量化', en: 'RP Proposal · Quantitative' },
+    nodeW: 258, gapX: 84, grid: true, rowGap: 56, topPad: 0,
+    prefix: 'L', signs: false, defaultEdgeKind: 'flow', mainStyle: 'loop', xref: true, readOrder: 'rows', defaultRole: 'step',
+    legendTitle: { zh: '回饋迴路（L）', en: 'Feedback Loops (L)' },
+    title: { zh: '研究流程圖', en: 'Research Process' },
+    subtitle: { zh: '研究生姓名 · 指導教授 · 日期', en: 'Student · Advisor · Date' },
+    lanes: { enabled: false },
+    encrypted: true,
+    phaseDir: 'row',
+    phases: [
+      { rows: [0], label: { zh: '第一章 緒論', en: 'Ch. 1 Introduction' } },
+      { rows: [1], label: { zh: '第二章 文獻探討', en: 'Ch. 2 Literature' } },
+      { rows: [2], label: { zh: '第三章 研究方法', en: 'Ch. 3 Method' } },
+      { rows: [3], label: { zh: '第四章 實證結果', en: 'Ch. 4 Results' } },
+      { rows: [4], label: { zh: '第五章 結論', en: 'Ch. 5 Conclusion' } }
+    ],
+    band: { roles: ['ethics'], label: { zh: '研究倫理與資料管理（貫穿全程）', en: 'Research Ethics & Data Management (throughout)' } },
+    roles: [
+      { id: 'start', col: 0, row: 0, shape: 'terminal', color: '#004030', fill: '#E6F0EC', zh: '起點', en: 'Start', terms: ['shapes'] },
+      { id: 'step', col: 0, row: 1, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: '步驟', en: 'Step', terms: ['chapter', 'xref'] },
+      { id: 'data', col: 1, row: 1, shape: 'doc', color: '#B45309', fill: '#FEF3E2', zh: '文獻／資料', en: 'Literature / Data', terms: ['shapes'] },
+      { id: 'decision', col: 1, row: 3, shape: 'decision', color: '#7C3AED', fill: '#F3EEFF', zh: '判斷', en: 'Decision', terms: ['loop'] },
+      { id: 'end', col: 0, row: 4, shape: 'terminal', color: '#004030', fill: '#E6F0EC', zh: '終點', en: 'End', terms: ['shapes'] },
+      { id: 'ethics', col: 0, row: 5, w: 600, shape: 'step', color: '#475569', fill: '#F1F5F9', zh: '研究倫理', en: 'Research Ethics', terms: ['ethics'] }
+    ],
+    groups: [],
+    nodes: [],
+    edges: [],
+    glossary: Object.assign({
+      chapter: { zh: ['章節對照', '左側色帶標示每個步驟寫在論文的哪一章，方便對照提案與論文目錄。'], en: ['Chapter Map', 'The left-hand strips show which thesis chapter each step belongs to, so the proposal lines up with the table of contents.'] },
+      ethics: { zh: ['研究倫理與資料管理', '資料取得須合法授權並遵守使用規範；保存分析紀錄與程式，確保研究可以重現。'], en: ['Research Ethics & Data Management', 'Data must be lawfully licensed and used within its terms; keep analysis logs and code so the study can be reproduced.'] },
+      robustness: { zh: ['穩健性檢定', '改用替代衡量、子樣本或不同模型重新估計，確認主要結果不會因設定不同而改變。'], en: ['Robustness Check', 'Re-estimating with alternative measures, sub-samples or models to confirm that the main results hold.'] }
+    }, B_SHAPES_GLOSS),
+    guide: {
+      zh: ['B 圖是研究流程圖：由上而下呈現從研究動機到結論的步驟，左側色帶標示對應的論文章節。', '建議步驟：① 每一章至少一個步驟節點；② 在步驟標籤填入時程（例如 M1–M2 代表第 1 到第 2 個月）；③ 「研究架構與假說」節點標示「→ A 圖」，內容要與 A 圖一致；④ 回饋迴路（虛線 L1、L2…）說明何時要回頭修正，例如假說未獲支持時如何處理。', '新增節點後，可在右側「所屬章節」把它放進正確的章節。'],
+      en: ['Diagram B is the research process: steps from motivation to conclusion, top to bottom, with coloured strips on the left showing the thesis chapter.', 'Suggested steps: (1) at least one step per chapter; (2) put the timeline in the step tag (e.g. M1–M2 = months 1 to 2); (3) mark the Framework & Hypotheses node "→ A" and keep it consistent with Diagram A; (4) feedback loops (dashed L1, L2 …) explain when you go back and revise, e.g. what you do if a hypothesis is not supported.', 'After adding a node, use Chapter in the side panel to place it in the right chapter.']
+    }
+  },
+
+  /* ---------------- RP · Qualitative · research process ---------------- */
+  rp_qual: {
+    id: 'rp_qual', short: 'RP-Qual-B',
+    name: { zh: 'RP 研究提案・質性', en: 'RP Proposal · Qualitative' },
+    nodeW: 258, gapX: 84, grid: true, rowGap: 56, topPad: 0,
+    prefix: 'L', signs: false, defaultEdgeKind: 'flow', mainStyle: 'loop', xref: true, readOrder: 'rows', defaultRole: 'step',
+    legendTitle: { zh: '回饋迴路（L）', en: 'Feedback Loops (L)' },
+    title: { zh: '研究流程圖', en: 'Research Process' },
+    subtitle: { zh: '研究生姓名 · 指導教授 · 日期', en: 'Student · Advisor · Date' },
+    lanes: { enabled: false },
+    phaseDir: 'row',
+    phases: [
+      { rows: [0], label: { zh: '第一章 緒論', en: 'Ch. 1 Introduction' } },
+      { rows: [1], label: { zh: '第二章 文獻探討', en: 'Ch. 2 Literature' } },
+      { rows: [2], label: { zh: '第三章 研究方法', en: 'Ch. 3 Method' } },
+      { rows: [3], label: { zh: '第四章 研究發現', en: 'Ch. 4 Findings' } },
+      { rows: [4], label: { zh: '第五章 結論', en: 'Ch. 5 Conclusion' } }
+    ],
+    band: { roles: ['ethics'], label: { zh: '研究倫理與信實度（貫穿全程）', en: 'Research Ethics & Trustworthiness (throughout)' } },
+    roles: [
+      { id: 'start', col: 0, row: 0, shape: 'terminal', color: '#004030', fill: '#E6F0EC', zh: '起點', en: 'Start', terms: ['shapes'] },
+      { id: 'step', col: 0, row: 1, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: '步驟', en: 'Step', terms: ['chapter', 'xref'] },
+      { id: 'data', col: 1, row: 1, shape: 'doc', color: '#B45309', fill: '#FEF3E2', zh: '文獻／資料', en: 'Literature / Data', terms: ['shapes'] },
+      { id: 'decision', col: 1, row: 2, shape: 'decision', color: '#7C3AED', fill: '#F3EEFF', zh: '判斷', en: 'Decision', terms: ['saturation', 'loop'] },
+      { id: 'end', col: 0, row: 4, shape: 'terminal', color: '#004030', fill: '#E6F0EC', zh: '終點', en: 'End', terms: ['shapes'] },
+      { id: 'ethics', col: 0, row: 5, w: 600, shape: 'step', color: '#475569', fill: '#F1F5F9', zh: '研究倫理', en: 'Research Ethics', terms: ['consent', 'trust'] }
+    ],
+    groups: [],
+    nodes: [
+      { k: 'motive', role: 'start', row: 0, tag: 'M1', text: T('研究背景與動機', ['生成式 AI 快速普及', '中小企業的導入經驗仍然有限'], 'Background & Motivation', ['Generative AI is spreading fast', 'SMEs have little adoption experience so far']) },
+      { k: 'rq', role: 'step', row: 0, text: T('研究問題', ['RQ1 中小企業如何感知並掌握生成式 AI 的機會？', 'RQ2 導入過程中，組織如何重組流程與分工？'], 'Research Questions', ['RQ1 How do SMEs sense and seize generative AI opportunities?', 'RQ2 How do they reconfigure processes and roles during adoption?']) },
+      { k: 'lens', role: 'data', row: 1, text: T('理論視角', ['動態能力觀點', '感知、掌握、重組三項能力'], 'Theoretical Lens', ['Dynamic capabilities view', 'Sensing, seizing and reconfiguring']) },
+      { k: 'lit', role: 'step', row: 1, tag: 'M1–M2', xref: 'A', text: T('文獻回顧與概念架構', ['整理相關研究與缺口', '形成概念架構與命題 P1、P2'], 'Literature Review & Conceptual Framework', ['Review related work and gaps', 'Build the framework and propositions P1, P2']) },
+      { k: 'design', role: 'step', row: 2, tag: 'M3', text: T('研究設計', ['多重個案研究', '立意抽樣：南投地區已試行生成式 AI 的製造業中小企業', '訪談大綱與知情同意書'], 'Research Design', ['Multiple case study', 'Purposive sampling: Nantou manufacturers already piloting generative AI', 'Interview guide and consent form']) },
+      { k: 'collect', role: 'step', row: 2, tag: 'M4–M6', text: T('資料蒐集', ['半結構式訪談', '現場觀察', '內部文件'], 'Data Collection', ['Semi-structured interviews', 'On-site observation', 'Internal documents']) },
+      { k: 'analyse', role: 'data', row: 2, text: T('資料分析', ['訪談逐字稿', '開放編碼 → 主題歸納', '撰寫分析備忘錄'], 'Data Analysis', ['Interview transcripts', 'Open coding → themes', 'Analytic memos']) },
+      { k: 'sat', role: 'decision', row: 2, text: T('是否達到理論飽和？', ['新資料不再產生新主題'], 'Theoretical saturation reached?', ['New data no longer yield new themes']) },
+      { k: 'findings', role: 'step', row: 3, tag: 'M7–M8', text: T('研究發現', ['依主題呈現，對照感知、掌握、重組', '修正命題 P1、P2'], 'Findings', ['Presented by theme against sensing, seizing, reconfiguring', 'Refine propositions P1, P2']) },
+      { k: 'concl', role: 'end', row: 4, tag: 'M9–M10', text: T('結論與建議', ['理論貢獻與實務意涵', '研究限制與未來研究方向'], 'Conclusions & Implications', ['Theoretical and practical contributions', 'Limitations and future research']) },
+      { k: 'ethics', role: 'ethics', row: 5, text: T('研究倫理與信實度', ['知情同意、匿名化與資料保密', '資料三角檢證；受訪者檢核（成員檢核）', '研究者反思紀錄'], 'Research Ethics & Trustworthiness', ['Informed consent, anonymity and confidentiality', 'Triangulation; member checking', 'Researcher reflexive journal']) }
+    ],
+    edges: [
+      { k: 'f1', from: 'n:motive', to: 'n:rq', kind: 'flow' },
+      { k: 'f2', from: 'n:rq', to: 'n:lit', kind: 'flow' },
+      { k: 'f3', from: 'n:lens', to: 'n:lit', kind: 'flow' },
+      { k: 'f4', from: 'n:lit', to: 'n:design', kind: 'flow' },
+      { k: 'f5', from: 'n:design', to: 'n:collect', kind: 'flow' },
+      { k: 'f6', from: 'n:collect', to: 'n:analyse', kind: 'flow' },
+      { k: 'f7', from: 'n:analyse', to: 'n:sat', kind: 'flow' },
+      { k: 'f8', from: 'n:sat', to: 'n:findings', kind: 'flow', text: { zh: '是', en: 'Yes' } },
+      { k: 'f9', from: 'n:findings', to: 'n:concl', kind: 'flow' },
+      { k: 'l1', from: 'n:sat', to: 'n:collect', kind: 'main', text: { zh: '未達理論飽和：增加個案或受訪者，繼續蒐集資料。', en: 'Not yet saturated: add cases or interviewees and keep collecting.' } },
+      { k: 'l2', from: 'n:analyse', to: 'n:collect', kind: 'main', text: { zh: '邊蒐集邊分析：依初步浮現的主題調整下一次訪談的問題。', en: 'Collect and analyse together: adjust the next interview questions to the themes that are emerging.' } }
+    ],
+    glossary: Object.assign({
+      chapter: { zh: ['章節對照', '左側色帶標示每個步驟寫在論文的哪一章，方便對照提案與論文目錄。'], en: ['Chapter Map', 'The left-hand strips show which thesis chapter each step belongs to, so the proposal lines up with the table of contents.'] },
+      saturation: { zh: ['理論飽和', '新蒐集的資料不再產生新的概念或主題時，即可停止蒐集；是質性研究決定樣本數的常用依據。'], en: ['Theoretical Saturation', 'The point at which new data no longer produce new concepts or themes; a common basis for sample size in qualitative research.'] },
+      consent: { zh: ['知情同意', '受訪者在充分了解研究目的、程序與權益後，自願同意參與，並可隨時退出。'], en: ['Informed Consent', 'Participants agree voluntarily after understanding the purpose, procedures and their rights, and may withdraw at any time.'] },
+      trust: { zh: ['信實度', '質性研究的品質標準，包含可信性、可遷移性、可靠性與可確認性；常用做法有三角檢證與成員檢核。'], en: ['Trustworthiness', 'Quality criteria for qualitative research — credibility, transferability, dependability and confirmability — supported by triangulation and member checking.'] }
+    }, B_SHAPES_GLOSS),
+    guide: {
+      zh: ['B 圖是研究流程圖：由上而下呈現從研究動機到結論的步驟，左側色帶標示對應的論文章節。', '質性研究的特色是「邊蒐集、邊分析」：資料蒐集與資料分析之間是循環，直到達到理論飽和才進入研究發現。', '建議步驟：① 依你的研究改寫各步驟內容與時程標籤（M1 代表第 1 個月）；② 保留判斷節點與回饋迴路，寫出停止蒐集的標準；③ 「文獻回顧與概念架構」節點標示「→ A 圖」，內容要與 A 圖一致；④ 底部寫明研究倫理與信實度的做法。'],
+      en: ['Diagram B is the research process: steps from motivation to conclusion, top to bottom, with coloured strips on the left showing the thesis chapter.', 'Qualitative research collects and analyses at the same time: data collection and analysis form a loop until theoretical saturation, and only then do you write up the findings.', 'Suggested steps: (1) rewrite each step and its timeline tag for your study (M1 = month 1); (2) keep the decision node and loops, and state your stopping rule; (3) mark the literature & framework node "→ A" and keep it consistent with Diagram A; (4) state your ethics and trustworthiness practices in the bottom band.']
+    }
+  }
+};
+
+const PDS_VAULT = { salt: '9JJu4ng2dpqZUNIuX3323A==', iv: '8jd6lPWeaZkpTqv8', iter: 200000, ct: 'OcBb+nTs0U6DRUjPRzNgeoTmJfs5D1SEfkSXgP4T3SOSPMNQhnxGJDdFR7w9rYcb4Rcs/YDSERmq4dv6TJjGY41TfQ9xV60UqFTZNKll6rUGfh+dnf81+DnEVbNU+G9sEOjYmTdjsZfw1kcxHQV4z8+NbtxCHbfEcvo9rtF9mV4Hc5cfLydNGGIAsMtgb+c0SYDevb1MuXcU9RGf6NfYdyasCHg+VlIJ+gN+ZJCwD7RWt2i4kUVxsDrXgcFIKF2zMGhryX4PBJG0SLBrvFrMx3xlOIWsckJxSnf5daGKfxPiMp5V2hqQV+MqDVKq8fbIEdBoyIG5PDFJ0mNxa6hdAVlRof3c+OHpKiX9k7sdGDD8eSDLskqkpa7u0IKYI/rUAFPgcxsnA7JeC21FF23YJDqY5l5zAmw9Hudzl9+j3jkyCpb6VIIGUEJHuWP9goX/7Z1kxRrSvZjkBiLiJKzmQGuNRGtHWQBJrmXDQghrDJkd2YhWJl1TPu+ZV0JBekRJbX07K6qbLbXQmwfSKj9Nh2FfpwLMWCFSTaY6osPFn9SekmfA7b/FudfoE5Le+i6VK9EeY1uuBQ2oWSNRj4BhrBElNOty/o9l2CgJ++TeVRNEviVueQ9aw7dopXTvZFiBjKNNoJlsQtsRpEpDuQEZnJTBbzpfQbTAu0MTLxPhxtTtdtrgnJ+ISuk23STXxw1xJhxujRSTbF3h3/XroVn+qwyUaYJHUyK0aZvcUcLxU5jO0JcyYu/pCP9N7Otj6uUvuAVqEKBOahIHMRIEM29ckgZ2yg7hEl4V1jrXpu//e7ZDGPxblXxYIpebyVv0JiX88qaXtuE5P3v0+qFkYbS0tA6NVBaiSxdgXNxeC3M+B3S+MkHP1MKb/eAT+O3YgQWHNMwyLIknrUjmcp64NtBK/+ClKJsCBlWKkzXQcoahvJOd33J6w5TmIKCuFLYQywjp/1+yita7EG0hUnj/EpGbbGc5UVZ+cwrMI3y8UyhZbDlI5IK4FJrBTZNdNPWaWXUHkDQ9u+leVfYByBiTk0aBfnBb5ocEGF/kkxviW0LBxtpF/73MqhfcOKcrGOZd9P/jhHjws7DPcvourePI4imRjpD5kVsIuukpsfVB5dcioxV2JFUEnGxPwUmO2n4yrU++WJqAdxcGECzxcttmGCQaqyvy7HyhHNss9oDdluAl7nqNeJO+R/yHMJuYFpiFQobGD463gHeBps20DwWwi1AmzwNp5cIGN0/5NYQxlzwG9S/eXF1Mr/3Vti6DSUioiR/3uW4ypsjdXK+XIs5QNl5CvN7OmPRy08hpqa6Sj9Z7sNVFLVUxQJpZpH48DMthfNcd5WNoZ5MQQrvfRJ0QD0KqTuFcEAjFd0ns3RD9hpdfxcgLJqrgxhwkJY/a88Uk1P6klENO+4NBwP0Eqkouh+MwQAA8nguIIYVz6wbR6nWaaClwUfZUi16M4U2HorldSVK4Zv0gkiryNZqGvNQcea77QV/As74hBS/Gu9cnZmP156jdk1hKq0UOMBeJ2uYYsuOQPPqo1oCtKdnKA1wGkIxqPavix4A6LW5AwD3573FxtIeDtFCfQGzd4H87GcGeeAl+kAsjGavq1ZyolxtRJF6lXja1a7W/B4DMEoyu3Zw4vDAJzbJoa7d8kTgCS0QPfTJ1SMo6RbiLsR3uj/1CGDA7NbYisElBb3VnX69kgNm7nDcGooUQOQixz4GHwzGzldDz7gAUvVZ3PT0aOEuntaYUWc5+LcRXVXroub4pDr3xf3wNw1Kbwx9N6ltjW0T+hoM+nPU/ER2pbZtjN0sGzoQShdgVMeqHit69kDP9az/lzCJeCCq6VvAOnAk4WuxNbIMTp0Sp7RNwpET39ZahhPk0c7vi6JDRbEE8bwJQLQM2yV6A06h2sMqaLOp6wjNnjigRS890l9O1vmgM3EF55jOfQrmvhpQYefTxyADSP1G/aXV28nH1D+TvfDEQLB3Gaw31GHpam55SnJL7EXbYNqWFIqYF1f9b8AzhApZi3RETBLv/SaEJ+HCAkn4GAmYZP+OLUNZsmawaTTF6DJjZlRb6axIUOP12bHhOywE/GsX2VL8Q+8qA5s00kDUKPyD3mqwwQGOk2L7vRN8UYbAg5vfHqbH8vawA2lrgsummgCtFz2m4dPjjIwEh5K/E+jY+NRk87xv1YUDkxO+Huu7QgrXSTwGEXt3DwWiiEIN6keUJvLX/lr2PwjqCipTwVUnO62LjFrJ6mGSKL2DMX4dirs+iCDUU/zIKU4qX+dDwB4oXFbFT1VOh7fPpTSuTt9GqCasagKLgzLmnKOX9SFFXvX1CIk8CRb3ox9qZkF/1mD6mNhA3WgJywIoSOvMfydBszsO17Im9OTFUIKh5txuXjY9CC6bzG0CcMLnKYsq5wEcnSQ38KFUxow+igBvOj/aKJFnebUuPUEcF8Ib55JMTCgc3vF/fp5QJZhVN2SodJf1B2yNywBh4eUNnnpYnvLdUD4oFotmz4dPan4RtNb3mHJPKkQTTcNG09Xr2yGVOzMs49sOKxKAnGmVJ5c3lGzE1nEzKXZlKbu9MIuDqtY3JTX6z3mGHlGZpVVSdg52RwJ1RpSxnBKIChVP6b0CjaoMSJzwQZc5LfkIUu1zeK4vniLck8Rmbf35eKcIGAkarxNXA/T8XcEbGuvkU0vqkza2QmLaEzWRUYffCGB0CS5Ay35DbqhDSZUQuaugBFOKsEz0u7r+KkWPrMBJ4Deof/NyukD9N54Uo5f0D3MXA56gvN0qaXlMT35UFmtfRC0TyWSTQnY1fIBXWhg+tYkQZQAj3LsqZUSWBcM/x/Lq5jBBK6jTPMWoCuKFmrY+YM7OsHc9bIXiTdEJKN0l7EXEA5cikwDvxMIpg017UdyMkvcQxrQAFe7/3SpXPW/wB3Yf+S7rG59Elh5LmJ02zr1rGkmstPdYR8ndeQtLCtsYIqYcu6FFk+pS6RguVhBYoFF7B5Ar9CM738XFWvBLZkc8QvHnaI/xDVm6emXdFY6aaWLljEEUwH3eZ5crfNh1XzCal0EwSMOqvC4JHTcOwBWTiv0A3uxIdBkad6v1EHZJKOGIukJj3OrkAs3ftqYjMyAuScwhfDdbvifUpG1A6ykKgEPa74e1Q/mnwPy4/vA9TgFoY58Wbe8k+yU/mZBEAtdp+LsmiFQ5SCWnI6NrCGLbc6CyQ9B6tUJysCXs0xXo/nPN3bRdOIYVYwmkQy66LfTzi0kHRnr45qHBHkf/gPxh7sOEj2Qd3L1rodASg5NpbcuuC77lHNrAAk4sti2PtDkNCD4WtcUbEpNFHpiI7AHhbqhoUrkyqcUOSPnw1Loi8XDHN1mbHlFmgkKefI3T5Sx6UniDVTccP0pEEWsJxYOQ3odTWda1y18sz0bBhRvY4+zSEFdkypJU+2aQxTAk8zShkcF+Lr60noe7EcMVbBcbmmBdGwH8pZMce6Sy69TnEM39KWChkWWk7b0SjYg5V9vAgk8NnlVn8V58rsEkIEP3LIa+FTYnEIfzlKCmQ0YH4IUxMPCSR6oOYLs5U+lO8SmDvhN2TJZMKB68CqjnRbJKZgUdOB6utk7NhTPTFzWVeEVKfUVtD4QrX/9IvsAE2K9nqnkKF7s/rbo5jwIqXUCLFMsYSE5iovQlCQ5oOcpYYoH7X5tILKoGztQ6ktIy8FTlKdjOV4qPEAPuQJYKTlc5rXj6cc+FZVDKcu6CsccomwIZaqvCfr95zHxMTIX7KQaXSqM7huQL752/lVBHuaD9nYiGEHNweNHPNFfqH8sCKJFSLa30rjnjiMKCZeEFuM/KWLOrgSBabkpoDcaQeq6o+nYNF72o8+85wGp+NEHFgIVc5dfCyhVdv1UmOJ1xaeoqoZouvufl9v+FlNhuqr8/Oy6zDf0D8jHLnOmn9ndRS0Z2iWzPDoiA+YmeayLNIag+e6I8Pw3aMRqbHxPxKP+jXMuw7GXcfAN8Ge6Je8N4SYYR5uL7+1iA4saLLCJWhYUouAdedqCFhH0IMCQcsfTQwfYExEiJAxl4TTV368x8PwDZejXfZAvWN9iATnnxw7DrajCdYk9QhO1UnA7G5QwrXdaZZsg8PZ2E4aAQAItgYhV2Zx5+xPgKHeDvDBRPmtOMm8lerOgythRlu3RYRGj9No2+nl9SSU7fj5rieSU4MYkkLksYx1PTJiqMqn+7z9O0rxR9q2ZK5i6nQGzv1HdDRjEX3SDMKZUgeqslOeGsbrG0qoslivU8/AzwM4hulg7Nf2jTXRiLM6GuCeo02yR4c2mneW93df8g+sy/I6fWSdg++r1HptjKKWAw376V4rICHN+vKRfAYoGb7/DodS65ne1+PteD5i4kQ6YCTUBWVw2AK/9aU/6ZJmoDjKAOcy9Hhi8neK09GVSxKzvzCqjNwZOYA6hqAoiSdPP3mfbZsCxZut4dY7JzA30RXWj8tvu8/8NJcGzcRMF+HdShwNIRPxFYcD5vPItOx1Avt9XYOQw66cmmpUoq7w3YpAgETzYUUD5O/Hj74BaecLFHv/ARBegj0ywbRVIA9RBCvIV/j7VUcWdyIW4kduVTWauKry6nj1jcg2XwzvB/njGZ3ARuRhAXmDFEnjuQ09Q1Tf9HKost2RzG0ovx7erkwsmM8pyl1kXVXj45+n4RTaVOa8qKE4EzByVkyQaK9Gy621Kc9k802uCsL+kRWEtPb8NoCNaRvs6SipJVi1jpWi0vxlYoD5FD6yJS84WhWx5j8wg0Bj61XvJDh6XP2zJ3VrCcJnga6AUqtOo+rkk96aPdQbJ2T8EWOLwiysKnpEwx5AqCghWAVNYjd8RGmnBXNlA3xLUJAB58mC34jzvLNVqwCDsi5SAzwqx9hi4XYB3MLmTSsTZutCmaGpqCfCcgHeLKpdsVV5rcE+A5kciZz+p7LMjRy1fatB43P3hTGdDbnQpRIrATutEPagRVEvVWxF8IlzxtdgmE/lSyTfWF5SgQzBHEO2dsPozaGuoiVU9+sVf2ZDwCGCfQI8Z1vNQGO5WDhZNookVUAK1cqT+OquZ1ZT4hJyoYmJonY5FHtUAPC2SY9nJea2dK7ZI6Xc53chvrplo3zjNZe/cHVnboPYO4jlZDTPGdo4XVN1R2x5qxUDa8DT87KiISD3mAe+CYX5Y+XfOrk24sX5oLZJuukaRsu2lAwbIOjMkRbU9TZeTmCP19ds9we+tMuuLDjofthVPQbI81+qtexcsdAwSSJi5qwc4orxPxRfASys/gWdPa7Cx/yMzYJdXt+z/oktkaUv+A9pp5AqJtNRZXxeTE34mpg3apV/7Ks0JJGdz692HJIX/LHGtVQsreizzqiC/1rRxyHFqCt537wJKw6Y4gSJn3nqXZXuO48xbI5XynY3RsMgiFrIZq2A4+Pd2aUqIijuIs+2KhEWz9oRiKLb0dq53F5wXaveyw/eblkNTFOqyb4tTw2hb80t5kyktv/CestcNAgIuWr9PKCzAunWBsMtMGxdXnwHaWgg4kpRlGBNzvpdSZm0tmbWS43LR/A6ZNdLgoOFGprewRkOuGf0ObwonctE3HFRzDPrp5jjLXQEO8QrwrT9LdVNefv/qR0BvmBOps7eMaGUUq2eCm2+5LsYrMICluuWf9UKp7RxN5qzNzU6jPktGt+63o1RazEjSgCJ201a1tVzCuS5CG7b8alsL+viC5YfIQTsr6M7LuaCK1fvD1uVduuR3xgebWr83VMo759870lkBElvSq4HM6nRg4Wg1DFy0t8Jb43ANIArlnvl1IgDQjgX/azahN/gn45DZpURHQtBaMXsVfUDrLBcLyChzaMkflpSHQjTo1vMTLRHLcZfDRvR3KtVOmIpq37YuNKHVqp7YLuVvhpRr7uxXgr8l5eIzYEg5PNO40L0II/s+jpEG1VJI8s5hStExmAC6Vhv5YCMfdhby+7OxICtoNQKQfzB6vJGBlw0zEjuNZVUU7fVR7fWfK2PU6Mv7DprfXFQWqEzfCCIchPNM92NIfbr/Fz921yxbfsOV5RihocUhpxhkxunQ4WmV8JiBU/QTyuyc1JfAoK4WdANz3qOJG2uF6GJSvbDMH7W/gnINf3Ki9aksdfSj9fUlYHBpGZYk2sbkZLJvtHxjAKnStEpHAQbkjn1C5GhDZRFwSllwqESkslyySVCd3rcwBJYEP3ARGsNp85nd41ANkBXkhxEZuJIhNh1jADRp4x23fh/H4HNofB08x8eF/ccVCf/gERXeaXJ96GbatzK2w3T3r2J1UViuXkxdC4GnX6OUaEoJ/v/G5JLYVVxauQyOdQaH4bKpQexb20mG+y73DUY2GmX0n6pgGP/OKFRvj0DYxbiHWiIAYbbVnPaXsXAK8mhC7Hn5hMlb21liV7Q+DoX7yo8SD76CVILa78SqmCX4ZwdHbwGD6bOnXA/zozc4zQyrPP4VCXdg2UTIVP3nG/2XKzZ7HQYBciOPHh8GRncYAm/pvvK4jKAl+tDfRt7R/ZDxNhRlxyKDPImwsei6URDigZDtGKJ9WeAmnTE+BenAXq9t2dTNH6XxIhz8jSiG/I7Q9XofFCCKivjQElYXlYWg8moPkrAnlGSdnAEHevAfmymyXQPMVgrT6hedVS853Ws7FRmmPgcXAJj09Wd6AYOdsq2t9K4qnEOMPpl58eRxVRCHE0lXBs7mAiLOiji+YZ4ovAo6Lywe8QkESeeqHjnOPIrxuhhVJReXTjQX1dPIoAcFp/xvQ/EF7I/uTT5oH5QMFVw5radrYicYllgFXZM15MCyzjSQmvZq0KFygygWXrhPhQnhrW0UbdbPThN/HTXEmSWItIVn+ROyoIm2LsJI5WmEdDsMqIN6keUG8VC7prDXTcS42/YmBswJhlNlRGzuqymQtBHJ7t3e75lul9w8hqN8zZ9Hwkks12h4XcQaAo0ENel2yHih7fBP7h0OKFlm87doXSGc4QB97x1g56+tBZrtdE5rn0casSnu0rVSr4uM3EB10bfcB+CV3tK+6N9O45R6gMq3QKbeKkbQFomIJLneMY3Qkwzorv1vr1iXjctHm8Su2ffP4ydcsM32rDLCkqGtUyTlqOMnLfZ+82HpbwVxpCebCWS1JDJp8579DljrNZZ1TGeFpADxg0SK813gd49GJsT3oW1HYCoSfHzzMwkS+WtVMeQDTTNvgccuoWfPFsne87OV+5A8vJYAiyzCzXuRhvyxlS1YsFUwAZZE4vXqRfhKbHpgjrbPYrRaAnozLTa+kowM01wVyaTGCh0p0m34SN9YQl5caYb9EqNPO+pYGATvbXyNQaUUveNLe0E9PBkfFI9fEezlAZfnivL4FDYvzcroqL9OMvM+7UzSebb7e2VQ9GDo8HjHbCNzvpz0ISB0zHiMVBSrxhXg4otuXKHjamES8ZA62F5horRV/EM54rBnwTVV8aGEocWssHFAllROLUgENMxvW7P6H1KoQqEPT+NswTEJeeLoXpmU3pW7tUWmM6nTJR35D17V4r83zp+Latwr7zcF2MnBeki48uTtE9d49aJaFO2CqeY7WbU6GClOdw33kjjKseQ/ZNLPCi3Px289OQmyAtPc1Rs86N/WlVH2rANFUgTo/QnjRSDfhSiqH+K5OgoXBoVwjzcC9wvVF0q2nJkC4VYKJaGIZBNPt28oYv9PXHX90TYA6RSJBRxOld7jaTIcas6YpIEjksvTyuM3U/uWefgKqvIHW0JNHAM6yOt0pL2WVIIBB2mPW4NO80t01TPQzcIfcHWso1wdpOpHZGUyT98r4uN7sqpMIx7LFb3EOHfB3LD4nsC9ACZUcPp1STwc/kWiglLTegcQvcAeUYOU1ti9v77jTCRu8zr99MNpcbEw4NuElgPbT4w7ErzzNtopWhv78JtYgnB23UMDd9OPDtgF4RoKmDjGH6aShyJyTg39RwGhd+TQSRG8zQgv4iCF8M/Y+c+VXtvLOLODBqVEsSe9rZrn7lYn2VigRPS8EXX9j5x884Tfo5tNTdMmPKyywLExw6Pjsg37JJ4lMcjv350dMHaaC5stGKLjIJfPUgOGJrEqdLhY6tmKsJKCzwf9t/lgnL/V6vxij62rFZQZIUMad68+KXvLg20hXuPKr5nBwudXWSUA1rbGbCYeDq9IlfgUEOTW/H5f8Cg858RzcCth2VPfki7ELql8MulERYGtxznw0W3zMrOKDWjKEiQXN15XKEfFBzuVZyaxiBovbqb9eEp/IQSecyCCB4/MQeH6dPuWsFRfc2sSTqP1xhJ2kuBQxwdsLy5iHp9MGIFivAegQwkXUr/Q0GdOeUr6XZCQK4gf4nkUet+0HLbIHKqO/Q5lOXkWlTywrOFWEXpzg9aB1q0KEyHUHDRCX30YAA5XW+70lpEk8kHO2lB3GWt/6Qar00GZ3br/2zi37kPcc5EtqAxbx6cjlIvxqS6APqa8ESji9ofcR8w0pAssg/yZa+TkJhAy6kgEkfI/aPJCJAz0s9hNpMnnlXfOtrtyUWHkjy05RatSsYv2/4OmuMmfGjhrjdvRl+QYnBMr5FyPFuhFDyUf655slesAUhJV7ibo8kQQIMPfzzKDOZNtwEpM7w1vPZND6Ns6VYlxX9ZpQ1t/qaWfc+dMjKqxpbECkXld4e+x0c4rj186Zm9hGK1euaLliJLScVDB9oHRqipcVBc8iv23s2PYtMyexUuDIfxD7TS/vkO481lKue+3lwnmwD2/YwEv3ZA2klvooJX6I3jTYBsSnw5Ybjd0bZ0obELi3JPYdAk0Y2U7Xap6C8+LnvW4ZJtwgHjZINhoRkHqoEU7em9XRQ9n3760lajjDp8NSEHzGTAbD/oFZ/SZjO+VPWKXaUNQHcRwwm2hacEVP71gCsFqUK21O/0Z62W/rsL6Vpuhd/VMIFEezPaGEEHaeauoAmhlyD7LqIv0H5ZVojvqks+ZbiZHD8aGHw5AeRU9wdTqJjW4IA09Rhmewvs8EWyzVbN/0ueILz2QLv57w6USReJG+e/X/cn7UJfD1MhNccta+i/g00KVA/eGMN7G5HqnGqcLLstB9bPQsol0nbkYM1X/lj7GVm15q2hrNk/XsMhuYU6kvvmDDhB7vF5nRdQZona18fbm039qD/n8BAM7ookIG8I0AjJtKOP8ZUDBURaOnh5T2JcMvBY6wR/l6zpaBBzxsq3t77UXka7kDE3Q4+3/4q9MdPbeainXNDKlimPPjXhmTjYWGJi+ztyfvWAIW5XpA5CHx5mDh1259bHwunMiufKf8UIF0bwtFz+FNCYo5pH5ZMGdWr2IS3DduvTl7/Zp+4ZUBB3YTxk1IArplLZZGJ8px5ElZyuhrAxP1QS3t6SbhUloJOAX0fU36H+bdHru+9coB7iPR1rIYK9owFBnOwQq8FdU5aos+E9qGay5jPNbwGRRLEajNUZmabvjGz1vhA65wsvF4P1ScCVednEA/98rf0jcwWOOx28yLNHSy+IzvA/SLSCFUewDFrclH6s8yRRRe0P5CZ9M2qtdQ9O+ZUeEsI9eGz/1OukDdVqkHxuLJeIGmH5pzqxC9RNU7LFm0xdVT4sVYnuH/Z3hyyO4FImEqYbnX3Tk01CgJwDit0fsSmzOrX9IhPymFCxPp1+U3gMJni3fx/Pk8WO1MJGG/MXqHtQCtjOb3TCzH6Rt0M/d3GhBCYrgyOA469+imGkEZtRxZexYxEYjvjHPT+sFQ4/t5/Z9SRIHKsTEz3hV9W3ZFZheQdAsz8L6D57P8MlKSoHyRBF9QYTjihD8rz2BeeCKrwMtYY2qePn+ahTp5uCYWL0jJ4RnEjR0O923K0kGPfgOX2vq09ax9JAscXSqdk2S/lMXDl/lKGZth8zfexoy9EWcvjCPPqoqrOmSwI2qDmTgBKbA2AFcek0mnUm5AuP8uo0Z8R2H9BTK1qlmnfZl+EfUwVGejFC52aOumC4rVd/Qbly14nJDEazGTGHpZRg9yeRlfpnDvd3pFdqBpmuXtV2XLwnQapHyr9lucTiNqCo7eWliwLbDWICQgJTSKjBXdWEJJl5hv1KDOJjTYprY6as5PsnOTyDdUoCpgdLRETIpNsIOrdB3l+4bKBhc7LMrJB/PTVq6Hjdp39Ri84qZHqwoD5Gy57inBzQBg2IZ77DQSa5SAXTVrXp8dkSCBNr0WObVQXS+wHNbhIqJaCKlVZ5CEkYM+3kZR8nWUZzVGr6g2Jz9M+rc32sKbidokKoyZf8DN0GrotQobz7vpMM+NuEr3pwiFCCBy7X7v65MMhaEI4hTCrVCg30PlecEASQXIYjMaPjSqHXznNKDaJH1pLS8sCnz4Y+lnAkbwBWQYM0JAWbV5gLjnJgjhg/ANB6OJsZGGavG6UeIxxtOxf0TDWLKJU5jbLvAPXXXYcAVwFkJsiVC78ocqWXusDt0fLK+MnVvYLaoioA2GIc5sPDHainmHnQS+VeKa3+qzMNfHpDIRDLLL7W5088UsIiTt6XoRMa5KwOgQLKtY3SO9Mld7a8gZtgK5smRM5cUv+onCPleGwnslixM5b/ymHM2SUSO5TtkcJw0PRmWeaktC8Ux70Yd0mj91NFWQvu6PcJHgc9DtqwtukyKSSqTbhOIC949cF3sGp8sHm3Cz52OMjgcVT7MklOwubQf6pNIA7g8QCBex5afiSgfz7Hbt61W0Ehv6hKT3Gw96BQ3FTYtUavr0MwpUEDwz1AwgvUySK3yVnUsxsIeQn0a7wywkcdYdXyvStx2OJ+xiNrBlbwBMFderHAGSONyAhFopOsygX6f0+ZeeuhH51NyW+VKIeveYgW5idQM+YvPKHyWVrCCDv745/PJS2PEkljtlZm9dCcVQX1aXbHvESozx8CAyPtX7679hAPstuBx+rvNKJ1c5MF4Q7Kid1i9NUKCO7vvfNorc7KdwRyd+cxhY+sQrwd79a+QQCYGsruTc27HmQFdJ8NIn6e5W5i3waUyQyH79rS/nGe9btuO9gt/Tv0/PfHw1MDy34mSIR2Ws4sRCq7Ls49fNrkdpGBlZLkQxBrvY1W1CkJZZshRWURP0oo26tfja2kfVQ7YvgYjlR884FUBPi2z5FUE6Lxu6nzuyTVLWyhylhmJmiYQ931A3jBaU6QGeOoSyEBwuPxKcjGE+uOhOjiUK7GlprlTMEbubgCFBDfwaNHMIAesTLufjZVLPTqCBQ9FfV5ENfWkakXVfjgWTKdKnGbFpjPtxjSZQcj+87/AHSZIgYiqKDkuQfdZwRL2I4WpvJFUcQJjhmAtAZ7A3wRdVDFHgAD6epb2ha7WpuS4UPX5nkzYEtIBhsLpmqeyH1W3f73N8a6Wdc81jQMpfJkkqlUGdCLGYsaxxDr90oF7lmf29oI63rwd0+Ds5gMz3xSkfMKmqbeuypLrPcHLJ4lDm+VVw3nnPSMoo5BD1YXg40l2vBfznqDKg6HbVTx1+SbADF/JhSQEcq9YQRXv7sPOiruWgvhOy0c03n0ZOEsQrugIfu0rzqjxXMlVVVoDyqIhZ02gzmfRc/T/oX3ICSflBQCEOWFL+izoaljmMV0PR8OqfPJRUKiEbAjfLC6jVKFzcnYcwhJwIBNudipuOyPPBaTgak5u0OLeKsdFMTr/qkXaysVHDaHpOzNtNsXm90HHRfkNHtyo80d5Jkom3GkDouUkLseUMTH7j2KyKysunV9FQwXi8w6zPKaDp9HRLdEL8iMQG3PMlvWzuSXdZEn4VdnTqQVEYUjfY6PmVkYwTv8b8qPLZK3UZs67wibrigvFxCfz1C/7piaz73uXti+fI4r6MyZL5Xvh7bzherIERjSgMOwNI1pIYr3XMxx87FnFMK+FjnJL/ZkqDbov+fC1qwl0nin7jgJDaXcxtmlhSJiqZzaK1YTU9FDsgCyW64t1vajOP0r2QM6poqykdGSvEEgXtNhRDiSyxeBG8aXzPs8tTLCh2en3ExR8btSW6NKJJ4njF/yUIIulyOy3eDTkrmsik9vTaRUe1ieYu9dLBdB7DU5/X2+zRDFARjDU74WG6+AhZzrNwLkBbiYoajB6f9Ebp+UzyEfnsZguoLeqPJK6QN7iLgNTxNMUTUrB2Z/52p629ltAu7lO5ySyrv/y9vF7vo9MwRABe0xQS+qdbnE0Uh6Nzhu6z3JKM2GLb4YBBEKlYlmyBfDLGhU9uDR0DybXLHAgpGFJjZ26U6noRQ4Jl0aWVZtKUp7k7K86Jb1Sf7UQZsd7nMFc6Pf2egSoqs86UmoxYcrSdP7AnWs/YFHv07xafV96itaJrz2fAyX73TuwfCOlGK/EFEWKBWSo8i6EnCuKIR4v+aVJUGU5bgm7zxtvOQd2hm2wZITftyfJaszd+5NkW4swtbFrKNzGJyuEYaPNrrjUMPhbnFyVlaDqF2vm/oVx0VnJmRCLh0qsYdNNEbFzp6KzldxlArfe3HLnkM6tt8UROO7i1EPQwC7Al7sdFfafTgPxVr4NjWY10BMarTmmPQCy6DPL3zXkwOZo1x9JMwCo3sgfUCZ2rJlZ6dgG76ZZVaPKwK6eAGzq/pd1m1pwvgmEp1pSZ4VCkp26JoGHqHOzF+RO1wPfzGkVisCpoCEwocJDEeW3uy9Lo24taHK9V4DGU2Tuw9tV5vYEACBAk65gubCQdYJkehWikQWOSShqJrsSMo7Vkm4SsTv6qXwSqiK90Q09hTmHzgU0RHsvVq2OClW/1QSnfvxnNfyqVQo7CyJYjq25NZ0VllTU/bpQyLrPhPMA29ysyJdcbsRZ61EnUMitfLTQiZsITXD/2FpnWuEfPZgIPH42pT9PqWNbOtx78z4rSfGzOYpmga92e0W8+CgFbvCLyN52xtspnZMKV8bXgz8qJhIh6nLHYbL8mb9jSZ1y8gY4BzTYncKE79fgSrRNBbI1DLychMBkyiczgFqAHUN4vSpEC0jAq3HSqX6KMrcgLXFxHL40J1ZQf2/tzbGDcKG6jG19kST8Tvq45uBmPFsqjNqfFdBZDFy4yN8QdJRPwQrtUDGZpfLCCBnmuEeBz7Xmaud1Plz21ybVhGGSjgOUNe5d6zADWLXJlKCkiEleiAWBG4t8SGHgFr6LmKrr/7PLtF4R4m/YbCSWSU+e5BupRX6qdz0ZhXraiXdKJlHLO64dVy0pIXRAGULsSFXFMsT5TBLD8seC0ogEPnnTJAtJez0SYUtulCWVx4Kv3E58jxYiYw0IPt1x/37JEdtXXG2XnOdpbNQZ+uln0LIzIfys+1nhMLONL/ixg/phSdnYVGm1FlwWpRFxW525nDat3F6trgJ4IHLtZoA4d2Pn2FEIB09ATFkIcg3a2x9moscDC5ipZzcv2pkud6Gwf8C3dbmLKL8t4XbawVBmyld2Z3AOyaPKY45zEXoLsV5VX2b2X5yGCIlZM273ymDMQh55ifz5X0J2sXWjoyw31YpD8DixF7CgRnuhS3CRzqGVt06c6uaWOVgjue5fdrPBN5Y1NjV7vxCkt/qh4tJ7R5/km3HjU5vG4EokSG18rotGehV7OD4sqoOQpl3872Xd19J2HjLDLOgU+dwxYFK7oYBbYfe9cXBtivBq75PInuPLRDppqM' };
+/* ============================================================
+   UI DICTIONARY — zh / en (identical keys)
+   ============================================================ */
+const dict = {
+  zh: {
+    brand: 'PDS',
+    gate_title: '研究提案圖產生器',
+    gate_desc: '請輸入授課教師提供的存取碼。',
+    gate_label: '存取碼',
+    gate_ph: '輸入存取碼',
+    gate_btn: '進入',
+    gate_err: '存取碼不正確，請再試一次。',
+    gate_remember: '在這台裝置的瀏覽器記住存取碼',
+    gate_checking: '驗證中…',
+    gate_logout: '登出',
+    tour_label: '新手導覽',
+    tour_replay: '▶ 播放新手導覽',
+    tour_next: '下一步', tour_prev: '上一步', tour_skip: '略過', tour_done: '開始使用',
+    tour_steps: [
+      { t: '選擇範本', d: '依你的用途選擇：研究生選 RP 量化或質性，PMCS 課程選 TP。切換範本會取代目前的 A、B 兩張圖，建議先儲存 JSON。' },
+      { t: '切換圖別', d: 'A 是架構圖（變數或分析邏輯），B 是流程圖（研究流程或系統流程）。兩張圖存在同一份檔案，切換不會遺失內容。C 一頁摘要即將推出。' },
+      { t: '圖中文字', d: '選擇圖上顯示中文、英文或雙語。切換時會自動重新排版。' },
+      { t: '畫布', d: '點一下節點或連線即可在右側編輯；按住節點拖曳可移動位置。節點右上角的 ⓘ 會顯示相關術語。' },
+      { t: '新增連線', d: '按下後先點起點、再點終點。終點也可以是另一條連線（調節效果）或 ⑤ 的框。編號關係會自動列在圖下方。' },
+      { t: '右側面板', d: '「編輯」修改選取的內容；「新增」加入節點與比較列；「術語」查詢專有名詞並可朗讀；「說明」有範本導讀，也可以重播本導覽。' },
+      { t: '匯出與儲存', d: '匯出 SVG 或 PNG 放進提案；「儲存 JSON」可備份，下次用「載入 JSON」繼續編輯。瀏覽器也會自動暫存。' }
+    ],
+    title: '研究提案圖產生器',
+    subtitle: 'Proposal Diagram Studio',
+    view_label: '圖別',
+    view_A: 'A 架構圖', view_B: 'B 流程圖', view_C: 'C 摘要',
+    view_C_soon: 'C 一頁提案摘要（即將推出）',
+    toast_view: '已切換到「{name}」',
+    f_chapter: '所屬章節',
+    f_owner: '負責角色（團隊分工）',
+    owner_none: '（未指定）',
+    f_tag_time: '標籤（時程，例如 M1–M2）',
+    f_xref: '對照 A 圖',
+    f_xref_ph: '例如 A②、A 圖',
+    kind_loop: '回饋迴路（{prefix}）',
+    f_edge_hint_loop: '回饋迴路以虛線弧形箭頭呈現，敘述會自動列在圖下方；請寫明上限，例如重試或重寫幾次。',
+    menu_templates: '切換範本',
+    menu_tabs: '面板',
+    tpl_label: '範本',
+    disp_label: '圖中文字',
+    disp_zh: '中文', disp_en: 'EN', disp_both: '雙語',
+    btn_layout: '自動排版',
+    btn_connect: '新增連線',
+    connect_hint1: '連線模式：請點選起點節點（或 ⑤ 的框）',
+    connect_hint2: '請點選終點：節點、框，或另一條連線（調節效果）',
+    connect_cancel: '取消',
+    connect_err_self: '起點與終點不能相同',
+    connect_err_edge: '起點不能是連線',
+    btn_undo: '復原', btn_redo: '重做',
+    zoom_in: '放大', zoom_out: '縮小', zoom_fit: '符合視窗',
+    btn_export_svg: '匯出 SVG', btn_export_png: '匯出 PNG',
+    btn_export_json: '儲存 JSON', btn_import_json: '載入 JSON',
+    btn_clear: '🗑 清除全部',
+    confirm_clear: '確定要清除 A、B 兩張圖，並還原為範本預設內容嗎？本機暫存的草稿也會一併刪除，此操作無法復原。',
+    confirm_template: '切換到「{name}」會取代目前的 A、B 兩張圖。確定要切換嗎？建議先「儲存 JSON」備份。',
+    confirm_import: '載入「{file}」會取代目前的 A、B 兩張圖。確定要載入嗎？',
+    import_error: '無法讀取此檔案：格式不符或內容損毀。',
+    toast_restored: '已還原上次暫存的草稿',
+    toast_exported: '已匯出 {file}',
+    toast_cleared: '已清除並還原為範本預設內容',
+    toast_lane_max: '比較列最多 {n} 列',
+    toast_relayout: '已依新的文字模式重新排版；按「復原」可回到原位置',
+    saved_badge: '💾 已自動暫存於本機瀏覽器',
+    tab_edit: '編輯', tab_add: '新增', tab_terms: '術語', tab_help: '說明',
+    panel_diagram: '圖表資訊',
+    f_title_zh: '標題（中文）', f_title_en: '標題（英文）',
+    f_subtitle_zh: '副標題（中文）', f_subtitle_en: '副標題（英文）',
+    panel_node: '節點',
+    f_role: '角色',
+    f_lane: '所屬比較列',
+    lane_shared: '共用（跨比較列）',
+    f_node_title_zh: '標題（中文）', f_node_title_en: '標題（英文）',
+    f_items_zh: '條列項目（中文，一行一項）', f_items_en: '條列項目（英文，一行一項）',
+    f_tag: '標籤（KB 檔案／週次）',
+    f_optional: '選配（虛線框）',
+    f_variant: '資料來源模式',
+    variant_auto: '自動', variant_semi: '半自動',
+    variant_note: '兩種模式都是正式合格做法；切換後會顯示該模式的預設內容，兩者分別保存。',
+    btn_delete_node: '刪除節點', btn_dup_node: '複製節點',
+    panel_edge: '連線',
+    from_to: '起點 → 終點',
+    f_kind: '類型',
+    kind_main: '編號關係（{prefix}）', kind_flow: '流程箭頭',
+    f_sign: '方向',
+    sign_pos: '正向 (+)', sign_neg: '負向 (−)', sign_none: '未標示',
+    f_edge_zh: '敘述（中文）', f_edge_en: '敘述（英文）',
+    f_edge_hint: '編號關係的敘述會自動列在圖下方的說明區。',
+    btn_reverse: '反轉方向', btn_up: '編號往前', btn_down: '編號往後',
+    btn_delete_edge: '刪除連線',
+    panel_add_node: '新增節點',
+    btn_add: '＋ 新增',
+    panel_add_edge: '新增連線',
+    add_edge_desc: '按下按鈕後，先點起點、再點終點。',
+    panel_lanes: '比較列',
+    lanes_desc: '最多 3 列，例如上排「台灣 A 企業」、下排「美國 B 企業」。新增時會複製比較列 A 的專屬節點與流程箭頭。',
+    btn_add_lane: '＋ 新增比較列',
+    btn_remove_lane: '移除',
+    confirm_remove_lane: '確定移除「{name}」及其專屬節點嗎？',
+    f_lane_zh: '名稱（中文）', f_lane_en: '名稱（英文）',
+    none_selected: '點選圖中的節點或連線即可編輯；拖曳節點可調整位置。沒有選取時，這裡可以編輯圖表標題。',
+    stats: '節點 {n} · 連線 {m}',
+    kbd_hint: '快捷鍵：Delete 刪除 · Ctrl+Z 復原 · Ctrl+Y 重做 · Esc 取消',
+    terms_desc: '節點右上角的 ⓘ 可查看該節點的術語。以下列出本範本的全部術語，可點 🔊 朗讀。',
+    btn_speak: '朗讀',
+    help_title: '使用方式',
+    help_steps: [
+      '從上方選擇範本，圖會自動產生預設內容。',
+      '用「圖別」切換 A 架構圖與 B 流程圖；兩張圖存在同一份 JSON，匯出時只匯出目前顯示的那一張。',
+      '點選節點或連線，在右側「編輯」分頁修改文字；拖曳節點可調整位置，「自動排版」可重新整理版面。',
+      '按「新增連線」後，先點起點、再點終點；終點也可以是另一條連線（調節效果）或 ⑤ 的框。',
+      '「圖中文字」可切換中文、英文或雙語；介面語言由右上角切換。',
+      '隨時可以「儲存 JSON」備份，之後用「載入 JSON」繼續編輯；本機瀏覽器也會自動暫存。',
+      '完成後「匯出 SVG」（向量圖，適合 Word 與簡報）或「匯出 PNG」。'
+    ],
+    help_tpl_title: '本範本導讀',
+    tts_play: '語音導覽', tts_pause: '暫停', tts_stop: '停止',
+    tts_intro: '以下是本圖的內容。',
+    info_terms: '術語',
+    close: '關閉',
+    lang_toggle: 'EN',
+    theme_toggle: '切換深淺色',
+    copyright_msg: 'Intellectual Property of Prof. Shihmin Lo',
+    date: 'Version 2026.09.27',
+    copyright: 'For Educational Use Only',
+    architect_label: 'Architect:',
+    architect_name: 'Prof. Shihmin Lo',
+    architect_url: 'https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo'
+  },
+  en: {
+    brand: 'PDS',
+    gate_title: 'Proposal Diagram Studio',
+    gate_desc: 'Enter the access code provided by your instructor.',
+    gate_label: 'Access code',
+    gate_ph: 'Enter access code',
+    gate_btn: 'Enter',
+    gate_err: 'Incorrect access code. Please try again.',
+    gate_remember: 'Remember the code in this browser',
+    gate_checking: 'Checking…',
+    gate_logout: 'Log out',
+    tour_label: 'Quick tour',
+    tour_replay: '▶ Play the quick tour',
+    tour_next: 'Next', tour_prev: 'Back', tour_skip: 'Skip', tour_done: 'Start',
+    tour_steps: [
+      { t: 'Choose a template', d: 'Graduate students choose RP Quantitative or Qualitative; PMCS students choose TP. Switching replaces both diagrams A and B, so save a JSON first.' },
+      { t: 'Switch diagrams', d: 'A is the framework (variables or analysis logic); B is the flow (research process or system flow). Both live in the same file, so switching loses nothing. C, a one-page summary, is coming soon.' },
+      { t: 'Diagram text', d: 'Show Chinese, English or both on the diagram. The layout is refreshed automatically when you switch.' },
+      { t: 'Canvas', d: 'Click a node or link to edit it on the right; drag a node to move it. The ⓘ at the top right of a node shows related terms.' },
+      { t: 'Connect', d: 'Press it, then click the source and the target. The target can also be another link (moderation) or the ⑤ frame. Numbered relations are listed below the diagram.' },
+      { t: 'Side panel', d: 'Edit changes the selection; Add creates nodes and comparison rows; Glossary explains terms and can read them aloud; Guide has the template notes and replays this tour.' },
+      { t: 'Export and save', d: 'Export SVG or PNG for your proposal. Save JSON as a backup and Load JSON to continue later. The browser also auto-saves.' }
+    ],
+    title: 'Proposal Diagram Studio',
+    subtitle: '研究提案圖產生器',
+    view_label: 'Diagram',
+    view_A: 'A Framework', view_B: 'B Flow', view_C: 'C Summary',
+    view_C_soon: 'C One-page proposal summary (coming soon)',
+    toast_view: 'Switched to "{name}"',
+    f_chapter: 'Chapter',
+    f_owner: 'Owner (team role)',
+    owner_none: '(unassigned)',
+    f_tag_time: 'Tag (timeline, e.g. M1–M2)',
+    f_xref: 'Links to Diagram A',
+    f_xref_ph: 'e.g. A②, A',
+    kind_loop: 'Feedback loop ({prefix})',
+    f_edge_hint_loop: 'Feedback loops are drawn as dashed arcs and their statements are listed below the diagram; state the limits, e.g. how many retries or rewrites.',
+    menu_templates: 'Templates',
+    menu_tabs: 'Panels',
+    tpl_label: 'Template',
+    disp_label: 'Diagram text',
+    disp_zh: '中文', disp_en: 'EN', disp_both: 'Bilingual',
+    btn_layout: 'Auto layout',
+    btn_connect: 'Connect',
+    connect_hint1: 'Connect mode: click the source node (or the ⑤ frame)',
+    connect_hint2: 'Click the target: a node, a frame, or another link (moderation)',
+    connect_cancel: 'Cancel',
+    connect_err_self: 'Source and target cannot be the same',
+    connect_err_edge: 'A link cannot be the source',
+    btn_undo: 'Undo', btn_redo: 'Redo',
+    zoom_in: 'Zoom in', zoom_out: 'Zoom out', zoom_fit: 'Fit',
+    btn_export_svg: 'Export SVG', btn_export_png: 'Export PNG',
+    btn_export_json: 'Save JSON', btn_import_json: 'Load JSON',
+    btn_clear: '🗑 Clear all',
+    confirm_clear: 'Clear both diagrams A and B and restore the template defaults? The draft saved in this browser will also be deleted. This cannot be undone.',
+    confirm_template: 'Switching to "{name}" will replace both diagrams A and B. Continue? Consider saving a JSON backup first.',
+    confirm_import: 'Loading "{file}" will replace both diagrams A and B. Continue?',
+    import_error: 'This file could not be read: wrong format or damaged content.',
+    toast_restored: 'Your last saved draft has been restored',
+    toast_exported: 'Exported {file}',
+    toast_cleared: 'Cleared and restored to template defaults',
+    toast_lane_max: 'Up to {n} comparison rows',
+    toast_relayout: 'Re-laid out for the new text mode; press Undo to restore positions',
+    saved_badge: '💾 Auto-saved in this browser',
+    tab_edit: 'Edit', tab_add: 'Add', tab_terms: 'Glossary', tab_help: 'Guide',
+    panel_diagram: 'Diagram info',
+    f_title_zh: 'Title (Chinese)', f_title_en: 'Title (English)',
+    f_subtitle_zh: 'Subtitle (Chinese)', f_subtitle_en: 'Subtitle (English)',
+    panel_node: 'Node',
+    f_role: 'Role',
+    f_lane: 'Comparison row',
+    lane_shared: 'Shared (all rows)',
+    f_node_title_zh: 'Title (Chinese)', f_node_title_en: 'Title (English)',
+    f_items_zh: 'Bullet items (Chinese, one per line)', f_items_en: 'Bullet items (English, one per line)',
+    f_tag: 'Tag (KB file / week)',
+    f_optional: 'Optional (dashed box)',
+    f_variant: 'Source mode',
+    variant_auto: 'Automatic', variant_semi: 'Semi-automatic',
+    variant_note: 'Both modes are fully acceptable. Each mode keeps its own text; switching shows that mode\'s content.',
+    btn_delete_node: 'Delete node', btn_dup_node: 'Duplicate',
+    panel_edge: 'Link',
+    from_to: 'From → To',
+    f_kind: 'Type',
+    kind_main: 'Numbered relation ({prefix})', kind_flow: 'Flow arrow',
+    f_sign: 'Direction',
+    sign_pos: 'Positive (+)', sign_neg: 'Negative (−)', sign_none: 'None',
+    f_edge_zh: 'Statement (Chinese)', f_edge_en: 'Statement (English)',
+    f_edge_hint: 'Statements of numbered relations are listed automatically below the diagram.',
+    btn_reverse: 'Reverse', btn_up: 'Move up', btn_down: 'Move down',
+    btn_delete_edge: 'Delete link',
+    panel_add_node: 'Add a node',
+    btn_add: '+ Add',
+    panel_add_edge: 'Add a link',
+    add_edge_desc: 'Press the button, then click the source and the target.',
+    panel_lanes: 'Comparison rows',
+    lanes_desc: 'Up to three rows, e.g. "Taiwan firm A" on top and "US firm B" below. A new row copies the row-specific nodes and flow arrows of Row A.',
+    btn_add_lane: '+ Add row',
+    btn_remove_lane: 'Remove',
+    confirm_remove_lane: 'Remove "{name}" and its row-specific nodes?',
+    f_lane_zh: 'Name (Chinese)', f_lane_en: 'Name (English)',
+    none_selected: 'Click a node or link in the diagram to edit it; drag nodes to reposition them. With nothing selected, you can edit the diagram title here.',
+    stats: '{n} nodes · {m} links',
+    kbd_hint: 'Shortcuts: Delete to remove · Ctrl+Z undo · Ctrl+Y redo · Esc cancel',
+    terms_desc: 'The ⓘ at the top right of a node shows its terms. All terms of this template are listed below; click 🔊 to hear them.',
+    btn_speak: 'Speak',
+    help_title: 'How to use',
+    help_steps: [
+      'Choose a template at the top; the diagram fills in with default content.',
+      'Use Diagram to switch between A Framework and B Flow; both are kept in one JSON, and SVG/PNG export covers the diagram on screen.',
+      'Click a node or link and edit it in the Edit tab; drag nodes to reposition them, or press Auto layout to tidy up.',
+      'Press Connect, then click the source and the target; the target may also be another link (moderation) or the ⑤ frame.',
+      'Diagram text switches between Chinese, English and bilingual; the interface language is switched at the top right.',
+      'Save JSON at any time as a backup and Load JSON to continue later; the browser also auto-saves your draft.',
+      'When finished, Export SVG (vector, ideal for Word and slides) or Export PNG.'
+    ],
+    help_tpl_title: 'About this template',
+    tts_play: 'Audio guide', tts_pause: 'Pause', tts_stop: 'Stop',
+    tts_intro: 'Here is the content of this diagram.',
+    info_terms: 'Terms',
+    close: 'Close',
+    lang_toggle: '中',
+    theme_toggle: 'Toggle theme',
+    copyright_msg: 'Intellectual Property of Prof. Shihmin Lo',
+    date: 'Version 2026.09.27',
+    copyright: 'For Educational Use Only',
+    architect_label: 'Architect:',
+    architect_name: 'Prof. Shihmin Lo',
+    architect_url: 'https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo'
+  }
+};
+
+/* ============================================================
+   ENGINE — text measuring, node boxes, layout, geometry
+   (plain JS, no JSX)
+   ============================================================ */
+const G = {
+  TOP: 118, PADX: 12, PADY: 11, GAPY: 22,
+  FRAME_TOP: 32, FRAME_BOT: 50, FRAME_PADX: 14,
+  LANE_LABEL_W: 34, LANE_GAP: 34,
+  FONT: "Inter, 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', 'Heiti TC', sans-serif",
+  SERIF: "Merriweather, 'Noto Serif TC', 'Noto Sans TC', 'Microsoft JhengHei', serif"
+};
+
+const WIDE_RE = /[⺀-鿿豈-﫿︰-﹏＀-￯　-〿①-⓿★☆]/;
+function textW(s, fs) {
+  let w = 0;
+  for (const ch of String(s)) {
+    if (WIDE_RE.test(ch)) w += fs;
+    else if (ch === ' ') w += fs * 0.3;
+    else if (/[il.,:;|!'’()\[\]\/]/.test(ch)) w += fs * 0.32;
+    else if (/[A-Z0-9%&@#MW]/.test(ch)) w += fs * 0.66;
+    else w += fs * 0.55;
+  }
+  return w;
+}
+function wrapText(s, maxW, fs) {
+  s = String(s || '');
+  if (!s) return [];
+  const tokens = s.match(/[⺀-鿿豈-﫿︰-﹏＀-￯　-〿]|[^\s⺀-鿿豈-﫿︰-﹏＀-￯　-〿]+|\s+/g) || [];
+  const lines = []; let cur = '';
+  for (let t of tokens) {
+    if (/^\s+$/.test(t)) { if (cur) cur += ' '; continue; }
+    if (textW(cur + t, fs) <= maxW) { cur += t; continue; }
+    // closing punctuation stays on the current line
+    if (/^[，。、；：？！）」』,.;:?!)]$/.test(t) && cur) { cur += t; continue; }
+    if (cur.trim()) lines.push(cur.trimEnd());
+    cur = '';
+    while (textW(t, fs) > maxW) {
+      let i = 1;
+      while (i < t.length && textW(t.slice(0, i + 1), fs) <= maxW) i++;
+      lines.push(t.slice(0, i)); t = t.slice(i);
+    }
+    cur = t;
+  }
+  if (cur.trim()) lines.push(cur.trimEnd());
+  return lines;
+}
+
+const getText = (n) => (n.variants ? n.variants[n.variant || 'auto'] : n.text) || { zh: { title: '', items: [] }, en: { title: '', items: [] } };
+const roleOf = (tpl, id) => tpl.roles.find(r => r.id === id) || tpl.roles[0];
+
+/* Build the drawable lines of a node for a display mode (zh | en | both). */
+function nodeBox(n, tpl, mode) {
+  const role = roleOf(tpl, n.role), W = role.w || tpl.nodeW;
+  const sx = role.shape === 'decision' ? 12 : 0; /* hexagon: keep text clear of the pointed sides */
+  const inner = W - G.PADX * 2 - sx * 2;
+  const txt = getText(n);
+  const prim = mode === 'en' ? 'en' : 'zh';
+  const lines = [];
+  let y = G.PADY;
+  const badgeIndent = (role.badge ? 24 : 0) + sx;
+  const push = (arr, o) => arr.forEach(t => { y += o.lh; lines.push({ t, x: o.x, y: y - o.lh * 0.28, fs: o.fs, fw: o.fw || 400, fill: o.fill || '#1f2937', fi: o.fi || 'normal' }); });
+  // title
+  const tPrim = (txt[prim] && txt[prim].title) || (txt.zh && txt.zh.title) || '';
+  push(wrapText(tPrim, inner - badgeIndent, 14.5), { x: G.PADX + badgeIndent, fs: 14.5, fw: 700, lh: 19, fill: '#0f172a' });
+  if (mode === 'both' && txt.en && txt.en.title) {
+    push(wrapText(txt.en.title, inner - badgeIndent, 11.5), { x: G.PADX + badgeIndent, fs: 11.5, lh: 15, fill: '#475569', fi: 'italic' });
+  }
+  let pillY = null;
+  if (n.variants) { y += 5; pillY = y; y += 18; }
+  y += 5;
+  const iz = (txt[prim] && txt[prim].items) || [];
+  const ie = (txt.en && txt.en.items) || [];
+  const count = Math.max(iz.length, mode === 'both' ? ie.length : 0);
+  const bullets = [];
+  for (let i = 0; i < count; i++) {
+    const a = (iz[i] || '').trim(), b = (ie[i] || '').trim();
+    if (!a && !(mode === 'both' && b)) continue;
+    const startY = y;
+    if (a) push(wrapText(a, inner - 11, 12), { x: G.PADX + 11 + sx, fs: 12, lh: 16.5, fill: '#1f2937' });
+    if (mode === 'both' && b) push(wrapText(b, inner - 11, 10.5), { x: G.PADX + 11 + sx, fs: 10.5, lh: 14, fill: '#64748b', fi: 'italic' });
+    bullets.push(startY + 16.5 * 0.72);
+    y += 3;
+  }
+  let tagY = null;
+  const owner = tpl.owners && n.owner ? tpl.owners.find(o => o.id === n.owner) : null;
+  if (n.tag || owner || n.xref) { y += 4; tagY = y; y += 18; }
+  y += G.PADY + (role.shape === 'doc' ? 8 : 0);
+  return { w: W, h: Math.max(y, 54), lines, bullets, pillY, tagY, badgeIndent, sx, owner };
+}
+
+function laneOn(tpl) { return !!(tpl.lanes && tpl.lanes.enabled); }
+function rowPhases(tpl) { return !!(tpl.phases && tpl.phaseDir === 'row'); }
+function leftX(tpl) { return laneOn(tpl) || rowPhases(tpl) ? 14 + G.LANE_LABEL_W + 20 : 36; }
+function colX(tpl, c) { return leftX(tpl) + c * (tpl.nodeW + tpl.gapX) + ((tpl.colShift && tpl.colShift[c]) || 0); }
+const colOfN = (tpl, n) => (n.col !== undefined ? n.col : roleOf(tpl, n.role).col);
+const rowOfN = (tpl, n) => (n.row !== undefined ? n.row : (roleOf(tpl, n.role).row !== undefined ? roleOf(tpl, n.role).row : 1));
+const inBand = (tpl, n) => !!(tpl.band && tpl.band.roles.includes(n.role));
+function isPerLane(tpl, n) { return laneOn(tpl) && !!roleOf(tpl, n.role).perLane; }
+
+/* Auto layout: returns a new nodes array with x/y set. */
+function autoLayout(d, tpl, mode) {
+  const boxes = {}; d.nodes.forEach(n => boxes[n.id] = nodeBox(n, tpl, mode));
+  const gRole = {}; (tpl.groups || []).forEach(g => g.roles.forEach(r => gRole[r] = g.id));
+  const order = {}; tpl.roles.forEach((r, i) => order[r.id] = i);
+  const sortFn = (a, b) => (order[a.role] - order[b.role]) || (a.y - b.y);
+  const place = (arr, y0) => {
+    let y = y0, prevG = null; const pos = {};
+    arr.forEach((n, i) => {
+      const g = gRole[n.role] || null;
+      if (i > 0) y += G.GAPY;
+      if (g !== prevG) { if (prevG) y += G.FRAME_BOT - 8; if (g) y += G.FRAME_TOP; }
+      pos[n.id] = y; y += boxes[n.id].h; prevG = g;
+    });
+    if (prevG) y += G.FRAME_BOT;
+    return { pos, h: y - y0 };
+  };
+  const colOf = n => (n.col !== undefined ? n.col : roleOf(tpl, n.role).col);
+  if (tpl.grid) {
+    const rowOf = n => (n.row !== undefined ? n.row : (roleOf(tpl, n.role).row !== undefined ? roleOf(tpl, n.role).row : 1));
+    const cells = {};
+    d.nodes.forEach(n => { const k = colOf(n) + '_' + rowOf(n); (cells[k] = cells[k] || []).push(n); });
+    const nRows = Math.max(1, ...d.nodes.map(n => rowOf(n) + 1));
+    const rowH = Array(nRows).fill(0);
+    Object.entries(cells).forEach(([k, arr]) => { arr.sort(sortFn); const r = +k.split('_')[1]; rowH[r] = Math.max(rowH[r], place(arr, 0).h); });
+    const rowTop = []; let yy = G.TOP + (tpl.topPad || 0);
+    for (let r = 0; r < nRows; r++) { rowTop[r] = yy; yy += (rowH[r] || 0) + (rowH[r] ? (tpl.rowGap || G.GAPY * 2) : 0); }
+    const pos = {};
+    Object.entries(cells).forEach(([k, arr]) => {
+      const [c, r] = k.split('_').map(Number); const h = place(arr, 0).h;
+      const res = place(arr, rowTop[r] + (tpl.alignTop ? 0 : (rowH[r] - h) / 2));
+      arr.forEach(n => pos[n.id] = { x: colX(tpl, c), y: Math.round(res.pos[n.id]) });
+    });
+    return d.nodes.map(n => pos[n.id] ? { ...n, ...pos[n.id] } : n);
+  }
+  const lanes = laneOn(tpl) ? d.lanes.length : 1;
+  const newPos = {};
+  const bandTop = [], bandH = [];
+  let cursor = G.TOP;
+  for (let l = 0; l < lanes; l++) {
+    const laneNodes = d.nodes.filter(n => laneOn(tpl) ? (isPerLane(tpl, n) && n.lane === l) : true);
+    let maxH = 90;
+    const cols = {};
+    laneNodes.forEach(n => { (cols[colOf(n)] = cols[colOf(n)] || []).push(n); });
+    Object.values(cols).forEach(arr => { arr.sort(sortFn); maxH = Math.max(maxH, place(arr, 0).h); });
+    bandTop[l] = cursor; bandH[l] = maxH;
+    Object.entries(cols).forEach(([c, arr]) => {
+      const r = place(arr, 0); const y0 = cursor + (maxH - r.h) / 2;
+      const r2 = place(arr, y0);
+      arr.forEach(n => newPos[n.id] = { x: colX(tpl, +c), y: Math.round(r2.pos[n.id]) });
+    });
+    cursor += maxH + G.LANE_GAP;
+  }
+  if (laneOn(tpl)) {
+    const totalH = cursor - G.LANE_GAP - G.TOP;
+    const shared = d.nodes.filter(n => !isPerLane(tpl, n));
+    const cols = {};
+    shared.forEach(n => { (cols[colOf(n)] = cols[colOf(n)] || []).push(n); });
+    Object.entries(cols).forEach(([c, arr]) => {
+      arr.sort(sortFn);
+      const r = place(arr, 0); const y0 = G.TOP + Math.max(0, (totalH - r.h) / 2);
+      const r2 = place(arr, y0);
+      arr.forEach(n => newPos[n.id] = { x: colX(tpl, +c), y: Math.round(r2.pos[n.id]) });
+    });
+  }
+  return d.nodes.map(n => newPos[n.id] ? { ...n, ...newPos[n.id] } : n);
+}
+
+/* Geometry helpers ------------------------------------------------ */
+function computeGeometry(d, tpl, mode) {
+  const boxes = {}; d.nodes.forEach(n => boxes[n.id] = nodeBox(n, tpl, mode));
+  const rects = {}; d.nodes.forEach(n => rects['n:' + n.id] = { x: n.x, y: n.y, w: boxes[n.id].w, h: boxes[n.id].h });
+  // frames
+  const frames = [];
+  const lanes = laneOn(tpl) ? d.lanes.map((_, i) => i) : [null];
+  (tpl.groups || []).forEach(g => {
+    lanes.forEach(l => {
+      const ns = d.nodes.filter(n => g.roles.includes(n.role) && (l === null || n.lane === l));
+      if (!ns.length) return;
+      const x1 = Math.min(...ns.map(n => n.x)), y1 = Math.min(...ns.map(n => n.y));
+      const x2 = Math.max(...ns.map(n => n.x + boxes[n.id].w)), y2 = Math.max(...ns.map(n => n.y + boxes[n.id].h));
+      const ref = 'g:' + g.id + ':' + (l === null ? 0 : l);
+      const r = { x: x1 - G.FRAME_PADX, y: y1 - G.FRAME_TOP + 4, w: x2 - x1 + G.FRAME_PADX * 2, h: y2 - y1 + G.FRAME_TOP - 4 + G.FRAME_BOT - 8 };
+      rects[ref] = r; frames.push({ ref, g, lane: l, ...r });
+    });
+  });
+  // bands
+  const bands = [];
+  if (laneOn(tpl)) {
+    d.lanes.forEach((ln, l) => {
+      const ns = d.nodes.filter(n => isPerLane(tpl, n) && n.lane === l);
+      const rs = ns.map(n => rects['n:' + n.id]).concat(frames.filter(f => f.lane === l));
+      if (!rs.length) return;
+      const y1 = Math.min(...rs.map(r => r.y)) - 14, y2 = Math.max(...rs.map(r => r.y + r.h)) + 14;
+      bands.push({ lane: l, ln, y: y1, h: y2 - y1 });
+    });
+  }
+  // phase bands (B diagrams): columns (I-P-O) or rows (thesis chapters)
+  const phases = [];
+  if (tpl.phases) {
+    const body = d.nodes.filter(n => !inBand(tpl, n));
+    const rOf = n => rects['n:' + n.id];
+    const fr = ns => frames.filter(f => d.nodes.some(n => ns.includes(n) && f.g.roles.includes(n.role)));
+    if (tpl.phaseDir === 'row') {
+      tpl.phases.forEach((ph, i) => {
+        const ns = body.filter(n => ph.rows.includes(rowOfN(tpl, n)));
+        if (!ns.length) return;
+        const rs = ns.map(rOf);
+        const y1 = Math.min(...rs.map(r => r.y)) - 14, y2 = Math.max(...rs.map(r => r.y + r.h)) + 14;
+        phases.push({ i, ph, y: y1, h: y2 - y1 });
+      });
+    } else {
+      const cols = tpl.phases.map(ph => { const ns = body.filter(n => ph.cols.includes(colOfN(tpl, n))); return { ph, rs: ns.map(rOf).concat(fr(ns)) }; });
+      const all = [].concat(...cols.map(c => c.rs));
+      if (all.length) {
+        const y1 = Math.min(...all.map(r => r.y)) - 40, y2 = Math.max(...all.map(r => r.y + r.h)) + 34;
+        cols.forEach((c, i) => {
+          const x1 = c.rs.length ? Math.min(...c.rs.map(r => r.x)) - 14 : colX(tpl, c.ph.cols[0]) - 14;
+          const x2 = c.rs.length ? Math.max(...c.rs.map(r => r.x + r.w)) + 14 : colX(tpl, c.ph.cols[c.ph.cols.length - 1]) + tpl.nodeW + 14;
+          phases.push({ i, ph: c.ph, x: x1, y: y1, w: x2 - x1, h: y2 - y1 });
+        });
+      }
+    }
+  }
+  // cross-cutting band (governance / ethics)
+  let xband = null;
+  if (tpl.band) {
+    const ns = d.nodes.filter(n => inBand(tpl, n));
+    if (ns.length) {
+      const rs = ns.map(n => rects['n:' + n.id]);
+      const x1 = Math.min(...rs.map(r => r.x)) - 14, x2 = Math.max(...rs.map(r => r.x + r.w)) + 14;
+      const y1 = Math.min(...rs.map(r => r.y)) - 34, y2 = Math.max(...rs.map(r => r.y + r.h)) + 14;
+      xband = { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+    }
+  }
+  // return channel for long feedback loops (between the phase bands and the cross band)
+  const colPh = phases.filter(p => p.w);
+  const channelY = colPh.length ? Math.max(...colPh.map(p => p.y + p.h)) + 20 : null;
+  let farIdx = 0;
+  // edges
+  const edgeGeo = {};
+  const center = r => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
+  const geo = (e, depth) => {
+    if (edgeGeo[e.id]) return edgeGeo[e.id];
+    const a = rects[e.from];
+    if (!a) return null;
+    let res;
+    if (e.to.startsWith('e:')) {
+      if (depth > 3) return null;
+      const te = d.edges.find(x => 'e:' + x.id === e.to);
+      if (!te || te.id === e.id) return null;
+      const tg = geo(te, depth + 1); if (!tg) return null;
+      const t = tg.mid, ac = center(a);
+      let p0;
+      if (t.y > a.y + a.h) p0 = { x: ac.x, y: a.y + a.h };
+      else if (t.y < a.y) p0 = { x: ac.x, y: a.y };
+      else p0 = t.x > ac.x ? { x: a.x + a.w, y: ac.y } : { x: a.x, y: ac.y };
+      const mid = { x: (p0.x + t.x) / 2, y: (p0.y + t.y) / 2 };
+      res = { d: `M${p0.x},${p0.y} L${t.x},${t.y}`, mid, p0, p3: t };
+    } else if (tpl.mainStyle === 'loop' && e.kind === 'main' && rects[e.to] && e.from !== e.to) {
+      /* feedback loop: dashed return path */
+      const b = rects[e.to]; const ac = center(a), bc = center(b);
+      const overlapX = a.x < b.x + b.w && b.x < a.x + a.w;
+      const gapX = a.x > b.x ? a.x - (b.x + b.w) : b.x - (a.x + a.w);
+      const cub = (p0, c1, c2, p3) => ({ d: `M${p0.x},${p0.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${p3.x},${p3.y}`, mid: { x: (p0.x + 3 * c1.x + 3 * c2.x + p3.x) / 8, y: (p0.y + 3 * c1.y + 3 * c2.y + p3.y) / 8 }, p0, p3, c1, c2, loop: true });
+      if (e.side === 'bottom' || e.side === 'top') { /* explicit arc below / above both nodes */
+        const up = e.side === 'top';
+        const p0 = { x: ac.x, y: up ? a.y : a.y + a.h }, p3 = { x: bc.x, y: up ? b.y : b.y + b.h };
+        const ey = up ? Math.min(p0.y, p3.y) : Math.max(p0.y, p3.y);
+        const bow = (up ? -1 : 1) * Math.min(80, 34 + Math.abs(p3.x - p0.x) * 0.1);
+        res = cub(p0, { x: p0.x + (p3.x - p0.x) * 0.15, y: ey + bow }, { x: p3.x - (p3.x - p0.x) * 0.15, y: ey + bow }, p3);
+      } else if (overlapX) { /* same column: out and back on the right (or left) side */
+        const side = e.side === 'left' ? -1 : 1;
+        const p0 = { x: side > 0 ? a.x + a.w : a.x, y: ac.y }, p3 = { x: side > 0 ? b.x + b.w : b.x, y: bc.y };
+        const ex = side > 0 ? Math.max(p0.x, p3.x) : Math.min(p0.x, p3.x);
+        const bow = side * (40 + Math.abs(p3.y - p0.y) * 0.1);
+        res = cub(p0, { x: ex + bow, y: p0.y }, { x: ex + bow, y: p3.y }, p3);
+      } else if (gapX < 110 || !channelY) { /* neighbouring columns: side to side */
+        const dir = bc.x > ac.x ? 1 : -1;
+        const clamp = (v, r) => Math.max(r.y + 16, Math.min(r.y + r.h - 16, v));
+        const p0 = { x: dir > 0 ? a.x + a.w : a.x, y: clamp(bc.y, a) + 12 }, p3 = { x: dir > 0 ? b.x : b.x + b.w, y: clamp(ac.y, b) + 12 };
+        const c = (p3.x - p0.x) / 2;
+        res = cub(p0, { x: p0.x + c, y: p0.y + 18 }, { x: p3.x - c, y: p3.y + 18 }, p3);
+      } else { /* distant columns: along the return channel below the phase bands */
+        const k = farIdx++;
+        const yc = channelY + k * 16, r = 10;
+        const dir = bc.x < ac.x ? -1 : 1;
+        const xo = dir < 0 ? a.x + a.w + 7 + k * 4 : a.x - 7 - k * 4;       /* leave on the outer side of the source */
+        const xg = dir < 0 ? b.x - 30 - k * 8 : b.x + b.w + 30 + k * 8;    /* climb in the gap next to the target */
+        const ty = bc.y - 8 + k * 8, sy = ac.y + 8;
+        const sx0 = dir < 0 ? a.x + a.w : a.x, tx = dir < 0 ? b.x : b.x + b.w;
+        const sgo = xo > sx0 ? 1 : -1, sgi = tx > xg ? 1 : -1;
+        const dd = [`M${sx0},${sy}`, `L${xo - sgo * r},${sy}`, `Q${xo},${sy} ${xo},${sy + r}`, `L${xo},${yc - r}`, `Q${xo},${yc} ${xo - sgo * r * 0 + (xg < xo ? -r : r)},${yc}`,
+          `L${xg + (xg < xo ? r : -r)},${yc}`, `Q${xg},${yc} ${xg},${yc - r}`, `L${xg},${ty + r}`, `Q${xg},${ty} ${xg + sgi * r},${ty}`, `L${tx},${ty}`].join(' ');
+        res = { d: dd, mid: { x: (xo + xg) / 2 + (k % 2 ? 80 : -80) * Math.ceil(k / 2), y: yc }, p0: { x: sx0, y: sy }, p3: { x: tx, y: ty }, loop: true, channel: true };
+      }
+    } else {
+      const b = rects[e.to]; if (!b || e.from === e.to) return null;
+      const ac = center(a), bc = center(b);
+      const dx = bc.x - ac.x, dy = bc.y - ac.y;
+      const overlapX = a.x < b.x + b.w && b.x < a.x + a.w;
+      let p0, p3, c1, c2;
+      if (!overlapX && Math.abs(dx) >= Math.abs(dy) * 0.5) {
+        p0 = dx > 0 ? { x: a.x + a.w, y: ac.y } : { x: a.x, y: ac.y };
+        p3 = dx > 0 ? { x: b.x, y: bc.y } : { x: b.x + b.w, y: bc.y };
+        const c = (p3.x - p0.x) / 2;
+        c1 = { x: p0.x + c, y: p0.y }; c2 = { x: p3.x - c, y: p3.y };
+      } else {
+        p0 = dy > 0 ? { x: ac.x, y: a.y + a.h } : { x: ac.x, y: a.y };
+        p3 = dy > 0 ? { x: bc.x, y: b.y } : { x: bc.x, y: b.y + b.h };
+        const c = (p3.y - p0.y) / 2;
+        c1 = { x: p0.x, y: p0.y + c }; c2 = { x: p3.x, y: p3.y - c };
+      }
+      const mid = { x: (p0.x + 3 * c1.x + 3 * c2.x + p3.x) / 8, y: (p0.y + 3 * c1.y + 3 * c2.y + p3.y) / 8 };
+      res = { d: `M${p0.x},${p0.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${p3.x},${p3.y}`, mid, p0, p3, c1, c2 };
+    }
+    edgeGeo[e.id] = res; return res;
+  };
+  d.edges.forEach(e => geo(e, 0));
+  // labels of moderated links move off the midpoint so the moderating arrow stays visible
+  const bez = (g, t) => { const u = 1 - t; return { x: u*u*u*g.p0.x + 3*u*u*t*g.c1.x + 3*u*t*t*g.c2.x + t*t*t*g.p3.x, y: u*u*u*g.p0.y + 3*u*u*t*g.c1.y + 3*u*t*t*g.c2.y + t*t*t*g.p3.y }; };
+  d.edges.forEach(e => { const g = edgeGeo[e.id]; if (!g) return; g.label = g.mid;
+    if (g.c1 && d.edges.some(x => x.to === 'e:' + e.id)) g.label = bez(g, 0.25); });
+  // numbering
+  const codes = {}; let k = 0;
+  d.edges.forEach(e => { if (e.kind === 'main') codes[e.id] = tpl.prefix + (++k); });
+  // bounds
+  const allR = Object.values(rects).concat(phases.filter(p => p.w).map(p => ({ x: p.x, y: p.y, w: p.w, h: p.h })), xband ? [xband] : []);
+  const maxX = allR.length ? Math.max(...allR.map(r => r.x + r.w)) : 600;
+  const maxY = allR.length ? Math.max(...allR.map(r => r.y + r.h)) : G.TOP + 100;
+  const W = Math.max(780, Math.ceil(maxX + 40));
+  const W2 = rowPhases(tpl) ? Math.max(W, Math.ceil(maxX + 40)) : W;
+  return { boxes, rects, frames, bands, phases, xband, edgeGeo, codes, W: W2, contentBottom: maxY + (bands.length || (phases.length && rowPhases(tpl)) ? 16 : 0) };
+}
+
+/* Legend lines: numbered relations (H / P / AQ / L) and, for B diagrams, the team-role table */
+function legendLines(d, tpl, mode, codes, W) {
+  const out = [];
+  const maxW = W - 60;
+  const head = (bi) => out.push({ head: mode === 'en' ? bi.en : mode === 'both' ? `${bi.zh} ${bi.en}` : bi.zh, lines: [], fs: 13.5 });
+  const mains = d.edges.filter(e => e.kind === 'main');
+  if (mains.length) head(tpl.legendTitle);
+  mains.forEach(e => {
+    const code = codes[e.id];
+    const sign = tpl.signs && e.sign ? ` (${e.sign === '-' ? '−' : '+'})` : '';
+    const zh = (e.text && e.text.zh) || '', en = (e.text && e.text.en) || '';
+    const prim = mode === 'en' ? (en || zh) : (zh || en);
+    const hd = code + sign + '  ';
+    const hw = textW(hd, 12.5) + 4;
+    const l1 = wrapText(prim || '—', maxW - hw, 12.5);
+    out.push({ code: hd, lines: l1, fs: 12.5, fill: '#1f2937', hw });
+    if (mode === 'both' && en) out.push({ code: '', lines: wrapText(en, maxW - hw, 11), fs: 11, fill: '#64748b', hw, fi: 'italic' });
+  });
+  if (tpl.owners) {
+    const rows = tpl.owners.map(o => ({ o, ns: d.nodes.filter(n => n.owner === o.id) })).filter(r => r.ns.length);
+    if (rows.length) {
+      if (out.length) out.push({ gap: true, lines: [], fs: 6 });
+      head(tpl.ownerTitle);
+      const hw = Math.max(...tpl.owners.map(o => textW(mode === 'en' ? o.en : o.zh, 12.5))) + 22;
+      rows.forEach(({ o, ns }) => {
+        const names = L => ns.map(n => (getText(n)[L] && getText(n)[L].title) || '').filter(Boolean).join(L === 'en' ? ', ' : '、');
+        const prim = mode === 'en' ? 'en' : 'zh';
+        out.push({ code: mode === 'en' ? o.en : o.zh, codeFill: o.color, dot: o.color, lines: wrapText(names(prim), maxW - hw, 12.5), fs: 12.5, fill: '#1f2937', hw });
+        if (mode === 'both') out.push({ code: '', lines: wrapText(names('en'), maxW - hw, 11), fs: 11, fill: '#64748b', hw, fi: 'italic' });
+      });
+    }
+  }
+  return out;
+}
+
+/* Misc ------------------------------------------------------------ */
+const uid = (p) => p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const stamp = () => { const d = new Date(), z = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}_${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}`; };
+const deep = (o) => JSON.parse(JSON.stringify(o));
+
+const VIEWS = ['A', 'B'];
+function tplOf(tplId, view) { return view === 'B' ? TEMPLATES_B[tplId] : TEMPLATES[tplId]; }
+function instantiate(tplId, mode, view) {
+  const tpl = tplOf(tplId, view || 'A');
+  const d = {
+    title: deep(tpl.title), subtitle: deep(tpl.subtitle),
+    lanes: laneOn(tpl) ? [{ id: 'L0', text: deep(tpl.laneNames[0]) }] : [],
+    nodes: tpl.nodes.map((n, i) => ({
+      id: n.k, role: n.role, lane: n.lane === undefined ? -1 : n.lane, ...(n.row !== undefined ? { row: n.row } : {}), ...(n.col !== undefined ? { col: n.col } : {}),
+      x: 0, y: i * 10, optional: !!n.optional, tag: n.tag || '', ...(n.owner ? { owner: n.owner } : {}), ...(n.xref ? { xref: n.xref } : {}),
+      ...(n.variants ? { variants: deep(n.variants), variant: n.variant || 'auto' } : { text: deep(n.text) })
+    })),
+    edges: tpl.edges.map(e => ({ id: e.k, from: e.from, to: e.to, kind: e.kind, sign: e.sign || '', text: deep(e.text || { zh: '', en: '' }), ...(e.side ? { side: e.side } : {}) }))
+  };
+  d.nodes = autoLayout(d, tpl, mode);
+  return d;
+}
+function newDoc(tplId, mode, view) {
+  return { templateId: tplId, view: view || 'A', diagrams: { A: instantiate(tplId, mode, 'A'), B: instantiate(tplId, mode, 'B') } };
+}
+
+/* Strip any markup from imported strings (DOMPurify → textContent). */
+function cleanStr(s, max) {
+  let v = String(s == null ? '' : s);
+  try {
+    const div = document.createElement('div');
+    div.innerHTML = window.DOMPurify ? DOMPurify.sanitize(v) : v.replace(/</g, '&lt;');
+    v = div.textContent || '';
+  } catch (e) { v = v.replace(/<[^>]*>/g, ''); }
+  return v.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').slice(0, max || 400);
+}
+function cleanBi(o, max) { o = o || {}; return { zh: cleanStr(o.zh, max), en: cleanStr(o.en, max) }; }
+function cleanTxt(o) {
+  const side = s => ({ title: cleanStr(s && s.title, 200), items: Array.isArray(s && s.items) ? s.items.slice(0, 15).map(x => cleanStr(x, 300)) : [] });
+  o = o || {}; return { zh: side(o.zh), en: side(o.en) };
+}
+function sanitizeDiagram(d, tpl) {
+  if (!d || !Array.isArray(d.nodes) || !Array.isArray(d.edges)) throw new Error('bad');
+  const roleIds = tpl.roles.map(r => r.id);
+  const ownerIds = (tpl.owners || []).map(o => o.id);
+  const num = v => (Number.isFinite(+v) ? Math.max(-2000, Math.min(20000, +v)) : 0);
+  const idOk = s => /^[A-Za-z0-9_\-]{1,60}$/.test(String(s));
+  const nodes = d.nodes.slice(0, 200).filter(n => n && idOk(n.id) && roleIds.includes(n.role)).map(n => {
+    const base = { id: String(n.id), role: n.role, lane: Number.isInteger(n.lane) ? Math.max(-1, Math.min(2, n.lane)) : -1, x: num(n.x), y: num(n.y), ...(Number.isInteger(n.row) ? { row: Math.max(0, Math.min(9, n.row)) } : {}), ...(Number.isInteger(n.col) ? { col: Math.max(0, Math.min(9, n.col)) } : {}), optional: !!n.optional, tag: cleanStr(n.tag, 60),
+      ...(ownerIds.includes(n.owner) ? { owner: n.owner } : {}), ...(n.xref ? { xref: cleanStr(n.xref, 24) } : {}) };
+    if (n.variants && typeof n.variants === 'object') return { ...base, variants: { auto: cleanTxt(n.variants.auto), semi: cleanTxt(n.variants.semi) }, variant: n.variant === 'semi' ? 'semi' : 'auto' };
+    return { ...base, text: cleanTxt(n.text) };
+  });
+  const refOk = r => typeof r === 'string' && /^(n|g|e):[A-Za-z0-9_\-:]{1,80}$/.test(r);
+  const edges = d.edges.slice(0, 300).filter(e => e && idOk(e.id) && refOk(e.from) && refOk(e.to)).map(e => ({
+    id: String(e.id), from: e.from, to: e.to, kind: e.kind === 'flow' ? 'flow' : 'main', sign: e.sign === '-' ? '-' : e.sign === '+' ? '+' : '', text: cleanBi(e.text, 400),
+    ...(['left', 'bottom'].includes(e.side) ? { side: e.side } : {})
+  }));
+  const lanes = laneOn(tpl) ? (Array.isArray(d.lanes) && d.lanes.length ? d.lanes.slice(0, tpl.lanes.max) : [{ id: 'L0', text: tpl.laneNames[0] }]).map((l, i) => ({ id: 'L' + i, text: cleanBi(l && l.text, 80) })) : [];
+  return { title: cleanBi(d.title, 160), subtitle: cleanBi(d.subtitle, 160), lanes, nodes, edges };
+}
+/* Accepts version 1 ({ diagram }) and version 2 ({ view, diagrams: { A, B } }); a missing diagram is rebuilt from the template. */
+function sanitizeDoc(obj, mode) {
+  if (!obj || obj.app !== 'PDS' || !TEMPLATES[obj.templateId]) throw new Error('bad');
+  const id = obj.templateId;
+  const src = obj.diagrams && typeof obj.diagrams === 'object' ? obj.diagrams : { A: obj.diagram };
+  if (!src.A && !src.B) throw new Error('bad');
+  const diagrams = {};
+  VIEWS.forEach(v => { diagrams[v] = src[v] ? sanitizeDiagram(src[v], tplOf(id, v)) : instantiate(id, mode || 'en', v); });
+  return { templateId: id, view: VIEWS.includes(obj.view) ? obj.view : 'A', diagrams };
+}
+
+</script>
+<script type="text/babel" data-presets="react">
+if (!window.__PDS_BLOCKED) {
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+/* ---------------- Icons ---------------- */
+const Ico = ({ d, size = 18, sw = 2 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{d}</svg>
+);
+const IconMenu = (p) => <Ico {...p} d={<><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>} />;
+const IconHome = (p) => <Ico {...p} d={<><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></>} />;
+const IconMoon = (p) => <Ico {...p} d={<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />} />;
+const IconSun = (p) => <Ico {...p} d={<><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>} />;
+const IconPlay = (p) => <Ico {...p} d={<polygon points="6 4 20 12 6 20 6 4" />} />;
+const IconPause = (p) => <Ico {...p} d={<><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></>} />;
+const IconSquare = (p) => <Ico {...p} d={<rect x="5" y="5" width="14" height="14" />} />;
+const IconLayers = (p) => <Ico {...p} d={<><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>} />;
+
+/* ---------------- TTS ---------------- */
+/* Remove symbols a speech engine would read aloud (arrows, slashes, badges). */
+const ttsClean = (s, lang) => String(s || '')
+  .replace(/\s*★\s*/g, lang === 'zh' ? '星號' : ' star ')
+  .replace(/[①-⑨☆ⓘ🔊💾🗑▶]/g, '')
+  .replace(/\s*(→|->|⇒)\s*/g, lang === 'zh' ? '，' : ', then ')
+  .replace(/([A-Za-z])\/(?=[A-Za-z])/g, '$1 ')
+  .replace(/\/(?=[\s，。、）)]|$)/g, '')
+  .replace(/_{2,}/g, ' ')
+  .replace(/\s*[／|｜]\s*/g, lang === 'zh' ? '、' : ', ')
+  .replace(/\s*[·・]\s*/g, lang === 'zh' ? '，' : ', ')
+  .replace(/\s+/g, ' ').trim();
+/* Join sentences without doubling end punctuation. */
+const joinSay = (arr, lang) => arr.filter(Boolean).map(s => String(s).trim()).filter(Boolean)
+  .map(s => /[。．.!?！？；;:：]$/.test(s) ? s : s + (lang === 'zh' ? '。' : '.')).join(' ');
+const speak = (text, lang, onEnd) => {
+  if (!('speechSynthesis' in window) || !text) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(ttsClean(text, lang));
+  u.rate = 0.95;
+  const voices = speechSynthesis.getVoices();
+  if (lang === 'zh') {
+    const v = voices.find(v => v.lang === 'zh-TW' && v.name.includes('Yating')) || voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang.startsWith('zh'));
+    if (v) u.voice = v; u.lang = 'zh-TW';
+  } else {
+    const v = voices.find(v => v.lang === 'en-GB' && (v.name.includes('Male') || v.name.includes('Daniel'))) || voices.find(v => v.lang === 'en-GB') || voices.find(v => v.lang.startsWith('en'));
+    if (v) u.voice = v; u.lang = 'en-GB';
+  }
+  if (onEnd) { u.onend = onEnd; u.onerror = onEnd; }
+  speechSynthesis.speak(u);
+};
+
+/* ---------------- Diagram (SVG) ---------------- */
+/* Outline path of a node by shape (step | decision | doc | terminal) */
+const shapePath = (shape, w, h) => {
+  if (shape === 'decision') { const k = 16; return `M0,${h / 2} L${k},0 L${w - k},0 L${w},${h / 2} L${w - k},${h} L${k},${h} Z`; }
+  if (shape === 'doc') { const r = 10, b = h - 8; return `M${r},0 L${w - r},0 Q${w},0 ${w},${r} L${w},${b} C${w * 0.75},${b - 10} ${w * 0.62},${h + 6} ${w / 2},${b} C${w * 0.38},${b - 10} ${w * 0.25},${h + 6} 0,${b} L0,${r} Q0,0 ${r},0 Z`; }
+  const r = shape === 'terminal' ? Math.min(h / 2, 26) : 10;
+  return `M${r},0 L${w - r},0 Q${w},0 ${w},${r} L${w},${h - r} Q${w},${h} ${w - r},${h} L${r},${h} Q0,${h} 0,${h - r} L0,${r} Q0,0 ${r},0 Z`;
+};
+const LOOP_COLOR = '#B45309';
+
+const Diagram = ({ doc, dia, tpl, mode, selected, onSelect, onDragNode, onDragEnd, connect, onConnectPick, zoom, svgRef, onInfo }) => {
+  const d = dia;
+  const geo = useMemo(() => computeGeometry(d, tpl, mode), [d, tpl, mode]);
+  const legend = useMemo(() => legendLines(d, tpl, mode, geo.codes, geo.W), [d, tpl, mode, geo]);
+  const drag = useRef(null);
+
+  const toSvg = (evt) => {
+    const svg = svgRef.current; const pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  };
+  useEffect(() => {
+    const move = (e) => {
+      const s = drag.current; if (!s) return;
+      const p = toSvg(e);
+      const nx = Math.round((s.ox + p.x - s.sx) / 2) * 2, ny = Math.round((s.oy + p.y - s.sy) / 2) * 2;
+      if (!s.moved && Math.abs(p.x - s.sx) + Math.abs(p.y - s.sy) < 3) return;
+      s.moved = true; onDragNode(s.id, nx, ny);
+    };
+    const up = () => { const s = drag.current; drag.current = null; if (s && s.moved) onDragEnd(s.snapshot); };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    return () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+  });
+
+  const nodeDown = (e, n) => {
+    e.stopPropagation();
+    if (connect) { onConnectPick('n:' + n.id); return; }
+    onSelect({ type: 'node', id: n.id });
+    const p = toSvg(e);
+    drag.current = { id: n.id, sx: p.x, sy: p.y, ox: n.x, oy: n.y, moved: false, snapshot: JSON.stringify(doc) };
+  };
+
+  const disp = (bi) => { if (!bi) return ''; return mode === 'en' ? (bi.en || bi.zh) : (bi.zh || bi.en); };
+  // header
+  const titleMain = disp(d.title);
+  const legendTop = geo.contentBottom + 34;
+  let ly = legendTop - 8;
+  const legendRows = legend.map(row => { const y0 = ly; ly += row.head ? 26 : row.gap ? 10 : row.lines.length * (row.fs + 5) + 4; return { ...row, y0 }; });
+  const H = Math.ceil(ly + 36);
+  const W = geo.W;
+  const selColor = '#D97706';
+
+  return (
+    <svg ref={svgRef} xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${W} ${H}`} width={W * zoom} height={H * zoom}
+      style={{ display: 'block', fontFamily: G.FONT, userSelect: 'none', touchAction: 'none' }}
+      onPointerDown={() => { if (!connect) onSelect(null); }}
+      data-w={W} data-h={H}>
+      <defs>
+        <marker id="arMain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#004030" /></marker>
+        <marker id="arFlow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8" /></marker>
+ <marker id="arLoop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill={LOOP_COLOR} /></marker>
+        <marker id="arSel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill={selColor} /></marker>
+      </defs>
+      <rect x="0" y="0" width={W} height={H} fill="#ffffff" />
+      {/* Title block */}
+      <rect x="0" y="0" width={W} height="6" fill="#004030" />
+      <text x="28" y="44" fontFamily={G.SERIF} fontSize="22" fontWeight="700" fill="#004030">{titleMain}</text>
+      {mode === 'both' && d.title.en && <text x="28" y="66" fontSize="13.5" fontStyle="italic" fill="#475569">{d.title.en}</text>}
+      <text x="28" y={mode === 'both' ? 88 : 68} fontSize="12.5" fill="#64748b">{mode === 'both' ? [d.subtitle.zh, d.subtitle.en].filter(Boolean).join('  ·  ') : disp(d.subtitle)}</text>
+      <line x1="28" y1={mode === 'both' ? 100 : 82} x2={W - 28} y2={mode === 'both' ? 100 : 82} stroke="#D8C3A5" strokeWidth="1.5" />
+
+      {/* Phase bands (B): I-P-O columns or thesis-chapter rows */}
+      {geo.phases.map(p => p.w ? (
+        <g key={'ph' + p.i}>
+          <rect x={p.x} y={p.y} width={p.w} height={p.h} rx="12" fill={p.ph.fill} stroke={p.ph.color} strokeOpacity="0.35" strokeWidth="1.2" />
+          <rect x={p.x} y={p.y} width={p.w} height="30" rx="12" fill={p.ph.color} />
+          <rect x={p.x} y={p.y + 18} width={p.w} height="12" fill={p.ph.color} />
+          <text x={p.x + p.w / 2} y={p.y + 20} textAnchor="middle" fontSize="12.5" fontWeight="700" fill="#ffffff">{disp(p.ph.label)}</text>
+          {p.ph.out && <text x={p.x + p.w / 2} y={p.y + p.h - 11} textAnchor="middle" fontSize="11.5" fontWeight="700" fill={p.ph.color}>{disp(p.ph.out)}</text>}
+        </g>
+      ) : (
+        <g key={'ph' + p.i}>
+          <rect x="14" y={p.y} width={W - 28} height={p.h} rx="10" fill={p.i % 2 ? '#f8fafc' : '#f4f8f6'} stroke="#cbd5e1" strokeDasharray="4 4" />
+          <rect x="14" y={p.y} width={G.LANE_LABEL_W} height={p.h} rx="10" fill="#004030" opacity="0.9" />
+          <text transform={`translate(${14 + G.LANE_LABEL_W / 2 + 5},${p.y + p.h / 2}) rotate(-90)`} textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#ffffff">{disp(p.ph.label)}</text>
+        </g>
+      ))}
+      {geo.xband && (
+        <g>
+          <rect x={geo.xband.x} y={geo.xband.y} width={geo.xband.w} height={geo.xband.h} rx="12" fill="#F8FAFC" stroke="#475569" strokeWidth="1.2" strokeDasharray="7 4" />
+          <text x={geo.xband.x + 14} y={geo.xband.y + 21} fontSize="12.5" fontWeight="700" fill="#334155">{disp(tpl.band.label)}</text>
+        </g>
+      )}
+
+      {/* Comparison-row bands */}
+      {geo.bands.map((b, i) => (
+        <g key={'band' + b.lane}>
+          <rect x="14" y={b.y} width={W - 28} height={b.h} rx="10" fill={b.lane % 2 ? '#f8fafc' : '#f4f8f6'} stroke="#cbd5e1" strokeDasharray="4 4" />
+          <rect x="14" y={b.y} width={G.LANE_LABEL_W} height={b.h} rx="10" fill="#004030" opacity="0.9" />
+          <text transform={`translate(${14 + G.LANE_LABEL_W / 2 + 5},${b.y + b.h / 2}) rotate(-90)`} textAnchor="middle" fontSize="12" fontWeight="700" fill="#ffffff">{disp(b.ln.text)}</text>
+        </g>
+      ))}
+
+      {/* Frames */}
+      {geo.frames.map(f => (
+        <g key={f.ref} onPointerDown={(e) => { if (connect) { e.stopPropagation(); onConnectPick(f.ref); } }} style={{ cursor: connect ? 'crosshair' : 'default' }}>
+          <rect x={f.x} y={f.y} width={f.w} height={f.h} rx="12" fill={f.g.color ? '#ffffff' : '#FFFBF2'} fillOpacity={f.g.color ? 0.55 : 1} stroke={f.g.color || '#B45309'} strokeOpacity={f.g.color ? 0.55 : 1} strokeWidth="1.4" strokeDasharray="6 4" />
+          <text x={f.x + 12} y={f.y + 20} fontSize="12.5" fontWeight="700" fill={f.g.color || '#92400E'}>{disp(f.g.label)}</text>
+          {(() => { const ls = wrapText(disp(f.g.note), f.w - 24, 10.5).slice(0, 2); return ls.map((l, i) => <text key={i} x={f.x + 12} y={f.y + f.h - 10 - (ls.length - 1 - i) * 14} fontSize="10.5" fill={f.g.color || '#92400E'}>{l}</text>); })()}
+          {connect && <rect className="no-export" x={f.x} y={f.y} width={f.w} height={f.h} rx="12" fill="none" stroke={selColor} strokeWidth="1" strokeDasharray="2 3" />}
+        </g>
+      ))}
+
+      {/* Edges */}
+      {d.edges.map(e => {
+        const g = geo.edgeGeo[e.id]; if (!g) return null;
+        const sel = selected && selected.type === 'edge' && selected.id === e.id;
+        const src = d.nodes.find(n => 'n:' + n.id === e.from), dst = d.nodes.find(n => 'n:' + n.id === e.to);
+        const dashed = (src && src.optional) || (dst && dst.optional);
+        const main = e.kind === 'main';
+        const loop = main && tpl.mainStyle === 'loop';
+        return (
+          <g key={e.id}>
+            <path d={g.d} fill="none" stroke={sel ? selColor : loop ? LOOP_COLOR : main ? '#004030' : '#94a3b8'} strokeWidth={main ? 2 : 1.6}
+              strokeDasharray={loop ? '7 5' : dashed ? '6 4' : undefined} markerEnd={`url(#${sel ? 'arSel' : loop ? 'arLoop' : main ? 'arMain' : 'arFlow'})`} />
+            <path className="no-export" d={g.d} fill="none" stroke="transparent" strokeWidth="14" style={{ cursor: connect ? 'crosshair' : 'pointer' }}
+              onPointerDown={(ev) => { ev.stopPropagation(); if (connect) onConnectPick('e:' + e.id); else onSelect({ type: 'edge', id: e.id }); }} />
+          </g>
+        );
+      })}
+
+      {/* Nodes */}
+      {d.nodes.map(n => {
+        const b = geo.boxes[n.id]; const role = roleOf(tpl, n.role);
+        const sel = selected && selected.type === 'node' && selected.id === n.id;
+        const terms = (role.terms || []).filter(k => tpl.glossary[k]);
+        return (
+          <g key={n.id} transform={`translate(${n.x},${n.y})`} onPointerDown={(e) => nodeDown(e, n)} style={{ cursor: connect ? 'crosshair' : 'move' }}>
+            {role.shape && role.shape !== 'step'
+              ? <path d={shapePath(role.shape, b.w, b.h)} fill={role.fill} stroke={role.color} strokeWidth={role.shape === 'terminal' ? 2.2 : 1.6} strokeDasharray={n.optional ? '6 4' : undefined} />
+              : <><rect x="0" y="0" width={b.w} height={b.h} rx="10" fill={role.fill} stroke={role.color} strokeWidth={1.6} strokeDasharray={n.optional ? '6 4' : undefined} />
+                <rect x="0" y="0" width="5" height={b.h} rx="2" fill={role.color} /></>}
+            {role.badge && <g><circle cx={G.PADX + 9} cy={G.PADY + 10} r="10" fill={role.color} /><text x={G.PADX + 9} y={G.PADY + 14.5} textAnchor="middle" fontSize="12" fontWeight="700" fill="#fff">{role.badge}</text></g>}
+            {b.lines.map((l, i) => <text key={i} x={l.x} y={l.y} fontSize={l.fs} fontWeight={l.fw} fontStyle={l.fi} fill={l.fill}>{l.t}</text>)}
+            {b.bullets.map((y, i) => <circle key={'b' + i} cx={G.PADX + 3.5 + b.sx} cy={y - 4} r="2.2" fill={role.color} />)}
+            {b.pillY !== null && (
+              <g>
+                <rect x={G.PADX + b.badgeIndent} y={b.pillY} width={mode === 'en' ? (n.variant === 'semi' ? 108 : 78) : 62} height="17" rx="8.5" fill={role.color} />
+                <text x={G.PADX + b.badgeIndent + 8} y={b.pillY + 12.5} fontSize="10.5" fontWeight="700" fill="#fff">{mode === 'en' ? (n.variant === 'semi' ? 'SEMI-AUTOMATIC' : 'AUTOMATIC') : (n.variant === 'semi' ? '半自動' : '自動')}</text>
+              </g>
+            )}
+            {b.tagY !== null && (() => {
+              let x = G.PADX + b.sx; const out = [];
+              if (b.owner) { const lb = mode === 'en' ? b.owner.en : b.owner.zh; const w = textW(lb, 10.5) + 14; out.push(<g key="ow"><rect x={x} y={b.tagY} width={w} height="17" rx="8.5" fill={b.owner.color} /><text x={x + 7} y={b.tagY + 12.3} fontSize="10.5" fontWeight="700" fill="#ffffff">{lb}</text></g>); x += w + 5; }
+              if (n.tag) { const w = Math.min(b.w - x - G.PADX, String(n.tag).length * 6.4 + 14); out.push(<g key="tg"><rect x={x} y={b.tagY} width={w} height="17" rx="4" fill="#ffffff" stroke={role.color} strokeWidth="0.8" /><text x={x + 7} y={b.tagY + 12.3} fontSize="10.5" fontFamily="'JetBrains Mono', Menlo, Consolas, monospace" fill={role.color}>{n.tag}</text></g>); }
+              if (n.xref) { const lb = '→ ' + n.xref; const w = textW(lb, 10.5) + 12; out.push(<g key="xr"><rect x={b.w - G.PADX - b.sx - w} y={b.tagY} width={w} height="17" rx="4" fill="#004030" /><text x={b.w - G.PADX - b.sx - w / 2} y={b.tagY + 12.3} textAnchor="middle" fontSize="10.5" fontWeight="700" fill="#D8C3A5">{lb}</text></g>); }
+              return <g>{out}</g>;
+            })()}
+            {terms.length > 0 && (
+              <g className="no-export" style={{ cursor: 'help' }}
+                onPointerDown={(e) => { e.stopPropagation(); onInfo(n, terms, e.clientX, e.clientY, true); }}
+                onMouseEnter={(e) => onInfo(n, terms, e.clientX, e.clientY, false)}>
+                <circle cx={b.w - 13} cy="13" r="8" fill="#fff" stroke={role.color} />
+                <text x={b.w - 13} y="17" textAnchor="middle" fontSize="11" fontWeight="700" fontStyle="italic" fill={role.color}>i</text>
+              </g>
+            )}
+            {sel && <rect className="no-export" x="-5" y="-5" width={b.w + 10} height={b.h + 10} rx="13" fill="none" stroke={selColor} strokeWidth="2.5" strokeDasharray="7 4" />}
+          </g>
+        );
+      })}
+
+      {/* Edge labels (on top) */}
+      {d.edges.map(e => {
+        const g = geo.edgeGeo[e.id]; if (!g) return null;
+        const sel = selected && selected.type === 'edge' && selected.id === e.id;
+        let label = '';
+        if (e.kind === 'main') label = geo.codes[e.id] + (tpl.signs && e.sign ? ` (${e.sign === '-' ? '−' : '+'})` : '');
+        else label = disp(e.text);
+        if (!label) return null;
+        const w = textW(label, 11.5) + 16;
+        return (
+          <g key={'lb' + e.id} onPointerDown={(ev) => { ev.stopPropagation(); if (connect) onConnectPick('e:' + e.id); else onSelect({ type: 'edge', id: e.id }); }} style={{ cursor: 'pointer' }}>
+            <rect x={g.label.x - w / 2} y={g.label.y - 10} width={w} height="20" rx="10" fill={e.kind === 'main' ? (sel ? selColor : tpl.mainStyle === 'loop' ? LOOP_COLOR : '#004030') : '#ffffff'} stroke={e.kind === 'main' ? 'none' : '#94a3b8'} />
+            <text x={g.label.x} y={g.label.y + 4} textAnchor="middle" fontSize="11.5" fontWeight="700" fill={e.kind === 'main' ? '#ffffff' : '#475569'}>{label}</text>
+          </g>
+        );
+      })}
+
+      {/* Legend */}
+      {legendRows.length > 0 && (
+        <g>
+          <line x1="28" y1={legendTop - 12} x2={W - 28} y2={legendTop - 12} stroke="#e2e8f0" />
+          {legendRows.map((r, i) => r.head ? <text key={'lg' + i} x="28" y={r.y0 + 16} fontSize="13.5" fontWeight="700" fill="#004030">{r.head}</text> : (
+            <g key={'lg' + i}>
+              {r.dot && <circle cx="33" cy={r.y0 + r.fs - 4} r="4" fill={r.dot} />}
+              {r.code && <text x={r.dot ? 42 : 30} y={r.y0 + r.fs} fontSize={r.fs} fontWeight="700" fill={r.codeFill || '#004030'}>{r.code}</text>}
+              {r.lines.map((t, j) => <text key={j} x={30 + r.hw} y={r.y0 + r.fs + j * (r.fs + 5)} fontSize={r.fs} fontStyle={r.fi || 'normal'} fill={r.fill}>{t}</text>)}
+            </g>
+          ))}
+        </g>
+      )}
+      <text x={W - 24} y={H - 14} textAnchor="end" fontSize="9.5" fill="#94a3b8">Proposal Diagram Studio · Prof. Shihmin Lo, NCNU IBS</text>
+    </svg>
+  );
+};
+
+/* ---------------- Small UI helpers ---------------- */
+const Btn = ({ children, onClick, active, danger, disabled, title, className = '' }) => (
+  <button type="button" title={title} disabled={disabled} onClick={onClick}
+    className={`px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-colors disabled:opacity-40 whitespace-nowrap
+      ${danger ? 'border-red-400 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30'
+        : active ? 'bg-[#004030] text-white border-[#004030] dark:bg-[#D8C3A5] dark:text-[#004030] dark:border-[#D8C3A5]'
+          : 'border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'} ${className}`}>{children}</button>
+);
+const Field = ({ label, children }) => (
+  <label className="block mb-3"><span className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">{label}</span>{children}</label>
+);
+const inputCls = 'w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#004030] dark:focus:ring-[#D8C3A5]';
+const H3 = ({ children }) => <h3 className="font-serif font-bold text-[#004030] dark:text-[#D8C3A5] mb-3 text-base">{children}</h3>;
+
+/* ---------------- Side panel ---------------- */
+const Panel = ({ t, lang, tab, setTab, doc, dia, tpl, selected, api, mode }) => {
+  const d = dia;
+  const node = selected && selected.type === 'node' ? d.nodes.find(n => n.id === selected.id) : null;
+  const edge = selected && selected.type === 'edge' ? d.edges.find(e => e.id === selected.id) : null;
+  const L = lang;
+  const [addRole, setAddRole] = useState(tpl.defaultRole || tpl.roles[0].id);
+  const [addLane, setAddLane] = useState(0);
+  useEffect(() => { setAddRole(tpl.defaultRole || tpl.roles[0].id); setAddLane(0); }, [tpl]);
+  const refName = (ref) => {
+    if (ref.startsWith('n:')) { const n = d.nodes.find(x => 'n:' + x.id === ref); return n ? getText(n)[L === 'en' ? 'en' : 'zh'].title || n.id : '?'; }
+    if (ref.startsWith('g:')) { const [, gid, l] = ref.split(':'); const g = tpl.groups.find(x => x.id === gid); return g ? g.label[L].split(' · ')[0] + (laneOn(tpl) ? ` [${String.fromCharCode(65 + +l)}]` : '') : '?'; }
+    if (ref.startsWith('e:')) { const geo = computeGeometry(d, tpl, mode); return geo.codes[ref.slice(2)] || 'link'; }
+    return ref;
+  };
+  const tabs = [['edit', t.tab_edit], ['add', t.tab_add], ['terms', t.tab_terms], ['help', t.tab_help]];
+
+  return (
+    <div className="flex flex-col h-full min-h-0">
+      <div className="flex border-b border-slate-200 dark:border-slate-700 shrink-0" role="tablist">
+        {tabs.map(([k, lbl]) => (
+          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+            className={`flex-1 py-2.5 text-sm font-semibold border-b-2 ${tab === k ? 'border-[#004030] text-[#004030] dark:border-[#D8C3A5] dark:text-[#D8C3A5]' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>{lbl}</button>
+        ))}
+      </div>
+      <div className="p-4 overflow-y-auto flex-1 min-h-0 text-sm">
+        {tab === 'edit' && !node && !edge && (
+          <div className="animate-fade-in">
+            <p className="text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">{t.none_selected}</p>
+            <H3>{t.panel_diagram}</H3>
+            <Field label={t.f_title_zh}><input className={inputCls} value={d.title.zh} onFocus={api.snap} onChange={e => api.setDiagram({ title: { ...d.title, zh: e.target.value.slice(0, 160) } })} /></Field>
+            <Field label={t.f_title_en}><input className={inputCls} value={d.title.en} onFocus={api.snap} onChange={e => api.setDiagram({ title: { ...d.title, en: e.target.value.slice(0, 160) } })} /></Field>
+            <Field label={t.f_subtitle_zh}><input className={inputCls} value={d.subtitle.zh} onFocus={api.snap} onChange={e => api.setDiagram({ subtitle: { ...d.subtitle, zh: e.target.value.slice(0, 160) } })} /></Field>
+            <Field label={t.f_subtitle_en}><input className={inputCls} value={d.subtitle.en} onFocus={api.snap} onChange={e => api.setDiagram({ subtitle: { ...d.subtitle, en: e.target.value.slice(0, 160) } })} /></Field>
+            <p className="text-xs text-slate-400 mt-4">{t.stats.replace('{n}', d.nodes.length).replace('{m}', d.edges.length)}</p>
+            <p className="text-xs text-slate-400 mt-1">{t.kbd_hint}</p>
+          </div>
+        )}
+
+        {tab === 'edit' && node && (() => {
+          const txt = getText(node); const role = roleOf(tpl, node.role);
+          const setTxt = (lng, field, val) => api.updateNodeText(node.id, lng, field, val);
+          return (
+            <div className="animate-fade-in">
+              <H3>{t.panel_node}</H3>
+              <Field label={t.f_role}>
+                <select className={inputCls} value={node.role} onChange={e => api.setNodeRole(node.id, e.target.value)}>
+                  {tpl.roles.map(r => <option key={r.id} value={r.id}>{r[L]}</option>)}
+                </select>
+              </Field>
+              {laneOn(tpl) && (
+                <Field label={t.f_lane}>
+                  {role.perLane
+                    ? <select className={inputCls} value={node.lane} onChange={e => api.patchNode(node.id, { lane: +e.target.value })}>
+                      {d.lanes.map((ln, i) => <option key={i} value={i}>{ln.text[L] || ln.text.zh}</option>)}
+                    </select>
+                    : <div className="text-slate-500 text-sm py-1">{t.lane_shared}</div>}
+                </Field>
+              )}
+              {rowPhases(tpl) && !inBand(tpl, node) && (
+                <Field label={t.f_chapter}>
+                  <select className={inputCls} value={rowOfN(tpl, node)} onChange={e => api.patchNode(node.id, { row: +e.target.value }, true)}>
+                    {tpl.phases.map((ph, i) => <option key={i} value={ph.rows[0]}>{ph.label[L]}</option>)}
+                  </select>
+                </Field>
+              )}
+              {tpl.owners && (
+                <Field label={t.f_owner}>
+                  <select className={inputCls} value={node.owner || ''} onChange={e => api.patchNode(node.id, { owner: e.target.value || undefined }, true)}>
+                    <option value="">{t.owner_none}</option>
+                    {tpl.owners.map(o => <option key={o.id} value={o.id}>{o[L]}</option>)}
+                  </select>
+                </Field>
+              )}
+              {node.variants && (
+                <Field label={t.f_variant}>
+                  <div className="flex gap-2">
+                    <Btn active={node.variant !== 'semi'} onClick={() => api.patchNode(node.id, { variant: 'auto' }, true)}>{t.variant_auto}</Btn>
+                    <Btn active={node.variant === 'semi'} onClick={() => api.patchNode(node.id, { variant: 'semi' }, true)}>{t.variant_semi}</Btn>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">{t.variant_note}</p>
+                </Field>
+              )}
+              <Field label={t.f_node_title_zh}><input id="fld-title-zh" className={inputCls} value={txt.zh.title} onFocus={api.snap} onChange={e => setTxt('zh', 'title', e.target.value.slice(0, 200))} /></Field>
+              <Field label={t.f_node_title_en}><input className={inputCls} value={txt.en.title} onFocus={api.snap} onChange={e => setTxt('en', 'title', e.target.value.slice(0, 200))} /></Field>
+              <Field label={t.f_items_zh}><textarea rows={5} className={inputCls} value={txt.zh.items.join('\n')} onFocus={api.snap} onChange={e => setTxt('zh', 'items', e.target.value.split('\n').slice(0, 15))} /></Field>
+              <Field label={t.f_items_en}><textarea rows={5} className={inputCls} value={txt.en.items.join('\n')} onFocus={api.snap} onChange={e => setTxt('en', 'items', e.target.value.split('\n').slice(0, 15))} /></Field>
+              <Field label={rowPhases(tpl) ? t.f_tag_time : t.f_tag}><input className={inputCls} value={node.tag || ''} onFocus={api.snap} onChange={e => api.patchNode(node.id, { tag: e.target.value.slice(0, 60) })} /></Field>
+              {tpl.xref && <Field label={t.f_xref}><input className={inputCls} value={node.xref || ''} placeholder={t.f_xref_ph} onFocus={api.snap} onChange={e => api.patchNode(node.id, { xref: e.target.value.slice(0, 24) })} /></Field>}
+              <label className="flex items-center gap-2 mb-4 cursor-pointer"><input type="checkbox" checked={!!node.optional} onChange={e => api.patchNode(node.id, { optional: e.target.checked }, true)} /> <span>{t.f_optional}</span></label>
+              <div className="flex flex-wrap gap-2">
+                <Btn onClick={() => api.dupNode(node.id)}>{t.btn_dup_node}</Btn>
+                <Btn danger onClick={() => api.deleteSel()}>{t.btn_delete_node}</Btn>
+              </div>
+            </div>
+          );
+        })()}
+
+        {tab === 'edit' && edge && (
+          <div className="animate-fade-in">
+            <H3>{t.panel_edge}</H3>
+            <Field label={t.from_to}><div className="text-sm py-1">{refName(edge.from)} → {refName(edge.to)}</div></Field>
+            <Field label={t.f_kind}>
+              <div className="flex flex-wrap gap-2">
+                <Btn active={edge.kind === 'main'} onClick={() => api.patchEdge(edge.id, { kind: 'main' }, true)}>{(tpl.mainStyle === 'loop' ? t.kind_loop : t.kind_main).replace('{prefix}', tpl.prefix)}</Btn>
+                <Btn active={edge.kind === 'flow'} onClick={() => api.patchEdge(edge.id, { kind: 'flow' }, true)}>{t.kind_flow}</Btn>
+              </div>
+            </Field>
+            {tpl.signs && edge.kind === 'main' && (
+              <Field label={t.f_sign}>
+                <div className="flex flex-wrap gap-2">
+                  {[['+', t.sign_pos], ['-', t.sign_neg], ['', t.sign_none]].map(([v, l]) => <Btn key={v || 'n'} active={edge.sign === v} onClick={() => api.patchEdge(edge.id, { sign: v }, true)}>{l}</Btn>)}
+                </div>
+              </Field>
+            )}
+            <Field label={t.f_edge_zh}><textarea rows={3} className={inputCls} value={edge.text.zh} onFocus={api.snap} onChange={e => api.patchEdge(edge.id, { text: { ...edge.text, zh: e.target.value.slice(0, 400) } })} /></Field>
+            <Field label={t.f_edge_en}><textarea rows={3} className={inputCls} value={edge.text.en} onFocus={api.snap} onChange={e => api.patchEdge(edge.id, { text: { ...edge.text, en: e.target.value.slice(0, 400) } })} /></Field>
+            <p className="text-xs text-slate-400 mb-4">{tpl.mainStyle === 'loop' ? t.f_edge_hint_loop : t.f_edge_hint}</p>
+            <div className="flex flex-wrap gap-2">
+              {!edge.to.startsWith('e:') && <Btn onClick={() => api.reverseEdge(edge.id)}>{t.btn_reverse}</Btn>}
+              {edge.kind === 'main' && <><Btn onClick={() => api.moveEdge(edge.id, -1)}>{t.btn_up}</Btn><Btn onClick={() => api.moveEdge(edge.id, 1)}>{t.btn_down}</Btn></>}
+              <Btn danger onClick={() => api.deleteSel()}>{t.btn_delete_edge}</Btn>
+            </div>
+          </div>
+        )}
+
+        {tab === 'add' && (
+          <div className="animate-fade-in">
+            <H3>{t.panel_add_node}</H3>
+            <Field label={t.f_role}>
+              <select className={inputCls} value={addRole} onChange={e => setAddRole(e.target.value)}>
+                {tpl.roles.map(r => <option key={r.id} value={r.id}>{r[L]}</option>)}
+              </select>
+            </Field>
+            {laneOn(tpl) && roleOf(tpl, addRole).perLane && (
+              <Field label={t.f_lane}>
+                <select className={inputCls} value={addLane} onChange={e => setAddLane(+e.target.value)}>
+                  {d.lanes.map((ln, i) => <option key={i} value={i}>{ln.text[L] || ln.text.zh}</option>)}
+                </select>
+              </Field>
+            )}
+            <Btn active onClick={() => api.addNode(addRole, Math.min(addLane, d.lanes.length - 1))}>{t.btn_add}</Btn>
+
+            <div className="mt-6"><H3>{t.panel_add_edge}</H3>
+              <p className="text-slate-500 dark:text-slate-400 mb-2">{t.add_edge_desc}</p>
+              <Btn onClick={api.startConnect}>{t.btn_connect}</Btn>
+            </div>
+
+            {laneOn(tpl) && (
+              <div className="mt-6">
+                <H3>{t.panel_lanes}</H3>
+                <p className="text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">{t.lanes_desc}</p>
+                {d.lanes.map((ln, i) => (
+                  <div key={i} className="mb-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center justify-between mb-2"><span className="font-bold">{String.fromCharCode(65 + i)}</span>
+                      {d.lanes.length > 1 && <Btn danger onClick={() => api.removeLane(i)}>{t.btn_remove_lane}</Btn>}</div>
+                    <Field label={t.f_lane_zh}><input className={inputCls} value={ln.text.zh} onFocus={api.snap} onChange={e => api.setLaneText(i, 'zh', e.target.value.slice(0, 80))} /></Field>
+                    <Field label={t.f_lane_en}><input className={inputCls} value={ln.text.en} onFocus={api.snap} onChange={e => api.setLaneText(i, 'en', e.target.value.slice(0, 80))} /></Field>
+                  </div>
+                ))}
+                <Btn disabled={d.lanes.length >= tpl.lanes.max} onClick={api.addLane}>{t.btn_add_lane}</Btn>
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === 'terms' && (
+          <div className="animate-fade-in">
+            <p className="text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">{t.terms_desc}</p>
+            {Object.entries(tpl.glossary).map(([k, g]) => (
+              <div key={k} className="mb-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-bold text-[#004030] dark:text-[#D8C3A5]">{g[L][0]}</div>
+                    <div className="text-xs text-slate-400">{g[L === 'zh' ? 'en' : 'zh'][0]}</div>
+                  </div>
+                  <button className="text-lg shrink-0" title={t.btn_speak} aria-label={t.btn_speak} onClick={() => speak(joinSay([g[L][0], g[L][1]], L), L)}>🔊</button>
+                </div>
+                <p className="mt-1.5 leading-relaxed text-slate-700 dark:text-slate-300">{g[L][1]}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tab === 'help' && (
+          <div className="animate-fade-in">
+            <div className="mb-5"><Btn active onClick={api.startTour}>{t.tour_replay}</Btn></div>
+            <H3>{t.help_tpl_title}：{tpl.name[L]}</H3>
+            {tpl.guide[L].map((p, i) => <p key={i} className="mb-3 leading-relaxed text-slate-700 dark:text-slate-300">{p}</p>)}
+            <div className="mt-6"><H3>{t.help_title}</H3>
+              <ol className="list-decimal pl-5 space-y-2 text-slate-700 dark:text-slate-300">
+                {t.help_steps.map((s, i) => <li key={i} className="leading-relaxed">{s}</li>)}
+              </ol>
+              <p className="text-xs text-slate-400 mt-4">{t.kbd_hint}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ---------------- App ---------------- */
+const LS_DOC = 'PDS_doc_v1';
+const LS_PREF = 'PDS_pref_v1';
+const loadLS = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } };
+
+/* ---------------- Access code + vault ---------------- */
+const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function openVault(code) {
+  if (!window.crypto || !crypto.subtle) throw new Error('nocrypto');
+  const enc = new TextEncoder();
+  const base = await crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(PDS_VAULT.salt), iterations: PDS_VAULT.iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(PDS_VAULT.iv) }, key, b64(PDS_VAULT.ct));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+function applyVault(p) {
+  const tq = TEMPLATES.rp_quant;
+  tq.title = p.title; tq.subtitle = p.subtitle; tq.nodes = p.nodes; tq.edges = p.edges;
+  Object.assign(tq.glossary, p.glossary);
+  tq.roles.forEach(r => { if (p.roleTerms[r.id]) r.terms = p.roleTerms[r.id]; });
+  tq.encrypted = false;
+  if (p.B) { const tb = TEMPLATES_B.rp_quant; tb.title = p.B.title; tb.subtitle = p.B.subtitle; tb.nodes = p.B.nodes; tb.edges = p.B.edges; tb.encrypted = false; }
+}
+const LS_CODE = 'PDS_code_v1';
+
+const Gate = ({ onOpen }) => {
+  const pref = loadLS(LS_PREF, {});
+  const [lang, setLang] = useState(pref.lang || 'en');
+  const [isDark, setIsDark] = useState(pref.isDark !== undefined ? pref.isDark : true);
+  const [code, setCode] = useState('');
+  const [remember, setRemember] = useState(true);
+  const [err, setErr] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const t = dict[lang];
+  useEffect(() => { document.documentElement.classList.toggle('dark', isDark); }, [isDark]);
+  const submit = async (e) => {
+    e.preventDefault(); if (busy) return;
+    setBusy(true); setErr(false);
+    try {
+      const v = code.trim().slice(0, 64);
+      const p = await openVault(v);
+      applyVault(p);
+      try { if (remember) localStorage.setItem(LS_CODE, v); else localStorage.removeItem(LS_CODE); } catch (x) { }
+      onOpen();
+    } catch (x) { setErr(true); setBusy(false); }
+  };
+  return (
+    <div className="min-h-screen flex flex-col bg-[#f4f4f4] dark:bg-[#121212] text-slate-800 dark:text-slate-100 font-sans">
+      <header className="h-16 bg-[#004030] dark:bg-slate-900 text-white flex items-center justify-between px-4 border-b border-[#D8C3A5]/30">
+        <span className="font-serif font-black text-[#D8C3A5] text-lg tracking-widest">PDS</span>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="px-2.5 py-1 border border-[#D8C3A5]/60 rounded-lg text-sm font-bold text-[#D8C3A5] hover:bg-white/10">{t.lang_toggle}</button>
+          <button onClick={() => setIsDark(!isDark)} className="p-2 hover:bg-white/10 rounded-lg" aria-label={t.theme_toggle}>{isDark ? <IconSun /> : <IconMoon />}</button>
+        </div>
+      </header>
+      <main className="flex-1 flex items-center justify-center p-4">
+        <form onSubmit={submit} className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 animate-fade-in">
+          <div className="h-1.5 w-16 bg-[#D8C3A5] rounded-full mb-6" />
+          <h1 className="font-serif font-black text-2xl text-[#004030] dark:text-[#D8C3A5] mb-1">{t.gate_title}</h1>
+          <p className="text-sm text-slate-400 mb-6">{lang === 'en' ? '研究提案圖產生器' : 'Proposal Diagram Studio'}</p>
+          <p className="text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">{t.gate_desc}</p>
+          <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1" htmlFor="pds-code">{t.gate_label}</label>
+          <input id="pds-code" type="password" autoComplete="off" autoFocus value={code} maxLength={64}
+            onChange={e => { setCode(e.target.value); setErr(false); }} placeholder={t.gate_ph}
+            className="w-full px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#004030] dark:focus:ring-[#D8C3A5]" />
+          {err && <p className="text-sm text-red-600 dark:text-red-400 mt-2" role="alert">{t.gate_err}</p>}
+          <label className="flex items-center gap-2 mt-4 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+            <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} /> {t.gate_remember}
+          </label>
+          <button type="submit" disabled={!code.trim() || busy} className="mt-6 w-full py-2.5 rounded-lg bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] font-bold disabled:opacity-40">{busy ? t.gate_checking : t.gate_btn}</button>
+        </form>
+      </main>
+      <footer className="h-8 bg-[#004030] flex items-center justify-between px-4">
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs">{t.date} · {t.copyright}</span>
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs">{t.architect_label}&nbsp;<a href={t.architect_url} target="_blank" rel="noopener noreferrer" className="text-[#D8C3A5] hover:text-white underline">{t.architect_name}</a></span>
+      </footer>
+    </div>
+  );
+};
+
+/* ---------------- Onboarding tour ---------------- */
+const TOUR_TARGETS = ['template', 'view', 'mode', 'canvas', 'connect', 'panel', 'export'];
+const LS_TOUR = 'PDS_tour_done_v1';
+const Tour = ({ t, onClose }) => {
+  const [i, setI] = useState(0);
+  const [rect, setRect] = useState(null);
+  const steps = t.tour_steps;
+  useEffect(() => {
+    const el = document.querySelector(`[data-tour="${TOUR_TARGETS[i]}"]`);
+    if (!el) { setRect(null); return; }
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    const measure = () => { const r = el.getBoundingClientRect(); setRect({ x: r.left, y: r.top, w: r.width, h: r.height }); };
+    measure(); const id = setTimeout(measure, 250);
+    window.addEventListener('resize', measure);
+    return () => { clearTimeout(id); window.removeEventListener('resize', measure); };
+  }, [i]);
+  const finish = () => { try { localStorage.setItem(LS_TOUR, '1'); } catch (e) { } onClose(); };
+  useEffect(() => { const h = e => { if (e.key === 'Escape') finish(); }; window.addEventListener('keydown', h); return () => window.removeEventListener('keydown', h); });
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const pad = 6;
+  const r = rect ? { x: Math.max(4, rect.x - pad), y: Math.max(4, rect.y - pad), w: Math.min(rect.w + pad * 2, vw - 8), h: Math.min(rect.h + pad * 2, vh - 8) } : null;
+  const cardW = Math.min(340, vw - 24);
+  let cx = 12, cy = vh / 2 - 90;
+  if (r) {
+    cx = Math.min(Math.max(12, r.x), vw - cardW - 12);
+    const below = r.y + r.h + 12, above = r.y - 12 - 200;
+    if (below + 200 < vh) cy = below; else if (above > 8) cy = above; else { cy = Math.max(12, Math.min(vh - 220, r.y + 20)); cx = Math.max(12, Math.min(vw - cardW - 12, r.x + r.w / 2 - cardW / 2)); }
+  }
+  return (
+    <div className="fixed inset-0 z-[150]" role="dialog" aria-modal="true" aria-label={t.tour_label}>
+      {r ? <div className="absolute rounded-xl transition-all duration-300 pointer-events-none" style={{ left: r.x, top: r.y, width: r.w, height: r.h, boxShadow: '0 0 0 9999px rgba(0,0,0,0.6)', outline: '3px solid #D8C3A5' }} />
+        : <div className="absolute inset-0 bg-black/60" />}
+      <div className="absolute bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 animate-fade-in" style={{ left: cx, top: cy, width: cardW }}>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.tour_label} · {i + 1} / {steps.length}</span>
+          <button onClick={finish} className="text-xs text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">{t.tour_skip}</button>
+        </div>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1.5">{steps[i].t}</h3>
+        <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{steps[i].d}</p>
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex gap-1">{steps.map((_, k) => <span key={k} className={`h-1.5 rounded-full ${k === i ? 'w-5 bg-[#004030] dark:bg-[#D8C3A5]' : 'w-1.5 bg-slate-300 dark:bg-slate-600'}`} />)}</div>
+          <div className="flex gap-2">
+            {i > 0 && <Btn onClick={() => setI(i - 1)}>{t.tour_prev}</Btn>}
+            {i < steps.length - 1 ? <Btn active onClick={() => setI(i + 1)}>{t.tour_next}</Btn> : <Btn active onClick={finish}>{t.tour_done}</Btn>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+function App({ onLogout }) {
+  const pref = loadLS(LS_PREF, {});
+  const [lang, setLang] = useState(pref.lang || 'en');
+  const [isDark, setIsDark] = useState(pref.isDark !== undefined ? pref.isDark : true);
+  const [mode, setMode] = useState(pref.mode || (pref.lang === 'zh' ? 'zh' : 'en'));
+  const [restored, setRestored] = useState(false);
+  const hadSaved = useRef(!!loadLS(LS_DOC, null));
+  const [doc, setDocRaw] = useState(() => {
+    const saved = loadLS(LS_DOC, null);
+    const m0 = pref.mode || (pref.lang === 'zh' ? 'zh' : 'en');
+    if (saved) { try { return sanitizeDoc({ app: 'PDS', ...saved }, m0); } catch (e) { } }
+    return newDoc('tp_pmcs', m0, 'A');
+  });
+  const [selected, setSelected] = useState(null);
+  const [tab, setTab] = useState('edit');
+  const [connect, setConnect] = useState(null); // null | {from:null|ref}
+  const [zoom, setZoom] = useState(0.8);
+  const [toast, setToast] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [info, setInfo] = useState(null);
+  const [tts, setTts] = useState('idle');
+  const [tour, setTour] = useState(() => { try { return !localStorage.getItem(LS_TOUR); } catch (e) { return true; } });
+  const [, setHistTick] = useState(0);
+  const hist = useRef({ past: [], future: [] });
+  const docRef = useRef(doc); docRef.current = doc;
+  const svgRef = useRef(null), wrapRef = useRef(null), fileRef = useRef(null), menuRef = useRef(null);
+  const t = dict[lang];
+  const view = doc.view;
+  const tpl = tplOf(doc.templateId, view);
+  const dia = doc.diagrams[view];
+
+  const showToast = (msg) => { setToast(msg); clearTimeout(window.__pdsToast); window.__pdsToast = setTimeout(() => setToast(null), 2400); };
+  window.__pdsCopyright = () => showToast(t.copyright_msg);
+
+  useEffect(() => { document.documentElement.classList.toggle('dark', isDark); }, [isDark]);
+  useEffect(() => { try { localStorage.setItem(LS_PREF, JSON.stringify({ lang, isDark, mode })); } catch (e) { } }, [lang, isDark, mode]);
+  useEffect(() => { try { localStorage.setItem(LS_DOC, JSON.stringify(doc)); } catch (e) { } }, [doc]);
+  useEffect(() => { if (hadSaved.current && !restored) { setRestored(true); setTimeout(() => showToast(t.toast_restored), 400); } }, []);
+  useEffect(() => { document.title = `${t.brand} · ${t.title}`; }, [lang]);
+  useEffect(() => {
+    const h = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false); };
+    document.addEventListener('pointerdown', h); return () => document.removeEventListener('pointerdown', h);
+  }, []);
+
+  /* history */
+  const pushHist = (snapshot) => { const h = hist.current; h.past.push(snapshot); if (h.past.length > 80) h.past.shift(); h.future = []; setHistTick(x => x + 1); };
+  const commit = (next) => { pushHist(JSON.stringify(docRef.current)); setDocRaw(next); };
+  const snap = () => pushHist(JSON.stringify(docRef.current));
+  const undo = () => { const h = hist.current; if (!h.past.length) return; h.future.push(JSON.stringify(docRef.current)); setDocRaw(JSON.parse(h.past.pop())); setSelected(null); setHistTick(x => x + 1); };
+  const redo = () => { const h = hist.current; if (!h.future.length) return; h.past.push(JSON.stringify(docRef.current)); setDocRaw(JSON.parse(h.future.pop())); setSelected(null); setHistTick(x => x + 1); };
+  const setD = (fn, record) => { const cur = docRef.current; const nd = { ...cur, diagrams: { ...cur.diagrams, [cur.view]: fn(cur.diagrams[cur.view]) } }; if (record) commit(nd); else setDocRaw(nd); };
+  const curDia = () => docRef.current.diagrams[docRef.current.view];
+  const curTpl = () => tplOf(docRef.current.templateId, docRef.current.view);
+
+  /* fit */
+  const modeRef = useRef(mode); modeRef.current = mode;
+  const fit = useCallback(() => {
+    const w = wrapRef.current ? wrapRef.current.clientWidth - 24 : 900;
+    const geoW = computeGeometry(curDia(), curTpl(), modeRef.current).W;
+    setZoom(Math.max(0.3, Math.min(1.2, w / geoW)));
+  }, [mode]);
+  useEffect(() => { fit(); }, [doc.templateId, doc.view]);
+  useEffect(() => { const h = () => fit(); window.addEventListener('resize', h); return () => window.removeEventListener('resize', h); }, [fit]);
+
+  /* api for panel */
+  const api = {
+    snap,
+    setDiagram: (patch) => setD(d => ({ ...d, ...patch })),
+    patchNode: (id, patch, record) => setD(d => ({ ...d, nodes: d.nodes.map(n => n.id === id ? { ...n, ...patch } : n) }), record),
+    setNodeRole: (id, role) => setD(d => ({ ...d, nodes: d.nodes.map(n => { if (n.id !== id) return n; const r = roleOf(tpl, role); return { ...n, role, lane: laneOn(tpl) ? (r.perLane ? Math.max(0, n.lane) : -1) : -1 }; }) }), true),
+    updateNodeText: (id, lng, field, val) => setD(d => ({
+      ...d, nodes: d.nodes.map(n => {
+        if (n.id !== id) return n;
+        if (n.variants) { const v = n.variant || 'auto'; const cur = n.variants[v]; return { ...n, variants: { ...n.variants, [v]: { ...cur, [lng]: { ...cur[lng], [field]: val } } } }; }
+        return { ...n, text: { ...n.text, [lng]: { ...n.text[lng], [field]: val } } };
+      })
+    })),
+    patchEdge: (id, patch, record) => setD(d => ({ ...d, edges: d.edges.map(e => e.id === id ? { ...e, ...patch } : e) }), record),
+    reverseEdge: (id) => setD(d => ({ ...d, edges: d.edges.map(e => e.id === id ? { ...e, from: e.to, to: e.from } : e) }), true),
+    moveEdge: (id, dir) => setD(d => {
+      const mains = d.edges.filter(e => e.kind === 'main'); const i = mains.findIndex(e => e.id === id); const j = i + dir;
+      if (i < 0 || j < 0 || j >= mains.length) return d;
+      const a = d.edges.indexOf(mains[i]), b = d.edges.indexOf(mains[j]); const arr = [...d.edges];[arr[a], arr[b]] = [arr[b], arr[a]]; return { ...d, edges: arr };
+    }, true),
+    deleteSel: () => {
+      if (!selected) return;
+      if (selected.type === 'node') {
+        const ref = 'n:' + selected.id;
+        setD(d => {
+          const dead = new Set(d.edges.filter(e => e.from === ref || e.to === ref).map(e => 'e:' + e.id));
+          return { ...d, nodes: d.nodes.filter(n => n.id !== selected.id), edges: d.edges.filter(e => e.from !== ref && e.to !== ref && !dead.has(e.to)) };
+        }, true);
+      } else {
+        setD(d => ({ ...d, edges: d.edges.filter(e => e.id !== selected.id && e.to !== 'e:' + selected.id) }), true);
+      }
+      setSelected(null);
+    },
+    dupNode: (id) => {
+      const n = curDia().nodes.find(x => x.id === id); if (!n) return;
+      const nn = { ...deep(n), id: uid(n.role), x: n.x + 24, y: n.y + 24 };
+      setD(d => ({ ...d, nodes: [...d.nodes, nn] }), true); setSelected({ type: 'node', id: nn.id });
+    },
+    addNode: (roleId, lane) => {
+      const r = roleOf(tpl, roleId); const d0 = curDia();
+      const perLane = laneOn(tpl) && r.perLane;
+      const same = d0.nodes.filter(n => colOfN(tpl, n) === r.col && (!perLane || n.lane === lane) && (!tpl.phases || rowOfN(tpl, n) === rowOfN(tpl, { role: roleId })));
+      const geo = computeGeometry(d0, tpl, mode);
+      const y = same.length ? Math.max(...same.map(n => n.y + geo.boxes[n.id].h)) + G.GAPY : G.TOP + (tpl.topPad || 0);
+      const nn = { id: uid(roleId), role: roleId, lane: perLane ? lane : -1, x: colX(tpl, r.col), y, optional: false, tag: '', text: { zh: { title: r.zh.replace(/^[①-⑨]\s*/, ''), items: [] }, en: { title: r.en.replace(/^[①-⑨]\s*/, ''), items: [] } } };
+      setD(d => ({ ...d, nodes: [...d.nodes, nn] }), true); setSelected({ type: 'node', id: nn.id }); setTab('edit');
+    },
+    startConnect: () => { setConnect({ from: null }); setSelected(null); },
+    startTour: () => { setSelected(null); setConnect(null); setTour(true); },
+    setLaneText: (i, lng, v) => setD(d => ({ ...d, lanes: d.lanes.map((l, k) => k === i ? { ...l, text: { ...l.text, [lng]: v } } : l) })),
+    addLane: () => {
+      const d0 = curDia(); const max = tpl.lanes.max;
+      if (d0.lanes.length >= max) { showToast(t.toast_lane_max.replace('{n}', max)); return; }
+      const idx = d0.lanes.length; const map = {};
+      const clones = d0.nodes.filter(n => isPerLane(tpl, n) && n.lane === 0).map(n => {
+        let id = n.id.replace(/__L\d+$/, '') + '__L' + idx; if (d0.nodes.some(x => x.id === id)) id = uid(n.role);
+        map['n:' + n.id] = 'n:' + id; return { ...deep(n), id, lane: idx };
+      });
+      const remap = (r) => map[r] || (r.startsWith('g:') && r.endsWith(':0') ? r.replace(/:0$/, ':' + idx) : null);
+      const eClones = d0.edges.filter(e => e.kind === 'flow' && !e.to.startsWith('e:') && (remap(e.from) || remap(e.to))).map(e => ({ ...deep(e), id: uid('f'), from: remap(e.from) || e.from, to: remap(e.to) || e.to }));
+      const nd = { ...d0, lanes: [...d0.lanes, { id: 'L' + idx, text: deep(tpl.laneNames[idx] || { zh: '比較列', en: 'Row' }) }], nodes: [...d0.nodes, ...clones], edges: [...d0.edges, ...eClones] };
+      nd.nodes = autoLayout(nd, tpl, mode);
+      setD(() => nd, true); setTimeout(fit, 30);
+    },
+    removeLane: (i) => {
+      const d0 = curDia(); const name = d0.lanes[i].text[lang] || d0.lanes[i].text.zh;
+      if (!window.confirm(t.confirm_remove_lane.replace('{name}', name))) return;
+      const dead = new Set(d0.nodes.filter(n => isPerLane(tpl, n) && n.lane === i).map(n => 'n:' + n.id));
+      const gDead = r => r.startsWith('g:') && +r.split(':')[2] === i;
+      const shiftG = r => { if (!r.startsWith('g:')) return r; const p = r.split(':'); return +p[2] > i ? `g:${p[1]}:${+p[2] - 1}` : r; };
+      let edges = d0.edges.filter(e => !dead.has(e.from) && !dead.has(e.to) && !gDead(e.from) && !gDead(e.to));
+      const alive = new Set(edges.map(e => 'e:' + e.id)); edges = edges.filter(e => !e.to.startsWith('e:') || alive.has(e.to)).map(e => ({ ...e, from: shiftG(e.from), to: shiftG(e.to) }));
+      const nodes = d0.nodes.filter(n => !dead.has('n:' + n.id)).map(n => isPerLane(tpl, n) && n.lane > i ? { ...n, lane: n.lane - 1 } : n);
+      const lanes = d0.lanes.filter((_, k) => k !== i).map((l, k) => ({ ...l, id: 'L' + k }));
+      const nd = { ...d0, lanes, nodes, edges }; nd.nodes = autoLayout(nd, tpl, mode);
+      setD(() => nd, true); setSelected(null);
+    }
+  };
+
+  const onConnectPick = (ref) => {
+    if (!connect) return;
+    if (!connect.from) {
+      if (ref.startsWith('e:')) { showToast(t.connect_err_edge); return; }
+      setConnect({ from: ref }); return;
+    }
+    if (ref === connect.from) { showToast(t.connect_err_self); return; }
+    const e = { id: uid('e'), from: connect.from, to: ref, kind: tpl.defaultEdgeKind, sign: tpl.signs ? '+' : '', text: { zh: '', en: '' } };
+    setD(d => ({ ...d, edges: [...d.edges, e] }), true);
+    setConnect(null); setSelected({ type: 'edge', id: e.id }); setTab('edit');
+  };
+
+  const layout = () => setD(d => ({ ...d, nodes: autoLayout(d, tpl, mode) }), true);
+  const changeMode = (k) => {
+    if (k === mode) return;
+    setMode(k);
+    const cur = docRef.current; const ds = {};
+    VIEWS.forEach(v => { const dd = cur.diagrams[v]; ds[v] = { ...dd, nodes: autoLayout(dd, tplOf(cur.templateId, v), k) }; });
+    commit({ ...cur, diagrams: ds });
+    showToast(t.toast_relayout);
+    setTimeout(fit, 30);
+  };
+
+  const switchTemplate = (id) => {
+    if (id === doc.templateId) return;
+    if (!window.confirm(t.confirm_template.replace('{name}', TEMPLATES[id].name[lang]))) return;
+    commit(newDoc(id, mode, docRef.current.view)); setSelected(null); setConnect(null); setTab('help');
+  };
+  const switchView = (v) => {
+    if (v === docRef.current.view) return;
+    setDocRaw({ ...docRef.current, view: v }); setSelected(null); setConnect(null); setInfo(null);
+    showToast(t.toast_view.replace('{name}', t['view_' + v]));
+  };
+  const clearAll = () => {
+    if (!window.confirm(t.confirm_clear)) return;
+    try { localStorage.removeItem(LS_DOC); } catch (e) { }
+    hist.current = { past: [], future: [] };
+    setDocRaw(newDoc(doc.templateId, mode, doc.view));
+    setSelected(null); setConnect(null); showToast(t.toast_cleared); setTimeout(fit, 30);
+  };
+
+  /* export */
+  const download = (blob, name) => { const a = document.createElement('a'); const url = URL.createObjectURL(blob); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500); showToast(t.toast_exported.replace('{file}', name)); };
+  const svgString = () => {
+    const src = svgRef.current; const clone = src.cloneNode(true);
+    clone.querySelectorAll('.no-export').forEach(el => el.remove());
+    const W = src.getAttribute('data-w'), H = src.getAttribute('data-h');
+    clone.setAttribute('width', W); clone.setAttribute('height', H);
+    clone.removeAttribute('style'); clone.setAttribute('font-family', G.FONT);
+    clone.removeAttribute('data-w'); clone.removeAttribute('data-h');
+    clone.querySelectorAll('[style]').forEach(el => el.removeAttribute('style'));
+    return { xml: '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone), W: +W, H: +H };
+  };
+  const base = () => `PDS_${tpl.short}_${stamp()}`;
+  const exportSVG = () => { const { xml } = svgString(); download(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }), base() + '.svg'); };
+  const exportPNG = () => {
+    const { xml, W, H } = svgString(); const img = new Image();
+    const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }));
+    img.onload = () => {
+      const c = document.createElement('canvas'); const s = 2; c.width = W * s; c.height = H * s;
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); c.toBlob(b => b && download(b, base() + '.png'), 'image/png');
+    };
+    img.src = url;
+  };
+  const exportJSON = () => download(new Blob([JSON.stringify({ app: 'PDS', version: 2, savedAt: new Date().toISOString(), ...doc }, null, 2)], { type: 'application/json' }), base() + '.json');
+  const importJSON = (e) => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    if (f.size > 2 * 1024 * 1024) { showToast(t.import_error); e.target.value = ''; return; }
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const clean = sanitizeDoc(JSON.parse(r.result), mode);
+        if (window.confirm(t.confirm_import.replace('{file}', f.name.slice(0, 80)))) { commit(clean); setSelected(null); setTimeout(fit, 30); }
+      } catch (err) { showToast(t.import_error); }
+      e.target.value = '';
+    };
+    r.readAsText(f);
+  };
+
+  /* keyboard */
+  useEffect(() => {
+    const h = (e) => {
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (['input', 'textarea', 'select'].includes(tag)) return;
+      if (e.key === 'Escape') { setConnect(null); setSelected(null); setInfo(null); }
+      else if ((e.key === 'Delete' || e.key === 'Backspace') && selected) { e.preventDefault(); api.deleteSel(); }
+      else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+      else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
+    };
+    window.addEventListener('keydown', h); return () => window.removeEventListener('keydown', h);
+  });
+
+  /* TTS narration of the diagram */
+  const narrate = (action) => {
+    if (!('speechSynthesis' in window)) return;
+    if (action === 'stop') { speechSynthesis.cancel(); setTts('idle'); return; }
+    if (action === 'pause') { speechSynthesis.pause(); setTts('paused'); return; }
+    if (tts === 'paused') { speechSynthesis.resume(); setTts('playing'); return; }
+    const L = mode === 'both' ? lang : mode; const sep = L === 'zh' ? '。 ' : '. ';
+    const d = dia; const geo = computeGeometry(d, tpl, mode);
+    const byRows = tpl.readOrder === 'rows';
+    const nodes = [...d.nodes].sort((a, b) => byRows ? ((a.y - b.y) || (a.x - b.x)) : ((a.x - b.x) || (a.y - b.y)));
+    const texts = [t.tts_intro, d.title[L], d.subtitle[L]];
+    const band = []; 
+    nodes.forEach(n => { const x = getText(n)[L]; if (!x) return; const arr = inBand(tpl, n) ? band : texts; arr.push(x.title); x.items.filter(Boolean).forEach(i => arr.push(i)); });
+    if (band.length) { texts.push(tpl.band.label[L]); texts.push(...band); }
+    const mains = d.edges.filter(e => e.kind === 'main');
+    if (mains.length) texts.push(tpl.legendTitle[L]);
+    mains.forEach(e => texts.push(`${geo.codes[e.id]}: ${e.text[L] || ''}`));
+    if (tpl.owners) {
+      texts.push(tpl.ownerTitle[L]);
+      tpl.owners.forEach(o => { const ns = d.nodes.filter(n => n.owner === o.id).map(n => getText(n)[L].title).filter(Boolean); if (ns.length) texts.push(`${o[L]}: ${ns.join(L === 'zh' ? '、' : ', ')}`); });
+    }
+    speak(joinSay(texts, L), L, () => setTts('idle'));
+    setTts('playing');
+  };
+
+  const onInfo = (n, terms, x, y, pin) => setInfo({ n, terms, x, y, pin });
+  const selectNode = (s) => { setSelected(s); if (s) setTab('edit'); setInfo(i => (i && i.pin ? i : null)); };
+
+  return (
+    <div className="min-h-screen lg:h-screen flex flex-col bg-[#f4f4f4] dark:bg-[#121212] text-slate-800 dark:text-slate-100 font-sans selection:bg-[#004030] selection:text-white dark:selection:bg-[#D8C3A5] dark:selection:text-[#004030] overflow-x-hidden">
+      {/* HEADER */}
+      <header className="fixed top-0 left-0 right-0 h-16 bg-[#004030] dark:bg-slate-900 text-white z-50 shadow-lg border-b border-[#D8C3A5]/30">
+        <div className="px-3 sm:px-4 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+            <div className="relative" ref={menuRef}>
+              <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 hover:bg-white/10 rounded-lg" aria-label={t.menu_templates}><IconMenu /></button>
+              {menuOpen && (
+                <div className="absolute top-full left-0 mt-1 w-72 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-5rem)] overflow-y-auto bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 z-[100]">
+                  <div className="px-4 pt-3 pb-1 text-xs font-bold uppercase tracking-wider text-slate-400">{t.menu_templates}</div>
+                  {TEMPLATE_ORDER.map((id, i) => (
+                    <button key={id} onClick={() => { setMenuOpen(false); switchTemplate(id); }}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 ${doc.templateId === id ? 'font-bold text-[#004030] dark:text-[#D8C3A5]' : ''}`}>
+                      <span className="w-6 text-center">{['📊', '🔍', '🧭'][i]}</span><span className="truncate">{i + 1}. {TEMPLATES[id].name[lang]}</span>
+                    </button>
+                  ))}
+                  <div className="px-4 pt-3 pb-1 text-xs font-bold uppercase tracking-wider text-slate-400 border-t border-slate-100 dark:border-slate-700 mt-1">{t.view_label}</div>
+                  {VIEWS.map(v => (
+                    <button key={v} onClick={() => { setMenuOpen(false); switchView(v); }}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 ${view === v ? 'font-bold text-[#004030] dark:text-[#D8C3A5]' : ''}`}>
+                      <span className="w-6 text-center font-bold">{v}</span><span>{t['view_' + v]}</span>
+                    </button>
+                  ))}
+                  <div className="px-4 pt-3 pb-1 text-xs font-bold uppercase tracking-wider text-slate-400 border-t border-slate-100 dark:border-slate-700 mt-1">{t.menu_tabs}</div>
+                  {[['edit', '✏️', t.tab_edit], ['add', '➕', t.tab_add], ['terms', '📖', t.tab_terms], ['help', '🧾', t.tab_help]].map(([k, ic, lbl]) => (
+                    <button key={k} onClick={() => { setTab(k); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700"><span className="w-6 text-center">{ic}</span><span>{lbl}</span></button>
+                  ))}
+                  <div className="border-t border-slate-100 dark:border-slate-700 mt-1" />
+                  <button onClick={() => { setMenuOpen(false); api.startTour(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700"><span className="w-6 text-center">🧭</span><span>{t.tour_label}</span></button>
+                  <button onClick={() => { setMenuOpen(false); onLogout(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700"><span className="w-6 text-center">🔒</span><span>{t.gate_logout}</span></button>
+                </div>
+              )}
+            </div>
+            <button onClick={() => { setSelected(null); setConnect(null); fit(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="p-2 hover:bg-white/10 rounded-lg" aria-label="Home"><IconHome /></button>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2 min-w-0">
+              <span className="font-serif font-black text-[#D8C3A5] text-lg tracking-widest">{t.brand}</span>
+              <span className="hidden sm:inline font-serif font-bold text-sm md:text-base truncate">{t.title}</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <button onClick={() => narrate(tts === 'playing' ? 'pause' : 'play')} className="p-2 hover:bg-white/10 rounded-lg flex items-center gap-1" title={t.tts_play} aria-label={t.tts_play}>
+              {tts === 'playing' ? <IconPause size={16} /> : <IconPlay size={16} />}<span className="hidden md:inline text-xs">{t.tts_play}</span>
+            </button>
+            {tts !== 'idle' && <button onClick={() => narrate('stop')} className="p-2 hover:bg-white/10 rounded-lg" aria-label={t.tts_stop}><IconSquare size={14} /></button>}
+            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="px-2.5 py-1 border border-[#D8C3A5]/60 rounded-lg text-sm font-bold text-[#D8C3A5] hover:bg-white/10">{t.lang_toggle}</button>
+            <button onClick={() => setIsDark(!isDark)} className="p-2 hover:bg-white/10 rounded-lg" aria-label={t.theme_toggle}>{isDark ? <IconSun /> : <IconMoon />}</button>
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN */}
+      <main className="pt-16 flex-1 flex flex-col lg:flex-row min-h-0">
+        <section className="flex-1 flex flex-col min-w-0 min-h-0">
+          {/* Toolbar */}
+          <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-3 py-2 flex flex-wrap items-center gap-2 shrink-0">
+            <label data-tour="template" className="flex items-center gap-1.5 text-xs font-semibold text-slate-500"><IconLayers size={15} />{t.tpl_label}
+              <select value={doc.templateId} onChange={e => switchTemplate(e.target.value)} className="ml-1 px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 font-medium">
+                {TEMPLATE_ORDER.map(id => <option key={id} value={id}>{TEMPLATES[id].name[lang]}</option>)}
+              </select>
+            </label>
+            <div data-tour="view" className="flex items-center gap-2"><span className="text-xs font-semibold text-slate-500 ml-1">{t.view_label}</span>
+            <div className="flex" role="tablist" aria-label={t.view_label}>
+              {['A', 'B', 'C'].map((k, i) => (
+                <button key={k} role="tab" aria-selected={view === k} disabled={k === 'C'} title={k === 'C' ? t.view_C_soon : t['view_' + k]} onClick={() => switchView(k)}
+                  className={`px-2.5 py-1.5 text-xs sm:text-sm border border-slate-300 dark:border-slate-600 ${i === 0 ? 'rounded-l-lg' : ''} ${i === 2 ? 'rounded-r-lg' : ''} ${i > 0 ? '-ml-px' : ''} disabled:opacity-40 disabled:cursor-not-allowed ${view === k ? 'bg-[#004030] text-white dark:bg-[#D8C3A5] dark:text-[#004030] font-bold' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}`}>{t['view_' + k]}</button>
+              ))}
+            </div></div>
+            <div data-tour="mode" className="flex items-center gap-2"><span className="text-xs font-semibold text-slate-500 ml-1">{t.disp_label}</span>
+            <div className="flex">
+              {[['zh', t.disp_zh], ['en', t.disp_en], ['both', t.disp_both]].map(([k, l], i) => (
+                <button key={k} onClick={() => changeMode(k)} className={`px-2.5 py-1.5 text-xs sm:text-sm border border-slate-300 dark:border-slate-600 ${i === 0 ? 'rounded-l-lg' : ''} ${i === 2 ? 'rounded-r-lg' : ''} ${i > 0 ? '-ml-px' : ''} ${mode === k ? 'bg-[#004030] text-white dark:bg-[#D8C3A5] dark:text-[#004030] font-bold' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}`}>{l}</button>
+              ))}
+            </div></div>
+            <span className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block" />
+            <Btn onClick={layout}>{t.btn_layout}</Btn>
+            <span data-tour="connect"><Btn active={!!connect} onClick={() => connect ? setConnect(null) : api.startConnect()}>{t.btn_connect}</Btn></span>
+            <Btn onClick={undo} disabled={!hist.current.past.length} title="Ctrl+Z">{t.btn_undo}</Btn>
+            <Btn onClick={redo} disabled={!hist.current.future.length} title="Ctrl+Y">{t.btn_redo}</Btn>
+            <span className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block" />
+            <Btn onClick={() => setZoom(z => Math.max(0.3, +(z - 0.1).toFixed(2)))} title={t.zoom_out}>−</Btn>
+            <span className="text-xs w-10 text-center tabular-nums">{Math.round(zoom * 100)}%</span>
+            <Btn onClick={() => setZoom(z => Math.min(2, +(z + 0.1).toFixed(2)))} title={t.zoom_in}>＋</Btn>
+            <Btn onClick={fit}>{t.zoom_fit}</Btn>
+            <span className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block" />
+            <span data-tour="export" className="flex flex-wrap gap-2">
+            <Btn onClick={exportSVG}>{t.btn_export_svg}</Btn>
+            <Btn onClick={exportPNG}>{t.btn_export_png}</Btn>
+            <Btn onClick={exportJSON}>{t.btn_export_json}</Btn>
+            <Btn onClick={() => fileRef.current && fileRef.current.click()}>{t.btn_import_json}</Btn>
+            </span>
+            <input ref={fileRef} type="file" accept=".json,application/json" className="hidden" onChange={importJSON} />
+            <Btn danger onClick={clearAll}>{t.btn_clear}</Btn>
+          </div>
+          {connect && (
+            <div className="bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border-b border-amber-200 dark:border-amber-800 px-4 py-2 text-sm flex items-center justify-between gap-3 shrink-0">
+              <span>{connect.from ? t.connect_hint2 : t.connect_hint1}</span>
+              <Btn onClick={() => setConnect(null)}>{t.connect_cancel}</Btn>
+            </div>
+          )}
+          {/* Canvas */}
+          <div ref={wrapRef} data-tour="canvas" className="flex-1 overflow-auto p-3 min-h-[60vh] lg:min-h-0 relative"
+            style={{ backgroundImage: `radial-gradient(${isDark ? '#334155' : '#cbd5e1'} 1px, transparent 1px)`, backgroundSize: '18px 18px' }}
+            onContextMenu={(e) => { e.preventDefault(); showToast(t.copyright_msg); }}
+            onScroll={() => info && !info.pin && setInfo(null)}>
+            <div className="inline-block shadow-xl rounded-md overflow-hidden ring-1 ring-slate-300 dark:ring-slate-600">
+              <Diagram doc={doc} dia={dia} tpl={tpl} mode={mode} selected={selected} onSelect={selectNode}
+                onDragNode={(id, x, y) => setD(d => ({ ...d, nodes: d.nodes.map(n => n.id === id ? { ...n, x, y } : n) }))}
+                onDragEnd={(snapshot) => pushHist(snapshot)}
+                connect={connect} onConnectPick={onConnectPick} zoom={zoom} svgRef={svgRef} onInfo={onInfo} />
+            </div>
+          </div>
+          <div className="px-4 py-1 text-[11px] text-slate-400 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shrink-0">{t.saved_badge}</div>
+        </section>
+        <aside data-tour="panel" className="w-full lg:w-[360px] shrink-0 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 min-h-[420px] lg:min-h-0 flex flex-col">
+          <Panel t={t} lang={lang} tab={tab} setTab={setTab} doc={doc} dia={dia} tpl={tpl} selected={selected} api={api} mode={mode} />
+        </aside>
+      </main>
+
+      {/* Term popover */}
+      {info && (
+        <div className="fixed z-[90] w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 p-4 animate-fade-in"
+          style={{ left: Math.max(8, Math.min(info.x + 12, window.innerWidth - 336)), top: Math.max(72, Math.min(info.y + 12, window.innerHeight - 320)) }}
+          onMouseLeave={() => !info.pin && setInfo(null)}>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.info_terms} · {getText(info.n)[lang === 'en' ? 'en' : 'zh'].title}</span>
+            <button className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none" aria-label={t.close} onClick={() => setInfo(null)}>×</button>
+          </div>
+          <div className="max-h-64 overflow-y-auto space-y-3">
+            {info.terms.map(k => { const g = tpl.glossary[k]; return (
+              <div key={k}>
+                <div className="flex items-center justify-between gap-2"><span className="font-bold text-[#004030] dark:text-[#D8C3A5] text-sm">{g[lang][0]}</span>
+                  <button className="shrink-0" aria-label={t.btn_speak} onClick={() => speak(joinSay([g[lang][0], g[lang][1]], lang), lang)}>🔊</button></div>
+                <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{g[lang][1]}</p>
+              </div>); })}
+          </div>
+        </div>
+      )}
+
+      {tour && <Tour t={t} onClose={() => setTour(false)} />}
+
+      {/* Toast */}
+      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[120] bg-[#004030] text-[#D8C3A5] dark:bg-[#D8C3A5] dark:text-[#004030] px-4 py-2 rounded-lg shadow-xl text-sm font-medium animate-fade-in">{toast}</div>}
+
+      {/* FOOTER */}
+      <footer className="h-8 bg-[#004030] flex items-center justify-between px-4 shrink-0 gap-2">
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs truncate">{t.date} · {t.copyright}</span>
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs flex items-center gap-3 shrink-0">
+          <span>{t.architect_label}&nbsp;<a href={t.architect_url} target="_blank" rel="noopener noreferrer" className="text-[#D8C3A5] hover:text-white underline">{t.architect_name}</a></span>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-[#D8C3A5] hover:text-white font-bold">Top ↑</button>
+        </span>
+      </footer>
+    </div>
+  );
+}
+
+function Root() {
+  const [state, setState] = useState('checking');
+  useEffect(() => {
+    let code = null; try { code = localStorage.getItem(LS_CODE); } catch (e) { }
+    if (!code) { setState('locked'); return; }
+    openVault(code).then(p => { applyVault(p); setState('open'); }).catch(() => { try { localStorage.removeItem(LS_CODE); } catch (e) { } setState('locked'); });
+  }, []);
+  const logout = () => { try { localStorage.removeItem(LS_CODE); } catch (e) { } location.reload(); };
+  if (state === 'checking') return <div className="min-h-screen bg-[#f4f4f4] dark:bg-[#121212]" />;
+  if (state === 'locked') return <Gate onOpen={() => setState('open')} />;
+  return <App onLogout={logout} />;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
+
+}
+</script>
+</body>
+</html>
