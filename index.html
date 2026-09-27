@@ -259,9 +259,119 @@ const TEMPLATES = {
       zh: ['A 圖呈現晨報 Agent 的「分析邏輯」：從範圍設定一路到晨報輸出。節點下方的標籤對應 KB 檔案或課程週次。', '建議步驟：① 在①填入你們鎖定的產業、企業、職務關鍵字與地區；需要比較時，到「新增」分頁加入比較列（最多 3 列）。② 在②選擇資料來源模式：自動與半自動都是正式合格做法。③ 依 JDKS 教材完成③④⑤的 JD 拆解。④ 在⑥⑦對照職位、PDMA 與薪酬。⑤ 在⑧定義晨報內容，包含新增職缺、累積統計與趨勢變化。⑥ 在連線上寫出你們的分析問題（AQ），系統會自動編號並列在圖下方。', '完成後匯出 SVG 或 PNG，放進 W9 提案。'],
       en: ['Diagram A shows the analysis logic of the morning-brief agent, from scope to output. The tag under each node points to a KB file or course week.', 'Suggested steps: (1) fill ① with your industry, company, job keywords and region; to compare, add comparison rows in the Add tab (up to three). (2) Choose the source mode in ②: both automatic and semi-automatic are fully acceptable. (3) Break the JD down through ③④⑤ following the JDKS material. (4) Map roles, PDMA and pay in ⑥⑦. (5) Define the brief in ⑧: new postings, cumulative stats and trends. (6) Write your analysis questions (AQ) on the links; they are numbered automatically and listed below the diagram.', 'When finished, export SVG or PNG for your W9 proposal.']
     }
+  },
+
+  /* ---------------- TP · CDPS 1151 ---------------- */
+  tp_cdps: {
+    id: 'tp_cdps', short: 'TP-CDPS',
+    name: { zh: 'TP 期末專案・CDPS 1151', en: 'TP Term Project · CDPS 1151' },
+    nodeW: 226, columns: 7, gapX: 62, prefix: 'AQ', signs: false, defaultEdgeKind: 'main',
+    legendTitle: { zh: '分析問題（AQ）', en: 'Analysis Questions (AQ)' },
+    title: { zh: '便利商店競合策略 AI 助理：分析架構圖', en: 'Convenience-Store Co-opetitive Strategy AI Assistant: Analysis Framework' },
+    subtitle: { zh: 'CDPS-EMI 1151 · 第 __ 組 · W9 提案', en: 'CDPS-EMI 1151 · Group __ · W9 Proposal' },
+    lanes: { enabled: true, max: 3 },
+    initLanes: 2,
+    laneNames: [
+      { zh: '比較列 A｜南投縣埔里鎮（鄉鎮）', en: 'Row A | Puli Township, Nantou (town)' },
+      { zh: '比較列 B｜臺中市西屯區（都會）', en: 'Row B | Xitun District, Taichung (city)' },
+      { zh: '比較列 C', en: 'Row C' }
+    ],
+    roles: [
+      { id: 'scope',    col: 0, badge: '1', perLane: true, color: '#004030', fill: '#E6F0EC', zh: '① 選定產業與範圍', en: '① Chosen Industry & Area', terms: ['lanes', 'chosen', 'aq'] },
+      { id: 'source',   col: 1, badge: '2', color: '#0F766E', fill: '#E3F4F1', zh: '② 資料來源與法遵', en: '② Data Sources & Compliance', terms: ['opendata', 'odbl', 'tos', 'matchrate', 'mops'] },
+      { id: 'parts',    col: 2, badge: '3', color: '#1D4ED8', fill: '#EAF1FF', zh: '③ PARTS 競合賽局', en: '③ PARTS Co-opetition Game', terms: ['coopetition', 'parts', 'valuenet', 'complementor', 'addedvalue', 'tactics'] },
+      { id: 'amc',      col: 3, badge: '4', perLane: true, color: '#B45309', fill: '#FEF3E2', zh: '④ 競爭動態 AMC', en: '④ Competitive Dynamics (AMC)', terms: ['amc', 'commonality', 'actresp', 'cluster', 'sameside'] },
+      { id: 'plat',     col: 4, badge: '5', perLane: true, color: '#7C3AED', fill: '#F3EEFF', zh: '⑤ 平台策略', en: '⑤ Platform Strategy', terms: ['platform', 'netfx', 'kiosk'] },
+      { id: 'analysis', col: 5, badge: '6', color: '#9D174D', fill: '#FCEEF4', zh: '⑥ 資料分析', en: '⑥ Data Analysis', terms: ['bi', 'nn', 'jamovi'] },
+      { id: 'insight',  col: 5, badge: '7', color: '#A16207', fill: '#FEF9E7', zh: '⑦ 商業洞察與策略建議', en: '⑦ Business Insight & Recommendations', terms: ['insight'] },
+      { id: 'agent',    col: 6, badge: '8', color: '#004030', fill: '#F7F1E8', zh: '⑧ Agent 回答與報告', en: '⑧ Agent Answer & Report', terms: ['react', 'sse'] },
+      { id: 'track',    col: 6, badge: '9', color: '#64748B', fill: '#F8FAFC', zh: '⑨（選配）持續追蹤', en: '⑨ (Optional) Continuous Tracking', terms: ['pipeline'] }
+    ],
+    nodes: [
+      { k: 'scope', role: 'scope', lane: 0, tag: 'W9 · Chosen firm/platform',
+        text: T('選定產業與範圍', ['產業：便利商店與超市', '品牌：7-ELEVEN、全家、萊爾富、OK、全聯', '地區：南投縣埔里鎮（鄉鎮）'], 'Chosen Industry & Area', ['Industry: convenience stores and supermarkets', 'Brands: 7-ELEVEN, FamilyMart, Hi-Life, OK mart, PX Mart', 'Area: Puli Township, Nantou (town)']) },
+      { k: 'scope__L1', role: 'scope', lane: 1, tag: 'W9 · Chosen firm/platform',
+        text: T('選定產業與範圍', ['產業：便利商店與超市', '品牌：7-ELEVEN、全家、萊爾富、OK、全聯', '地區：臺中市西屯區（都會）'], 'Chosen Industry & Area', ['Industry: convenience stores and supermarkets', 'Brands: 7-ELEVEN, FamilyMart, Hi-Life, OK mart, PX Mart', 'Area: Xitun District, Taichung (city)']) },
+      { k: 'source', role: 'source', lane: -1, tag: 'M1–M3 · Data sources', variant: 'auto',
+        variants: {
+          auto: T('資料來源與法遵', ['開放地理資料：政府開放資料、OpenStreetMap（標示 ODbL 出處）', '各品牌官網分店查詢（遵守服務條款與 robots.txt）', '兩者比對：比對差異率過高 → 人工核對', 'MOPS 財務資料：統一超、全家（上市櫃）', '速率限制＋退避重試'], 'Data Sources & Compliance', ['Open geodata: government open data, OpenStreetMap (ODbL attribution)', 'Brand store locators (respect terms of service and robots.txt)', 'Cross-check both: high mismatch rate → manual review', 'MOPS financials: President Chain Store, FamilyMart (listed)', 'Rate limiting + exponential backoff']),
+          semi: T('資料來源與法遵', ['組員依官網整理分店清單（共用 Google Sheets）', '每筆保留來源連結與查詢日期', '以開放地理資料補座標並交叉比對', 'MOPS 財務資料：統一超、全家（上市櫃）'], 'Data Sources & Compliance', ['Members compile store lists from brand websites (shared Google Sheets)', 'Source link and lookup date kept for every entry', 'Coordinates added and cross-checked with open geodata', 'MOPS financials: President Chain Store, FamilyMart (listed)'])
+        } },
+      { k: 'parts', role: 'parts', lane: -1, tag: 'CO · PARTS',
+        text: T('PARTS 競合賽局', ['P 參賽者：五大品牌、共同與相異供應商、互補者（物流、金流、ATM）', 'A 附加價值：自有品牌、獨家商品、店內服務', 'R 規則：加盟合約、展店條件', 'T 戰術：展店選址、同側卡位、促銷', 'S 範疇：服務擴張（ibon／FamiPort、提款、取貨）'], 'PARTS Co-opetition Game', ['P Players: five brands, shared and distinct suppliers, complementors (logistics, payments, ATMs)', 'A Added value: private labels, exclusive products, in-store services', 'R Rules: franchise contracts, store-opening conditions', 'T Tactics: site selection, same-side positioning, promotions', 'S Scope: service expansion (ibon / FamiPort, cash withdrawal, parcel pickup)']) },
+      { k: 'amc', role: 'amc', lane: 0, tag: 'Chen (1996) · AMC',
+        text: T('競爭動態 AMC', ['市場共同性：一定半徑內的異品牌分店數', '資源相似性：商品與服務的重疊程度', '行動—回應：展店／關店後，對手是否在附近跟進', 'AMC：察覺、動機、能力', '進階：同側與對側（進城／出城方向）'], 'Competitive Dynamics (AMC)', ['Market commonality: rival stores within a set radius', 'Resource similarity: overlap of products and services', 'Action–response: after an opening / closure, does a rival follow nearby?', 'AMC: awareness, motivation, capability', 'Advanced: same side vs opposite side (inbound / outbound)']) },
+      { k: 'amc__L1', role: 'amc', lane: 1, tag: 'Chen (1996) · AMC',
+        text: T('競爭動態 AMC', ['市場共同性：一定半徑內的異品牌分店數', '資源相似性：商品與服務的重疊程度', '行動—回應：展店／關店後，對手是否在附近跟進', 'AMC：察覺、動機、能力', '進階：同側與對側（進城／出城方向）'], 'Competitive Dynamics (AMC)', ['Market commonality: rival stores within a set radius', 'Resource similarity: overlap of products and services', 'Action–response: after an opening / closure, does a rival follow nearby?', 'AMC: awareness, motivation, capability', 'Advanced: same side vs opposite side (inbound / outbound)']) },
+      { k: 'plat', role: 'plat', lane: 0, tag: 'PR Ch.1–6, 9–10',
+        text: T('平台策略', ['門市即多邊平台：店內機台連接消費者與票券、繳費、物流業者', '跨邊網路效應：分店越密 → 服務提供者越願意加入', '獲利模式：服務手續費、通路上架', '指標：分店密度、服務項目數'], 'Platform Strategy', ['The store as a multi-sided platform: kiosks link shoppers with ticketing, bill-payment and logistics providers', 'Cross-side network effects: denser stores → more providers join', 'Monetisation: service fees, shelf access', 'Metrics: store density, number of services']) },
+      { k: 'plat__L1', role: 'plat', lane: 1, tag: 'PR Ch.1–6, 9–10',
+        text: T('平台策略', ['門市即多邊平台：店內機台連接消費者與票券、繳費、物流業者', '跨邊網路效應：分店越密 → 服務提供者越願意加入', '獲利模式：服務手續費、通路上架', '指標：分店密度、服務項目數'], 'Platform Strategy', ['The store as a multi-sided platform: kiosks link shoppers with ticketing, bill-payment and logistics providers', 'Cross-side network effects: denser stores → more providers join', 'Monetisation: service fees, shelf access', 'Metrics: store density, number of services']) },
+      { k: 'analysis', role: 'analysis', lane: -1, tag: 'M1 BI · M2 DA',
+        text: T('資料分析', ['儀表板：Looker Studio 地圖 → HTML＋Chart.js SPA', '空間指標：最近異品牌距離、群聚程度', 'jamovi：描述統計、t 檢定、相關、迴歸'], 'Data Analysis', ['Dashboard: Looker Studio map → HTML + Chart.js SPA', 'Spatial measures: nearest rival distance, degree of clustering', 'jamovi: descriptives, t-tests, correlation, regression']) },
+      { k: 'insight', role: 'insight', lane: -1, tag: 'W16 · Business Insight',
+        text: T('商業洞察與策略建議', ['群聚是競爭還是合作？對各品牌的意涵', '城鄉差異：鄉鎮與都會的展店邏輯', '給焦點品牌的建議：展店、服務、自有品牌'], 'Business Insight & Recommendations', ['Is clustering competition or co-operation? What it means for each brand', 'Town vs city: the logic of store openings', 'Advice for the focal brand: openings, services, private labels']) },
+      { k: 'agent', role: 'agent', lane: -1, tag: 'M4 · ReAct',
+        text: T('Agent 回答與報告', ['回答「這個地區便利商店的關鍵競爭動態是什麼？」', '依序：Players → Added Values → Competitive Dynamics → Platform Strategy', 'SSE 串流回答、PDF 報告匯出'], 'Agent Answer & Report', ['Answers "What are the key competitive dynamics of convenience stores in this area?"', 'In order: Players → Added Values → Competitive Dynamics → Platform Strategy', 'SSE streaming answers, PDF report export']) },
+      { k: 'track', role: 'track', lane: -1, tag: 'M3 · BPA', optional: true,
+        text: T('（選配）持續追蹤', ['定期重抓官網分店清單，偵測展店與關店', 'AI 依 AMC 分類行動—回應，存入 D1'], '(Optional) Continuous Tracking', ['Re-fetch brand store lists regularly to detect openings and closures', 'AI classifies actions and responses by AMC and stores them in D1']) }
+    ],
+    edges: [
+      { k: 'f1', from: 'n:scope', to: 'n:source', kind: 'flow' },
+      { k: 'f1b', from: 'n:scope__L1', to: 'n:source', kind: 'flow' },
+      { k: 'f2', from: 'n:source', to: 'n:parts', kind: 'flow' },
+      { k: 'f3', from: 'n:parts', to: 'n:amc', kind: 'flow' },
+      { k: 'f3b', from: 'n:parts', to: 'n:amc__L1', kind: 'flow' },
+      { k: 'f4', from: 'n:amc', to: 'n:plat', kind: 'flow' },
+      { k: 'f4b', from: 'n:amc__L1', to: 'n:plat__L1', kind: 'flow' },
+      { k: 'f5', from: 'n:plat', to: 'n:analysis', kind: 'flow' },
+      { k: 'f5b', from: 'n:plat__L1', to: 'n:analysis', kind: 'flow' },
+      { k: 'f6', from: 'n:analysis', to: 'n:insight', kind: 'flow' },
+      { k: 'f7', from: 'n:insight', to: 'n:agent', kind: 'flow' },
+      { k: 'q1', from: 'n:parts', to: 'n:amc', kind: 'main', text: { zh: '異品牌分店是群聚還是分散？群聚代表卡位競爭，還是共同吸引人潮的合作？', en: 'Do rival stores cluster or spread out? Is clustering competitive positioning, or co-operation that draws shoppers?' } },
+      { k: 'q2', from: 'n:parts', to: 'n:analysis', kind: 'main', text: { zh: '共同供應商的商品與自有品牌、獨家服務相比，哪一種附加價值讓品牌在群聚中仍能差異化？', en: 'Versus shared-supplier products, which added value — private labels or exclusive services — sets a brand apart in a cluster?' } },
+      { k: 'q3', from: 'n:amc', to: 'n:track', kind: 'main', text: { zh: '某品牌展店後，對手是否在一定期間內到附近跟進（察覺、動機、能力）？', en: 'After a brand opens a store, do rivals follow nearby within a set period (awareness, motivation, capability)?' } },
+      { k: 'q4', from: 'n:plat', to: 'n:analysis', kind: 'main', text: { zh: '服務越多的門市，是否越像平台，能吸引更多互補者？', en: 'Do stores with more services act more like platforms and attract more complementors?' } },
+      { k: 'q5', from: 'n:parts', to: 'n:amc__L1', kind: 'main', text: { zh: '同一方向路邊（進城或出城）的異品牌分店，競爭是否比對側更直接？', en: 'Is rivalry more direct between stores on the same side of the road (inbound or outbound) than across it?' } }
+    ],
+    glossary: {
+      lanes: { zh: ['比較列', '圖中的一條水平列代表一個比較地區，最多 3 列；範例以鄉鎮（埔里）與都會（西屯）對照。'], en: ['Comparison Row', 'Each horizontal row is one area being compared, up to three; the example sets a town (Puli) against a city district (Xitun).'] },
+      chosen: { zh: ['Chosen firm/platform', 'W9 提案格式的第二項：選定要分析的企業或平台。本範例選的是便利商店與超市五大品牌。'], en: ['Chosen Firm / Platform', 'The second item of the W9 proposal format: the firms or platforms to analyse. The example takes five convenience-store and supermarket brands.'] },
+      aq: { zh: ['分析問題 AQ', 'TP 版的「假說」：標在連線上，說明兩個節點之間要回答的問題，並自動編號列在圖下方。'], en: ['Analysis Question (AQ)', 'The TP counterpart of a hypothesis: written on a link, stating what the two nodes should answer, auto-numbered below the diagram.'] },
+      opendata: { zh: ['開放地理資料', '政府開放資料平台（data.gov.tw）或 OpenStreetMap 上的分店名稱、地址與座標；使用前確認授權條款。'], en: ['Open Geodata', 'Store names, addresses and coordinates from the government open-data portal (data.gov.tw) or OpenStreetMap; check the licence before use.'] },
+      odbl: { zh: ['ODbL 授權', 'OpenStreetMap 採用的開放資料授權：可自由使用，但必須標示「© OpenStreetMap contributors」，衍生資料庫也要以相同授權分享。'], en: ['ODbL Licence', 'The open-data licence of OpenStreetMap: free to use, but you must credit "© OpenStreetMap contributors" and share derived databases under the same licence.'] },
+      tos: { zh: ['服務條款與 robots.txt', '網站宣告自動存取規則的檔案與使用條款；明確禁止時改用半自動整理，不以技術手段規避。'], en: ['Terms of Service & robots.txt', "A site's rules for automated access; where it is forbidden, compile the data semi-automatically instead of circumventing it."] },
+      matchrate: { zh: ['比對差異率', '官網分店清單與開放資料對不上的比例（找不到、地址不同、已關店）。它就是 W16「Data Quality」最直接的證據。'], en: ['Mismatch Rate', 'The share of stores that do not match between brand lists and open data (missing, different address, closed) — the most direct evidence for W16 Data Quality.'] },
+      mops: { zh: ['MOPS 公開資訊觀測站', '上市櫃公司的財務報表與年報；五個品牌中只有統一超與全家是上市櫃公司，財務比較只做這兩家。'], en: ['MOPS', "Taiwan's disclosure site for listed companies' financial statements and annual reports; of the five brands only President Chain Store and FamilyMart are listed, so financial comparison covers these two."] },
+      coopetition: { zh: ['競合 Co-opetition', '同時競爭與合作：不只把對手看成威脅，也看互補者如何一起把餅做大，再來分餅。'], en: ['Co-opetition', 'Competing and co-operating at once: rivals are not only threats; complementors help make the pie bigger before it is divided.'] },
+      parts: { zh: ['PARTS', '分析與改變賽局的五個槓桿：Players 參賽者、Added value 附加價值、Rules 規則、Tactics 戰術、Scope 範疇。'], en: ['PARTS', 'Five levers for analysing and reshaping the game: Players, Added value, Rules, Tactics, Scope.'] },
+      valuenet: { zh: ['價值網 Value Net', '以企業為中心，上下是顧客與供應商，左右是競爭者與互補者；同一家公司可能同時扮演兩種角色。'], en: ['Value Net', 'The firm at the centre, customers and suppliers above and below, competitors and complementors on either side; one company can play two roles at once.'] },
+      complementor: { zh: ['互補者', '讓顧客更看重你的產品的一方。例如物流、金流業者讓門市的取貨與繳費服務更有價值。'], en: ['Complementor', 'A player that makes customers value your product more — e.g. logistics and payment providers make in-store pickup and bill payment more valuable.'] },
+      addedvalue: { zh: ['附加價值', '有你在與沒有你在時，整個賽局價值的差額。共同供應商的商品各家都有，附加價值低；自有品牌與獨家服務才是差異所在。'], en: ['Added Value', 'The size of the pie with you minus the size without you. Products from shared suppliers add little; private labels and exclusive services make the difference.'] },
+      tactics: { zh: ['戰術 Tactics', '改變他人認知的行動，例如展店選址、在同一側路邊卡位、促銷訊號。'], en: ['Tactics', "Moves that shape others' perceptions, such as site selection, taking the same side of the road, or promotional signals."] },
+      amc: { zh: ['AMC 架構', '對手是否回應，取決於察覺（Awareness）、動機（Motivation）與能力（Capability）三者是否同時具備。'], en: ['AMC Framework', 'Whether a rival responds depends on awareness, motivation and capability all being present.'] },
+      commonality: { zh: ['市場共同性與資源相似性', 'Chen (1996) 的競爭者分析兩軸：市場重疊越多、資源越相似，雙方越可能直接交手。本範例以距離衡量市場重疊，以商品與服務衡量資源相似。'], en: ['Market Commonality & Resource Similarity', 'The two axes of competitor analysis in Chen (1996): the more markets overlap and resources resemble, the more likely direct rivalry. Here distance measures market overlap; products and services measure resource similarity.'] },
+      actresp: { zh: ['行動—回應', '競爭動態的基本單位：一方發動行動（例如展店），另一方是否、何時、以何種方式回應。'], en: ['Action–Response', 'The basic unit of competitive dynamics: one firm acts (e.g. opens a store) and the other decides whether, when and how to respond.'] },
+      cluster: { zh: ['群聚', '異品牌分店集中在同一地點。它可能是卡位競爭，也可能是一起吸引人潮的合作，正是「競合」的例子。'], en: ['Clustering', 'Rival stores concentrated in one spot — competitive positioning or co-operation that draws more shoppers: a case of co-opetition.'] },
+      sameside: { zh: ['同側與對側（進階）', '同一方向路邊的分店搶同一批用路人；對側的分店要過馬路才到，競爭較間接。需要道路資料判斷，列為選配。'], en: ['Same Side vs Opposite Side (advanced)', 'Stores on the same side of the road compete for the same passers-by; those across the road compete less directly. It needs road data, so it is optional.'] },
+      platform: { zh: ['平台', '連接兩群以上使用者、讓他們彼此交換價值的商業模式；門市透過店內機台連接消費者與服務提供者。'], en: ['Platform', 'A business model that connects two or more user groups so they exchange value; a store connects shoppers with service providers through its kiosks.'] },
+      netfx: { zh: ['網路效應', '使用者越多，每位使用者得到的價值越高。同邊：同一群使用者之間；跨邊：一邊越多，另一邊越想加入。'], en: ['Network Effects', 'Each user gains more as the user base grows. Same-side: within one group; cross-side: more on one side attracts the other.'] },
+      kiosk: { zh: ['店內多功能機台', '例如 7-ELEVEN 的 ibon、全家的 FamiPort，提供票券、繳費、列印等服務，讓門市具有平台性質。'], en: ['In-store Kiosk', "e.g. 7-ELEVEN's ibon and FamilyMart's FamiPort, offering tickets, bill payment and printing — the feature that makes a store platform-like."] },
+      bi: { zh: ['BI 商業智慧', 'M1 的重點：資料＋視覺化＋策略敘事。先用 Looker Studio 拖拉做儀表板，再用 AI 協作做成 HTML＋Chart.js 網頁。'], en: ['Business Intelligence (BI)', 'The focus of M1: data + visualisation + strategic storytelling. Build a Looker Studio dashboard first, then an HTML + Chart.js page with AI.'] },
+      nn: { zh: ['最近異品牌距離', '每家分店到最近一家「不同品牌」分店的距離；平均越短，表示越群聚。'], en: ['Nearest Rival Distance', 'The distance from each store to the closest store of a different brand; the shorter the average, the stronger the clustering.'] },
+      jamovi: { zh: ['jamovi', 'M2 使用的免費統計軟體，以圖形介面完成描述統計、t 檢定、相關與迴歸。'], en: ['jamovi', 'The free statistics package used in M2: descriptives, t-tests, correlation and regression through a graphical interface.'] },
+      insight: { zh: ['商業洞察', 'W16 評分占 20%：不只呈現資料，還要說明「所以呢」，給出可行的策略建議。'], en: ['Business Insight', 'Worth 20% at W16: not just showing data but explaining "so what" and giving actionable strategy advice.'] },
+      react: { zh: ['ReAct Agent', '思考 → 呼叫工具 → 觀察修正的循環；W14 的競合策略 AI 助理依 Players → Added Values → Competitive Dynamics → Platform Strategy 依序推理。'], en: ['ReAct Agent', 'The think → call a tool → observe cycle; the W14 co-opetitive strategy assistant reasons through Players → Added Values → Competitive Dynamics → Platform Strategy.'] },
+      sse: { zh: ['SSE 串流', 'Server-Sent Events：後端邊產生邊傳送，使用者可以看到回答逐字出現，不必等整段完成。'], en: ['SSE Streaming', 'Server-Sent Events: the back end sends the answer as it is generated, so users see it appear word by word.'] },
+      pipeline: { zh: ['自動管線', 'M3 的重點：抓取 → AI 摘要 → 依 AMC 分類 → 存入 D1 資料庫 → 以 Cron 定期執行，形成持續的競爭情報。'], en: ['Automated Pipeline', 'The focus of M3: fetch → AI summary → AMC classification → D1 database → run on a Cron schedule, giving continuous competitive intelligence.'] }
+    },
+    guide: {
+      zh: ['A 圖呈現競合策略 AI 助理的「分析邏輯」：從選定的產業與地區，經過 PARTS、AMC 與平台策略三個分析視角，到資料分析、商業洞察與 Agent 的回答。節點下方的標籤對應課程週次、模組或教材。', '範例：便利商店與超市五大品牌（7-ELEVEN、全家、萊爾富、OK、全聯）的分店分布。異品牌分店的群聚同時有競爭與合作的意涵；店內的共同供應商商品、自有品牌與各項服務，則分別對應附加價值與平台策略。', '建議步驟：① 在①填入你們的產業、品牌與地區；兩條比較列預設為鄉鎮與都會，可在「新增」分頁再加一列（最多 3 列）。② 在②選擇資料來源模式：自動與半自動都是正式合格做法。③ 依 PARTS、AMC、平台策略完成③④⑤。④ 在⑥⑦寫出分析方法與預期的商業洞察。⑤ 在連線上寫出你們的分析問題（AQ），系統會自動編號並列在圖下方。', '完成後匯出 SVG 或 PNG，放進 W9 提案。'],
+      en: ['Diagram A shows the analysis logic of the co-opetitive strategy AI assistant: from the chosen industry and area, through three lenses — PARTS, AMC and platform strategy — to data analysis, business insight and the agent\'s answer. The tag under each node points to a course week, module or reading.', 'Example: the store networks of five convenience-store and supermarket brands (7-ELEVEN, FamilyMart, Hi-Life, OK mart, PX Mart). Clustering of rival stores carries both competition and co-operation; shared-supplier products, private labels and in-store services map onto added value and platform strategy.', 'Suggested steps: (1) fill ① with your industry, brands and area; the two default comparison rows are a town and a city, and you can add a third in the Add tab. (2) Choose the source mode in ②: both automatic and semi-automatic are fully acceptable. (3) Work through PARTS, AMC and platform strategy in ③④⑤. (4) State the analysis methods and expected insight in ⑥⑦. (5) Write your analysis questions (AQ) on the links; they are numbered automatically and listed below the diagram.', 'When finished, export SVG or PNG for your W9 proposal.']
+    }
   }
 };
-const TEMPLATE_ORDER = ['rp_quant', 'rp_qual', 'tp_pmcs'];
+const TEMPLATE_ORDER = ['rp_quant', 'rp_qual', 'tp_pmcs', 'tp_cdps'];
 
 /* ============================================================
    TEMPLATES_B — Diagram B (flow): same keys as TEMPLATES
@@ -505,6 +615,133 @@ const TEMPLATES_B = {
       zh: ['B 圖是研究流程圖：由上而下呈現從研究動機到結論的步驟，左側色帶標示對應的論文章節。', '質性研究的特色是「邊蒐集、邊分析」：資料蒐集與資料分析之間是循環，直到達到理論飽和才進入研究發現。', '建議步驟：① 依你的研究改寫各步驟內容與時程標籤（M1 代表第 1 個月）；② 保留判斷節點與回饋迴路，寫出停止蒐集的標準；③ 「文獻回顧與概念架構」節點標示「→ A 圖」，內容要與 A 圖一致；④ 底部寫明研究倫理與信實度的做法。'],
       en: ['Diagram B is the research process: steps from motivation to conclusion, top to bottom, with coloured strips on the left showing the thesis chapter.', 'Qualitative research collects and analyses at the same time: data collection and analysis form a loop until theoretical saturation, and only then do you write up the findings.', 'Suggested steps: (1) rewrite each step and its timeline tag for your study (M1 = month 1); (2) keep the decision node and loops, and state your stopping rule; (3) mark the literature & framework node "→ A" and keep it consistent with Diagram A; (4) state your ethics and trustworthiness practices in the bottom band.']
     }
+  },
+
+  /* ---------------- TP · CDPS 1151 · I-P-O system blueprint ---------------- */
+  tp_cdps: {
+    id: 'tp_cdps', short: 'TP-CDPS-B',
+    name: { zh: 'TP 期末專案・CDPS 1151', en: 'TP Term Project · CDPS 1151' },
+    nodeW: 212, gapX: 30, grid: true, rowGap: 150, topPad: 38, alignTop: true,
+    colShift: [0, 0, 44, 44, 88, 88],
+    prefix: 'L', signs: false, defaultEdgeKind: 'flow', mainStyle: 'loop', xref: true, defaultRole: 'pipe',
+    legendTitle: { zh: '回饋迴路（L）', en: 'Feedback Loops (L)' },
+    ownerTitle: { zh: '團隊角色分工（建議，可依組內分工調整；一個角色可由多位組員負責）', en: 'Team Roles (suggested; adjust to your team — one role may have several members)' },
+    title: { zh: '便利商店競合策略 AI 助理：系統流程圖（I-P-O 藍圖）', en: 'Convenience-Store Co-opetitive Strategy AI Assistant: System Flow (I-P-O Blueprint)' },
+    subtitle: { zh: 'CDPS-EMI 1151 · 第 __ 組 · W9 提案', en: 'CDPS-EMI 1151 · Group __ · W9 Proposal' },
+    stack: { zh: '前端 GitHub Pages；後端 Cloudflare Workers ＋ D1；全部使用免費方案', en: 'Front end: GitHub Pages; back end: Cloudflare Workers + D1; free tiers only' },
+    lanes: { enabled: false },
+    phaseDir: 'col',
+    phases: [
+      { cols: [0, 1], skipTech: true, color: '#004030', fill: '#F2F7F4', label: { zh: 'INPUT｜資料與設計（M1–M3、W13）', en: 'INPUT | Data & Design (M1–M3, W13)' }, out: { zh: '產出：乾淨的分店與服務資料、Agent 決策樹', en: 'Output: clean store and service data, the agent decision tree' } },
+      { cols: [2, 3], color: '#1D4ED8', fill: '#F3F7FF', label: { zh: 'PROCESS｜後端與 AI（Cloudflare Workers）', en: 'PROCESS | Back End & AI (Cloudflare Workers)' }, out: { zh: '產出：D1 中的空間指標與行動—回應紀錄', en: 'Output: spatial measures and action–response records in D1' } },
+      { cols: [4, 5], color: '#B45309', fill: '#FFF9F0', label: { zh: 'OUTPUT & LOOP｜前端、部署與排程', en: 'OUTPUT & LOOP | Front End, Deployment & Schedule' }, out: { zh: '產出：已部署、可實機展示的網頁應用', en: 'Output: a deployed web app ready for a live demo' } }
+    ],
+    band: { roles: ['gov'], label: { zh: '治理層 Governance（橫貫三欄）', en: 'Governance (cuts across all three columns)' } },
+    owners: [
+      { id: 'data', color: '#0F766E', zh: '資料', en: 'Data' },
+      { id: 'backend', color: '#0369A1', zh: '後端與 AI', en: 'Back End & AI' },
+      { id: 'frontend', color: '#BE185D', zh: '前端與部署', en: 'Front End & Deploy' },
+      { id: 'strategy', color: '#7C3AED', zh: '策略分析', en: 'Strategy Analyst' }
+    ],
+    roles: [
+      { id: 'src',    col: 0, row: 0, shape: 'doc',  color: '#004030', fill: '#E6F0EC', zh: '資料來源', en: 'Data Source', terms: ['opendata', 'tos', 'mops'] },
+      { id: 'prep',   col: 1, row: 0, shape: 'step', color: '#004030', fill: '#E6F0EC', zh: '資料整理', en: 'Data Preparation', terms: ['sheets'] },
+      { id: 'design', col: 1, row: 0, shape: 'step', color: '#004030', fill: '#E6F0EC', zh: '分析設計', en: 'Analysis Design', terms: ['decisiontree'] },
+      { id: 'pipe',   col: 2, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: '管線步驟', en: 'Pipeline Step', terms: ['geocode', 'matching'] },
+      { id: 'gate',   col: 2, row: 0, shape: 'decision', color: '#1D4ED8', fill: '#EAF1FF', zh: '品質閘', en: 'Quality Gate', terms: ['matchrate'] },
+      { id: 'secret', col: 2, row: 0, shape: 'doc',  color: '#1D4ED8', fill: '#EAF1FF', zh: '金鑰隔離', en: 'Key Isolation', terms: ['secrets'] },
+      { id: 'calc',   col: 3, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: '計算與核對', en: 'Computation & Review', terms: ['spatial', 'sameside'] },
+      { id: 'db',     col: 3, row: 0, shape: 'doc',  color: '#1D4ED8', fill: '#EAF1FF', zh: '資料庫', en: 'Database', terms: ['d1'] },
+      { id: 'ai',     col: 3, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: 'AI 模組', en: 'AI Module', terms: ['amcclass', 'rag', 'react'] },
+      { id: 'front',  col: 4, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: '前端功能', en: 'Front-end Feature', terms: ['ghpages', 'sse'] },
+      { id: 'report', col: 5, row: 0, shape: 'doc',  color: '#B45309', fill: '#FEF3E2', zh: '報告', en: 'Report', terms: ['insight'] },
+      { id: 'demo',   col: 5, row: 0, shape: 'terminal', color: '#B45309', fill: '#FEF3E2', zh: '發表', en: 'Presentation', terms: ['livedemo'] },
+      { id: 'sched',  col: 5, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: '排程', en: 'Schedule', terms: ['cron'] },
+      { id: 'gov',    row: 1, col: 0, w: 454, shape: 'step', color: '#475569', fill: '#F1F5F9', zh: '治理原則', en: 'Governance Principle', terms: ['tos', 'odbl', 'secrets', 'aidisclose'] }
+    ],
+    groups: [
+      { id: 'in', roles: ['src'], color: '#004030', label: { zh: '資料來源（M1–M3）', en: 'Data Sources (M1–M3)' } },
+      { id: 'gs', roles: ['prep', 'design'], color: '#004030', label: { zh: 'Google Sheets', en: 'Google Sheets' } },
+      { id: 'pp', roles: ['pipe', 'gate', 'secret'], color: '#1D4ED8', label: { zh: '資料管線', en: 'Data Pipeline' } },
+      { id: 'an', roles: ['calc', 'db', 'ai'], color: '#1D4ED8', label: { zh: '計算、儲存與 AI', en: 'Computation, Storage & AI' } },
+      { id: 'fe', roles: ['front'], color: '#B45309', label: { zh: '前端（GitHub Pages）', en: 'Front End (GitHub Pages)' } },
+      { id: 'dl', roles: ['report', 'demo'], color: '#B45309', label: { zh: '交付', en: 'Delivery' } },
+      { id: 'lp', roles: ['sched'], color: '#B45309', label: { zh: 'Loop Engineering', en: 'Loop Engineering' } }
+    ],
+    nodes: [
+      { k: 'geo', role: 'src', owner: 'data', xref: 'A②', text: T('開放地理資料', ['政府開放資料、OpenStreetMap', '分店名稱、地址、座標', '標示出處與授權（ODbL）'], 'Open Geodata', ['Government open data, OpenStreetMap', 'Store names, addresses, coordinates', 'Credit sources and licence (ODbL)']) },
+      { k: 'web', role: 'src', owner: 'data', xref: 'A②', text: T('品牌官網分店清單', ['7-ELEVEN、全家、萊爾富、OK、全聯', '遵守服務條款與 robots.txt', '半自動：組員整理至共用表單'], 'Brand Store Lists', ['7-ELEVEN, FamilyMart, Hi-Life, OK mart, PX Mart', 'Respect terms of service and robots.txt', 'Semi-automatic: members compile a shared sheet']) },
+      { k: 'goods', role: 'src', owner: 'strategy', xref: 'A③', text: T('商品與服務清單', ['共同／相異供應商、自有品牌', 'ibon／FamiPort、提款、取貨等服務'], 'Products & Services', ['Shared / distinct suppliers, private labels', 'ibon / FamiPort, cash withdrawal, parcel pickup']) },
+      { k: 'mops', role: 'src', owner: 'data', tag: 'MOPS', text: T('MOPS 財務資料', ['統一超、全家（上市櫃）', '營收、獲利與年報中的分店數'], 'MOPS Financials', ['President Chain Store, FamilyMart (listed)', 'Revenue, profit and store counts from annual reports']) },
+      { k: 'sheets', role: 'prep', owner: 'data', text: T('Google Sheets 整理', ['地址標準化、品牌名稱統一', '去除重複、標記來源與日期'], 'Google Sheets Clean-up', ['Standardise addresses and brand names', 'Remove duplicates; record source and date']) },
+      { k: 'logic', role: 'design', owner: 'strategy', tag: 'W13', xref: 'A③–⑤', text: T('Agent 邏輯設計', ['在 Sheets 設計決策樹', 'PARTS ＋ AMC ＋ 平台指標'], 'Agent Logic Design', ['Design the decision tree in Sheets', 'PARTS + AMC + platform metrics']) },
+      { k: 'geocode', role: 'pipe', owner: 'backend', text: T('地理編碼', ['地址 → 座標', '免費服務有速率限制（例如 Nominatim 每秒 1 次）'], 'Geocoding', ['Address → coordinates', 'Free services are rate-limited (e.g. Nominatim: 1 request per second)']) },
+      { k: 'match', role: 'pipe', owner: 'data', text: T('比對與去重', ['官網清單 × 開放資料', '以距離與店名配對同一分店'], 'Matching & De-duplication', ['Brand lists × open data', 'Pair records by distance and store name']) },
+      { k: 'gate', role: 'gate', owner: 'data', xref: 'A②', text: T('品質閘：比對差異率', ['差異率可接受？', '通過 → 空間計算；未通過 → 人工核對'], 'Quality Gate: Mismatch Rate', ['Is the mismatch rate acceptable?', 'Pass → spatial computation; fail → manual review']) },
+      { k: 'secrets', role: 'secret', owner: 'backend', tag: 'Secrets', text: T('Workers Secrets 金鑰隔離', ['API 金鑰只放 Cloudflare Workers Secrets', '絕不放前端、Git 或 Prompt'], 'Workers Secrets', ['API keys only in Cloudflare Workers Secrets', 'Never in front-end code, Git or prompts']) },
+      { k: 'spatial', role: 'calc', owner: 'backend', xref: 'A④', text: T('空間計算', ['最近異品牌距離、半徑內家數', '群聚程度', '進階：同側／對側'], 'Spatial Computation', ['Nearest rival distance, stores within radius', 'Degree of clustering', 'Advanced: same side / opposite side']) },
+      { k: 'review', role: 'calc', owner: 'data', text: T('人工核對', ['逐筆確認對不上的分店', '修正比對規則'], 'Manual Review', ['Check unmatched stores one by one', 'Revise the matching rules']) },
+      { k: 'd1', role: 'db', owner: 'backend', tag: 'D1', text: T('D1 資料庫', ['分店、服務、空間指標', '行動—回應紀錄'], 'D1 Database', ['Stores, services, spatial measures', 'Action–response records']) },
+      { k: 'classify', role: 'ai', owner: 'backend', tag: 'M3', xref: 'A⑨', text: T('AI 摘要與 AMC 分類', ['新聞與展店／關店事件 → AI 摘要', '依 AMC 分類行動—回應'], 'AI Summary & AMC Classification', ['News and opening / closure events → AI summary', 'Classify actions and responses by AMC']) },
+      { k: 'agent', role: 'ai', owner: 'backend', tag: 'M4', xref: 'A⑧', text: T('ReAct Agent', ['Players → Added Values → Competitive Dynamics → Platform Strategy', '查詢 D1、RAG 檢索'], 'ReAct Agent', ['Players → Added Values → Competitive Dynamics → Platform Strategy', 'Queries D1 and RAG retrieval']) },
+      { k: 'dash', role: 'front', owner: 'frontend', tag: 'M1', xref: 'A⑥', text: T('地圖儀表板', ['各品牌分店分布與群聚', 'HTML ＋ Chart.js'], 'Map Dashboard', ['Store distribution and clustering by brand', 'HTML + Chart.js']) },
+      { k: 'qa', role: 'front', owner: 'frontend', tag: 'M2', text: T('競爭 Q&A（RAG）', ['以資料與 Chen (1996) 回答問題'], 'Competitive Q&A (RAG)', ['Answers questions from the data and Chen (1996)']) },
+      { k: 'chat', role: 'front', owner: 'frontend', tag: 'M4', xref: 'A⑧', text: T('Agent 對話介面', ['SSE 串流回答', 'PDF 報告匯出'], 'Agent Chat Interface', ['SSE streaming answers', 'PDF report export']) },
+      { k: 'insight', role: 'report', owner: 'strategy', xref: 'A⑦', text: T('商業洞察報告', ['群聚的競合意涵', '城鄉比較與策略建議'], 'Business Insight Report', ['What clustering means for co-opetition', 'Town vs city comparison and advice']) },
+      { k: 'demo', role: 'demo', owner: 'strategy', tag: 'W16', text: T('W16 發表與實機展示', ['15 分鐘，含已部署網站實機展示', 'TP ＝ 已部署網頁，不是影片'], 'W16 Presentation & Live Demo', ['15 minutes, including a live demo of the deployed site', 'TP = deployed web app, not a video']) },
+      { k: 'cron', role: 'sched', owner: 'backend', tag: 'Cron', text: T('Cron Trigger', ['定期喚醒 Workers（寫明時區）', '重抓官網分店清單與新聞 RSS', '重試有上限，並發送失敗通知'], 'Cron Trigger', ['Wakes the Workers on a schedule (time zone stated)', 'Re-fetches brand store lists and news RSS', 'Capped retries with failure alerts']) },
+      { k: 'gov1', role: 'gov', col: 0, owner: 'data', text: T('資料法遵', ['遵守服務條款與 robots.txt', '開放資料標示出處與授權', '只蒐集分店資料，不蒐集個資'], 'Data Compliance', ['Respect terms of service and robots.txt', 'Credit open-data sources and licences', 'Store data only — no personal data']) },
+      { k: 'gov2', role: 'gov', col: 2, owner: 'backend', text: T('免費方案與金鑰安全', ['全部使用免費方案，不用付費 API', '金鑰只放 Workers Secrets'], 'Free Tiers & Key Safety', ['Free tiers only; no paid APIs', 'Keys only in Workers Secrets']) },
+      { k: 'gov3', role: 'gov', col: 4, owner: 'strategy', text: T('AI 協作揭露', ['標示 AI 協助的範圍', 'AI 產出經組員審閱才發布'], 'AI-assistance Disclosure', ['State where AI assisted', 'AI output is reviewed by the team before release']) }
+    ],
+    edges: [
+      { k: 'f1', from: 'n:geo', to: 'n:sheets', kind: 'flow' },
+      { k: 'f2', from: 'n:web', to: 'n:sheets', kind: 'flow' },
+      { k: 'f3', from: 'n:goods', to: 'n:logic', kind: 'flow' },
+      { k: 'f4', from: 'n:sheets', to: 'n:geocode', kind: 'flow' },
+      { k: 'f5', from: 'n:geocode', to: 'n:match', kind: 'flow' },
+      { k: 'f6', from: 'n:match', to: 'n:gate', kind: 'flow' },
+      { k: 'f7', from: 'n:gate', to: 'n:spatial', kind: 'flow' },
+      { k: 'f8', from: 'n:gate', to: 'n:review', kind: 'flow' },
+      { k: 'f9', from: 'n:spatial', to: 'n:d1', kind: 'flow' },
+      { k: 'f10', from: 'n:classify', to: 'n:d1', kind: 'flow' },
+      { k: 'f11', from: 'n:logic', to: 'n:agent', kind: 'flow' },
+      { k: 'f12', from: 'n:d1', to: 'n:dash', kind: 'flow' },
+      { k: 'f13', from: 'n:agent', to: 'n:chat', kind: 'flow' },
+      { k: 'f14', from: 'n:chat', to: 'n:insight', kind: 'flow' },
+      { k: 'f15', from: 'n:insight', to: 'n:demo', kind: 'flow' },
+      { k: 'l1', from: 'n:cron', to: 'n:web', kind: 'main', text: { zh: 'Cron：定期重抓官網分店清單與新聞，偵測展店與關店並更新 D1；排程要寫明頻率、時區、重試上限與失敗通知。', en: 'Cron: re-fetches store lists and news on a schedule, detects openings and closures and updates D1; state the frequency, time zone, retry cap and failure alerts.' } },
+      { k: 'l2', from: 'n:d1', to: 'n:agent', kind: 'main', text: { zh: 'ReAct：Agent 查詢 D1 與 RAG，觀察結果後判斷資料是否足夠，不足就再查一輪（設定上限）。', en: 'ReAct: the agent queries D1 and RAG, observes the result, and runs another round if the data are insufficient (with a cap).' } },
+      { k: 'l3', from: 'n:review', to: 'n:match', kind: 'main', text: { zh: '人工核對：比對差異過大時逐筆確認，修正比對規則後重新比對。', en: 'Manual review: when the mismatch rate is too high, check stores one by one, revise the matching rules and match again.' } }
+    ],
+    glossary: Object.assign({
+      opendata: { zh: ['開放地理資料', '政府開放資料平台（data.gov.tw）或 OpenStreetMap 上的分店名稱、地址與座標；使用前確認授權條款。'], en: ['Open Geodata', 'Store names, addresses and coordinates from the government open-data portal (data.gov.tw) or OpenStreetMap; check the licence before use.'] },
+      odbl: { zh: ['ODbL 授權', 'OpenStreetMap 採用的開放資料授權：可自由使用，但必須標示「© OpenStreetMap contributors」。'], en: ['ODbL Licence', 'The open-data licence of OpenStreetMap: free to use, but you must credit "© OpenStreetMap contributors".'] },
+      tos: { zh: ['服務條款與 robots.txt', '網站宣告自動存取規則的檔案與使用條款；明確禁止時改用半自動整理，不以技術手段規避。'], en: ['Terms of Service & robots.txt', "A site's rules for automated access; where it is forbidden, compile the data semi-automatically instead of circumventing it."] },
+      mops: { zh: ['MOPS 公開資訊觀測站', '上市櫃公司的財務報表與年報；五個品牌中只有統一超與全家是上市櫃公司。'], en: ['MOPS', "Taiwan's disclosure site for listed companies; of the five brands only President Chain Store and FamilyMart are listed."] },
+      sheets: { zh: ['Google Sheets 整理', 'M1–M3 的資料準備層：排序、篩選、樞紐分析、VLOOKUP，以及人工標記。'], en: ['Google Sheets Preparation', 'The data-preparation layer of M1–M3: sort, filter, pivot, VLOOKUP and manual labelling.'] },
+      decisiontree: { zh: ['Agent 決策樹', 'W13 先在 Google Sheets 設計 Agent 的推理步驟：PARTS ＋ AMC ＋ 平台指標，再寫成程式。'], en: ['Agent Decision Tree', 'In W13 the agent\'s reasoning steps are designed in Google Sheets first — PARTS + AMC + platform metrics — before any code.'] },
+      geocode: { zh: ['地理編碼', '把地址轉成經緯度座標。免費服務都有速率限制，例如 OpenStreetMap 的 Nominatim 規定每秒最多 1 次請求。'], en: ['Geocoding', 'Turning addresses into coordinates. Free services are rate-limited; e.g. OpenStreetMap\'s Nominatim allows at most one request per second.'] },
+      matching: { zh: ['比對與去重', '同一家分店在不同來源的名稱與地址常有差異；以距離與店名配對，並刪除重複紀錄。'], en: ['Matching & De-duplication', 'The same store often appears with different names or addresses across sources; pair records by distance and name and remove duplicates.'] },
+      matchrate: { zh: ['比對差異率', '官網清單與開放資料對不上的比例；這是 W16「Data Quality」最直接的證據。'], en: ['Mismatch Rate', 'The share of stores that do not match between sources — the most direct evidence for W16 Data Quality.'] },
+      secrets: { zh: ['Workers Secrets', 'Cloudflare Workers 的加密環境變數；API 金鑰只放這裡，一旦外洩立刻撤銷並重新產生。'], en: ['Workers Secrets', 'Encrypted environment variables in Cloudflare Workers; API keys live only here, and a leaked key is revoked and regenerated at once.'] },
+      spatial: { zh: ['空間計算', '以座標計算最近異品牌距離、一定半徑內的家數與群聚程度，作為市場共同性的衡量。'], en: ['Spatial Computation', 'Uses coordinates to compute nearest rival distance, stores within a radius and clustering, as measures of market commonality.'] },
+      sameside: { zh: ['同側與對側（進階）', '需要道路資料判斷分店位於進城或出城方向的哪一側，列為選配。'], en: ['Same Side vs Opposite Side (advanced)', 'Needs road data to tell which side of the road (inbound or outbound) a store is on; optional.'] },
+      d1: { zh: ['D1 資料庫', 'Cloudflare 的免費 SQL 資料庫，與 Workers 搭配使用，存放分店、指標與行動—回應紀錄。'], en: ['D1 Database', "Cloudflare's free SQL database used with Workers, holding stores, measures and action–response records."] },
+      amcclass: { zh: ['AMC 分類', 'M3 的自動管線：抓取新聞或分店變動 → AI 摘要 → 依察覺、動機、能力分類 → 存入 D1。'], en: ['AMC Classification', 'The M3 pipeline: fetch news or store changes → AI summary → classify by awareness, motivation and capability → store in D1.'] },
+      rag: { zh: ['RAG 檢索增強生成', '先從資料與文獻中找出相關段落，再交給模型回答，減少憑空杜撰；M2 以 NotebookLM 做概念驗證。'], en: ['Retrieval-Augmented Generation (RAG)', 'Retrieve relevant passages from data and readings first, then let the model answer, reducing fabrication; M2 uses NotebookLM as a proof of concept.'] },
+      react: { zh: ['ReAct Agent', '思考 → 呼叫工具 → 觀察修正的循環；依 Players → Added Values → Competitive Dynamics → Platform Strategy 依序推理。'], en: ['ReAct Agent', 'The think → call a tool → observe cycle, reasoning through Players → Added Values → Competitive Dynamics → Platform Strategy.'] },
+      ghpages: { zh: ['GitHub Pages', '免費的靜態網站託管，放前端 SPA；後端呼叫交給 Cloudflare Workers。'], en: ['GitHub Pages', 'Free static hosting for the front-end SPA; back-end calls go to Cloudflare Workers.'] },
+      sse: { zh: ['SSE 串流', 'Server-Sent Events：後端邊產生邊傳送，使用者可以看到回答逐字出現。'], en: ['SSE Streaming', 'Server-Sent Events: the back end sends the answer as it is generated, so it appears word by word.'] },
+      insight: { zh: ['商業洞察', 'W16 評分占 20%：說明資料的「所以呢」，並提出可行的策略建議。'], en: ['Business Insight', 'Worth 20% at W16: explain the "so what" of the data and give actionable advice.'] },
+      livedemo: { zh: ['實機展示', 'W16 每組 15 分鐘，必須展示已部署的網頁應用；TP 是可運作的網站，不是影片。'], en: ['Live Demo', 'Each group has 15 minutes at W16 and must demonstrate the deployed web app; the TP is a working site, not a video.'] },
+      cron: { zh: ['Cron Trigger', 'Cloudflare Workers 的定期排程，以 UTC 計時；台灣時間要換算（UTC+8）。'], en: ['Cron Trigger', 'The scheduled trigger of Cloudflare Workers, which runs on UTC; convert from Taiwan time (UTC+8).'] },
+      aidisclose: { zh: ['AI 協作揭露', '課程要求標示 AI 協助編修的範圍；AI 產出須經組員審閱才發布。'], en: ['AI-assistance Disclosure', 'The course asks you to state where AI helped; AI output is reviewed by the team before release.'] }
+    }, B_SHAPES_GLOSS),
+    guide: {
+      zh: ['B 圖呈現競合策略 AI 助理的「系統流程」：左欄 INPUT 整理 M1–M3 的資料並在 Sheets 設計 Agent 邏輯，中欄 PROCESS 在 Cloudflare Workers 上比對、計算與執行 AI，右欄 OUTPUT & LOOP 部署前端、產出報告並定期更新；底部治理層橫貫三欄。', '建議步驟：① 確認資料來源與「品質閘」的比對差異率門檻；② 逐一檢查每個節點的「負責角色」（四個角色，一個角色可由多位組員負責），圖下方會自動產生團隊分工表；③ 回饋迴路（虛線 L1、L2…）要寫明頻率與上限；④ 節點右下角的「→ A②」對應 A 架構圖，兩張圖的內容要一致。', '新增連線預設為流程箭頭；在右側把類型改為「回饋迴路」，就會變成編號的虛線弧形箭頭。'],
+      en: ['Diagram B shows the system flow of the co-opetitive strategy AI assistant: INPUT prepares the M1–M3 data and designs the agent logic in Sheets; PROCESS matches, computes and runs the AI on Cloudflare Workers; OUTPUT & LOOP deploys the front end, produces the report and refreshes on a schedule; the governance band cuts across all three.', 'Suggested steps: (1) confirm the data sources and the mismatch-rate threshold at the quality gate; (2) check the team role on every node (four roles; one role may have several members) — the team-role table below updates itself; (3) every feedback loop (dashed L1, L2 …) must state its frequency and limits; (4) the "→ A②" mark links a node to Framework Diagram A, so keep the two diagrams consistent.', 'New links are flow arrows by default; switch the type to Feedback Loop in the side panel to make a numbered dashed arc.']
+    }
   }
 };
 
@@ -621,6 +858,42 @@ const TEMPLATES_C = {
       zh: ['C 圖是研究提案的一頁摘要，適合口試委員、指導教授快速掌握研究全貌，也可以放進論文計畫書。', '「理論視角與命題」會跟著 A 圖更新，「研究時程」會跟著 B 圖的時程標籤更新。', '建議步驟：① 在右側填入研究題目與姓名；② 逐張檢查卡片內容；③ 頂端的「完成 X／9」全部打勾後，匯出或「列印／存成 PDF」。'],
       en: ['Diagram C is a one-page summary of the proposal, letting committee members and advisors grasp the whole study quickly; it also fits into a thesis proposal.', 'Theoretical Lens & Propositions follows Diagram A; Timeline follows the tags in Diagram B.', 'Suggested steps: (1) enter the title and names on the right; (2) check each card; (3) when "Done X/9" is complete, export or Print / Save as PDF.']
     }
+  },
+
+  /* ---------------- TP · CDPS 1151 · W9 proposal ---------------- */
+  tp_cdps: {
+    id: 'tp_cdps', short: 'TP-CDPS-C',
+    name: { zh: 'TP 期末專案・CDPS 1151', en: 'TP Term Project · CDPS 1151' },
+    pageTitle: { zh: '競合策略 AI 助理：W9 提案摘要', en: 'Co-opetitive Strategy AI Assistant: W9 Proposal Summary' },
+    title: { zh: '便利商店競合策略 AI 助理', en: 'Convenience-Store Co-opetitive Strategy AI Assistant' },
+    subtitle: { zh: 'CDPS-EMI 1151 · 第 __ 組 · 組員：__ · 日期：__', en: 'CDPS-EMI 1151 · Group __ · Members: __ · Date: __' },
+    cards: [
+      { id: 'bg', title: L2('背景', 'Background'), sub: L2('Background｜W16 Problem Definition 20%', 'W16: Problem Definition 20%'), limit: 150,
+        hint: L2('要回答什麼問題？為什麼重要？', 'What question will you answer, and why does it matter?'),
+        def: L2(['問題：同一條街上常有多家不同品牌的便利商店，它們在彼此競爭，還是一起吸引人潮？', '為什麼重要：展店選址與店內服務是便利商店最主要的競爭手段', '分析問題：見 ⑥'], ['Question: one street often hosts several rival convenience stores — are they competing, or drawing shoppers together?', 'Why it matters: site selection and in-store services are the main competitive weapons of convenience stores', 'Analysis questions: see ⑥']) },
+      { id: 'firm', title: L2('選定企業／平台', 'Chosen Firm / Platform'), sub: L2('Chosen firm/platform｜產業、品牌、地區', 'Industry, brands, area'), auto: 'cdps_scope', src: 'A', limit: 180 },
+      { id: 'data', title: L2('資料來源', 'Data Sources'), sub: L2('Data sources｜W16 Data Quality 20%', 'W16: Data Quality 20%'), auto: 'cdps_sources', src: 'A', limit: 200 },
+      { id: 'tech', title: L2('技術架構', 'Tech Architecture'), sub: L2('Tech architecture｜W16 Implementation 25%', 'W16: Implementation 25%'), auto: 'cdps_tech', src: 'B', limit: 260 },
+      { id: 'output', title: L2('預期部署成果', 'Expected Deployed Output'), sub: L2('Expected deployed output｜W16 Delivery 15%', 'W16: Delivery 15%'), limit: 160,
+        hint: L2('把 __ 換成你們的網址', 'Replace __ with your URL'),
+        def: L2(['網址：https://__.github.io/__/', '功能：地圖儀表板、競爭 Q&A、Agent 對話與 PDF 報告', 'TP ＝ 已部署的網頁應用（前端＋後端），不是影片'], ['URL: https://__.github.io/__/', 'Features: map dashboard, competitive Q&A, agent chat with PDF report', 'TP = a deployed web app (front end + back end), not a video']) },
+      { id: 'aq', title: L2('分析問題', 'Analysis Questions'), sub: L2('PARTS × AMC × 平台策略｜W16 Business Insight 20%', 'PARTS × AMC × Platform Strategy | W16: Business Insight 20%'), auto: 'a_hyp', src: 'A', limit: 320 },
+      { id: 'team', title: L2('團隊分工', 'Team Roles'), sub: L2('填入組員姓名（一個角色可填多位）', 'Add member names (several per role allowed)'), auto: 'team', src: 'B', people: true, limit: 260 },
+      { id: 'milestones', title: L2('里程碑', 'Milestones'), limit: 160,
+        def: L2(['W9：提案＋ 5 分鐘 pitch', 'W12：Module 3 管線可運作（Cron ＋ D1）', 'W15：部署 Agent（GitHub Pages ＋ Cloudflare Workers），完成 TP 製作', 'W16：期末發表 15 分鐘，含實機展示'], ['W9: proposal + 5-minute pitch', 'W12: Module 3 pipeline running (Cron + D1)', 'W15: agent deployed (GitHub Pages + Cloudflare Workers); TP production finished', 'W16: 15-minute final presentation with live demo']) },
+      { id: 'grading', title: L2('W16 評分對照', 'W16 Grading Map'), sub: L2('Grading｜每一項評分在本頁的哪裡回應', 'Where this page answers each criterion'), limit: 260,
+        def: L2(['Problem Definition 20% → ① 背景、⑥ 分析問題', 'Data Quality 20% → ③ 資料來源（比對差異率）', 'Implementation 25% → ④ 技術架構', 'Business Insight 20% → ⑥ 分析問題與 A 圖 ⑦ 商業洞察', 'Delivery 15% → ⑤ 預期部署成果、W16 實機展示'], ['Problem Definition 20% → ① Background, ⑥ Analysis Questions', 'Data Quality 20% → ③ Data Sources (mismatch rate)', 'Implementation 25% → ④ Tech Architecture', 'Business Insight 20% → ⑥ Analysis Questions and Diagram A ⑦', 'Delivery 15% → ⑤ Expected Deployed Output, W16 live demo']) }
+    ],
+    glossary: {
+      proposal: { zh: ['W9 提案格式', 'Syllabus W9 的五項：Background → Chosen firm/platform → Data sources → Tech architecture → Expected deployed output，並做 5 分鐘 pitch。'], en: ['W9 Proposal Format', 'The five items in the syllabus: Background → Chosen firm/platform → Data sources → Tech architecture → Expected deployed output, with a 5-minute pitch.'] },
+      grading: { zh: ['W16 評分標準', 'Problem Definition 20%、Data Quality 20%、Implementation 25%、Business Insight 20%、Delivery 15%。'], en: ['W16 Grading', 'Problem Definition 20%, Data Quality 20%, Implementation 25%, Business Insight 20%, Delivery 15%.'] },
+      autofill: { zh: ['自動帶入', '卡片右上角標示「自動帶入：A 圖／B 圖」時，內容會跟著 A、B 圖更新；自己改過之後改為「已手動修改」，可按「重新帶入」還原。'], en: ['Auto-fill', 'A card marked "Auto-filled from A / B" follows those diagrams; once you edit it, it is marked "Edited by hand" and "Refill" restores it.'] },
+      deployed: { zh: ['已部署的網頁應用', 'TP 的交付物是可以用網址開啟、前後端都能運作的網站，W16 要現場實機展示，不接受影片。'], en: ['Deployed Web App', 'The TP deliverable is a working site with front and back end, opened by URL and demonstrated live at W16; videos are not accepted.'] }
+    },
+    guide: {
+      zh: ['C 圖是 W9 提案的一頁摘要。①–⑤ 依 Syllabus W9 的提案格式排序（Background → Chosen firm/platform → Data sources → Tech architecture → Expected deployed output），⑥–⑨ 是分析問題、團隊分工、里程碑與 W16 評分對照。', '標示「自動帶入」的卡片會跟著 A、B 圖更新：②③⑥ 來自 A 圖，④⑦ 來自 B 圖。先把 A、B 圖改好，這裡就會一致。', '建議步驟：① 在右側填入題目、組別與組員；② 逐張點選卡片檢查內容，把 __ 換成你們的網址與資料；③ 在 ⑦ 填入每個角色的組員姓名；④ 頂端的「完成 X／9」全部打勾後，匯出 PNG 或「列印／存成 PDF」，搭配 5 分鐘 pitch 使用。'],
+      en: ['Diagram C is the one-page summary of the W9 proposal. Cards ①–⑤ follow the syllabus proposal format (Background → Chosen firm/platform → Data sources → Tech architecture → Expected deployed output); ⑥–⑨ cover analysis questions, team roles, milestones and the W16 grading map.', 'Cards marked Auto-filled follow Diagrams A and B: ②③⑥ come from A, ④⑦ from B. Fix A and B first and this page stays consistent.', 'Suggested steps: (1) fill in the title, group and members on the right; (2) click each card, check it and replace every __ with your URL and data; (3) add member names for each role in ⑦; (4) when the "Done X/9" counter is complete, export PNG or Print / Save as PDF for your 5-minute pitch.']
+    }
   }
 };
 
@@ -644,7 +917,7 @@ const dict = {
     tour_replay: '▶ 播放新手導覽',
     tour_next: '下一步', tour_prev: '上一步', tour_skip: '略過', tour_done: '開始使用',
     tour_steps: [
-      { t: '選擇範本', d: '依你的用途選擇：研究生選 RP 量化或質性，PMCS 課程選 TP。切換範本會取代目前的 A、B、C 三張圖，建議先儲存 JSON。' },
+      { t: '選擇範本', d: '依你的用途選擇：研究生選 RP 量化或質性；修課同學依課程選 TP（PMCS 或 CDPS）。切換範本會取代目前的 A、B、C 三張圖，建議先儲存 JSON。' },
       { t: '切換圖別', d: 'A 是架構圖（變數或分析邏輯），B 是流程圖（研究流程或系統流程）。C 是一頁提案摘要（A4），會自動帶入 A、B 圖的內容。三張圖存在同一份檔案，切換不會遺失內容。' },
       { t: '圖中文字', d: '選擇圖上顯示中文、英文或雙語。切換時會自動重新排版。' },
       { t: '畫布', d: '點一下節點或連線即可在右側編輯；按住節點拖曳可移動位置。節點右上角的 ⓘ 會顯示相關術語。' },
@@ -793,7 +1066,7 @@ const dict = {
     tour_replay: '▶ Play the quick tour',
     tour_next: 'Next', tour_prev: 'Back', tour_skip: 'Skip', tour_done: 'Start',
     tour_steps: [
-      { t: 'Choose a template', d: 'Graduate students choose RP Quantitative or Qualitative; PMCS students choose TP. Switching replaces diagrams A, B and C, so save a JSON first.' },
+      { t: 'Choose a template', d: 'Graduate students choose RP Quantitative or Qualitative; course students choose the TP for their course (PMCS or CDPS). Switching replaces diagrams A, B and C, so save a JSON first.' },
       { t: 'Switch diagrams', d: 'A is the framework (variables or analysis logic); B is the flow (research process or system flow). C is the one-page proposal summary (A4), filled in from A and B. All three live in the same file, so switching loses nothing.' },
       { t: 'Diagram text', d: 'Show Chinese, English or both on the diagram. The layout is refreshed automatically when you switch.' },
       { t: 'Canvas', d: 'Click a node or link to edit it on the right; drag a node to move it. The ⓘ at the top right of a node shows related terms.' },
@@ -1310,7 +1583,7 @@ function instantiate(tplId, mode, view) {
   const tpl = tplOf(tplId, view || 'A');
   const d = {
     title: deep(tpl.title), subtitle: deep(tpl.subtitle),
-    lanes: laneOn(tpl) ? [{ id: 'L0', text: deep(tpl.laneNames[0]) }] : [],
+    lanes: laneOn(tpl) ? tpl.laneNames.slice(0, Math.max(1, tpl.initLanes || 1)).map((t, i) => ({ id: 'L' + i, text: deep(t) })) : [],
     nodes: tpl.nodes.map((n, i) => ({
       id: n.k, role: n.role, lane: n.lane === undefined ? -1 : n.lane, ...(n.row !== undefined ? { row: n.row } : {}), ...(n.col !== undefined ? { col: n.col } : {}),
       x: 0, y: i * 10, optional: !!n.optional, tag: n.tag || '', ...(n.owner ? { owner: n.owner } : {}), ...(n.xref ? { xref: n.xref } : {}),
@@ -1391,7 +1664,19 @@ function autoC(key, tplId, ds, people) {
     const sign = tpl.signs && e.sign ? ` (${e.sign === '-' ? '−' : '+'})` : '';
     return { code: tpl.prefix + (i + 1) + sign, e };
   });
-  if (key === 'pmcs_scope') {
+  if (key === 'cdps_scope') {
+    const ns = A.nodes.filter(n => n.role === 'scope').sort((a, b) => a.lane - b.lane);
+    const its2 = (n, L) => T(n, L).items.filter(Boolean);
+    const z0 = ns.length ? its2(ns[0], 'zh') : [], e0 = ns.length ? its2(ns[0], 'en') : [];
+    const common = z0.filter(s => ns.every(n => its2(n, 'zh').includes(s)));
+    z0.forEach((s, i) => { if (common.includes(s)) add(s, e0[i] || ''); });
+    ns.forEach(n => {
+      const z = its2(n, 'zh'), e = its2(n, 'en'), idx = z.map((s, i) => i).filter(i => !common.includes(z[i]));
+      if (!idx.length) return;
+      const lt = ns.length > 1 ? String.fromCharCode(65 + Math.max(0, n.lane)) : '';
+      add((lt ? lt + '｜' : '') + idx.map(i => z[i]).join('；'), (lt ? lt + ' | ' : '') + idx.map(i => e[i] || '').join('; '));
+    });
+  } else if (key === 'pmcs_scope') {
     A.nodes.filter(n => n.role === 'scope').sort((a, b) => a.lane - b.lane).forEach(n => {
       const ln = (A.lanes[n.lane] && A.lanes[n.lane].text) || { zh: '', en: '' };
       add((ln.zh ? ln.zh + '：' : '') + its(n, 'zh'), (ln.en ? ln.en + ': ' : '') + its(n, 'en'));
@@ -1403,6 +1688,18 @@ function autoC(key, tplId, ds, people) {
     const n = A.nodes.find(x => x.role === 'source');
     if (n) { const semi = n.variant === 'semi'; add('模式：' + (semi ? '半自動（組員貼入 JD）' : '自動（程式抓取）'), 'Mode: ' + (semi ? 'semi-automatic (members paste JDs)' : 'automatic (programmatic fetching)'));
       const z = T(n, 'zh').items, e = T(n, 'en').items; z.forEach((s, i) => add(s, e[i] || '')); }
+  } else if (key === 'cdps_sources') {
+    const n = A.nodes.find(x => x.role === 'source');
+    if (n) { const semi = n.variant === 'semi'; add('模式：' + (semi ? '半自動（組員整理分店清單）' : '自動（程式抓取與比對）'), 'Mode: ' + (semi ? 'semi-automatic (members compile store lists)' : 'automatic (programmatic fetching and matching)'));
+      const z = T(n, 'zh').items, e = T(n, 'en').items; z.forEach((s, i) => add(s, e[i] || '')); }
+  } else if (key === 'cdps_tech') {
+    if (tB.stack) add(tB.stack.zh, tB.stack.en);
+    (tB.phases || []).filter(ph => !ph.skipTech).forEach(ph => {
+      const ns = B.nodes.filter(n => !inBand(tB, n) && ph.cols.includes(colOfN(tB, n))).sort(byY).sort((a, b) => colOfN(tB, a) - colOfN(tB, b));
+      if (!ns.length) return;
+      const lz = ph.label.zh.split('｜')[0], le = ph.label.en.split(' | ')[0];
+      add(`${lz}：${ns.map(n => T(n, 'zh').title).join('、')}`, `${le}: ${ns.map(n => T(n, 'en').title).join(', ')}`);
+    });
   } else if (key === 'pmcs_ksa') {
     const lane0 = Math.min(0, ...A.nodes.filter(n => ['k', 's', 'a', 'ai'].includes(n.role)).map(n => n.lane));
     ['k', 's', 'a', 'ai'].forEach(r => {
@@ -1410,7 +1707,7 @@ function autoC(key, tplId, ds, people) {
       A.nodes.filter(n => n.role === r && (n.lane === lane0 || n.lane === 0)).slice(0, 1).forEach(n => add(`${role.badge} ${T(n, 'zh').title}：${its(n, 'zh')}`, `${role.badge} ${T(n, 'en').title}: ${its(n, 'en')}`));
     });
     const g = (tA.groups || [])[0]; if (g && g.note) add(g.note.zh, g.note.en);
-  } else if (key === 'pmcs_team') {
+  } else if (key === 'pmcs_team' || key === 'team') {
     (tB.owners || []).forEach(o => {
       const ns = B.nodes.filter(n => n.owner === o.id);
       const nm = (people && people[o.id]) || '＿＿';
@@ -1444,11 +1741,11 @@ function cardContent(tplId, card, dC, ds) {
   return { lines: { zh: def.zh || [], en: def.en || def.zh || [] }, mode: 'default' };
 }
 const PLACEHOLDER_RE = /__|＿＿|^（.*）$|^\(.*\)$/;
-function cardFilled(card, content, st) {
+function cardFilled(card, content, st, tplId) {
   const z = content.lines.zh.map(s => String(s).trim()).filter(Boolean);
   if (!z.length) return false;
   if (z.some(s => PLACEHOLDER_RE.test(s))) return false;
-  if (card.people) { const owners = (TEMPLATES_B.tp_pmcs.owners || []); if (owners.some(o => !((st.people || {})[o.id] || '').trim())) return false; }
+  if (card.people) { const owners = ((TEMPLATES_B[tplId] || TEMPLATES_B.tp_pmcs).owners || []); if (owners.some(o => !((st.people || {})[o.id] || '').trim())) return false; }
   return true;
 }
 
@@ -1497,7 +1794,7 @@ function layoutC(dC, tplId, mode, ds) {
     if (empty) yy += 26;
     yy += 16;
     const chars = content.lines.zh.join('').replace(/\s/g, '').length;
-    return { card, idx, w, h: Math.max(yy, 110), lines: L, bullets, checks, empty, mode: content.mode, filled: cardFilled(card, content, st), chars, content };
+    return { card, idx, w, h: Math.max(yy, 110), lines: L, bullets, checks, empty, mode: content.mode, filled: cardFilled(card, content, st, tplId), chars, content };
   };
   const cards = []; let i = 0;
   while (i < tc.cards.length) {
@@ -2532,7 +2829,7 @@ function App({ onLogout }) {
                   {TEMPLATE_ORDER.map((id, i) => (
                     <button key={id} onClick={() => { setMenuOpen(false); switchTemplate(id); }}
                       className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 ${doc.templateId === id ? 'font-bold text-[#004030] dark:text-[#D8C3A5]' : ''}`}>
-                      <span className="w-6 text-center">{['📊', '🔍', '🧭'][i]}</span><span className="truncate">{i + 1}. {TEMPLATES[id].name[lang]}</span>
+                      <span className="w-6 text-center">{['📊', '🔍', '🧭', '🏪'][i]}</span><span className="truncate">{i + 1}. {TEMPLATES[id].name[lang]}</span>
                     </button>
                   ))}
                   <div className="px-4 pt-3 pb-1 text-xs font-bold uppercase tracking-wider text-slate-400 border-t border-slate-100 dark:border-slate-700 mt-1">{t.view_label}</div>
