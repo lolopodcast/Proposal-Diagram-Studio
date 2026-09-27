@@ -374,9 +374,121 @@ const TEMPLATES = {
       zh: ['A 圖呈現競合策略 AI 助理的「分析邏輯」：從選定的產業與地區，經過 PARTS、AMC 與平台策略三個分析視角，到資料分析、商業洞察與 Agent 的回答。節點下方的標籤對應課程週次、模組或教材。', '範例：便利商店與超市五大品牌（7-ELEVEN、全家、萊爾富、OK、全聯）的分店分布，資料來自政府開放資料「全國5大超商資料集」。異品牌分店的群聚同時有競爭與合作的意涵；店內的共同供應商商品、自有品牌與各項服務，則分別對應附加價值與平台策略。競合範圍以步行、機車、汽車三圈界定：埔里分店間距較大，採鄉村標準（100／500／1,000 m）；西屯採市鎮標準（50／100／500 m）。兩個比較列是各自獨立的案例，不做直接比較。', '建議步驟：① 在①填入你們的產業、品牌與地區；兩條比較列預設為埔里與西屯兩個獨立案例，可在「新增」分頁再加一列（最多 3 列）。② 在②選擇資料來源模式：自動與半自動都是正式合格做法。③ 依 PARTS、AMC、平台策略完成③④⑤。④ 在⑥⑦寫出分析方法與預期的商業洞察。⑤ 在連線上寫出你們的分析問題（AQ），系統會自動編號並列在圖下方。', '完成後匯出 SVG 或 PNG，放進 W9 提案。'],
       en: ['Diagram A shows the analysis logic of the co-opetitive strategy AI assistant: from the chosen industry and area, through three lenses — PARTS, AMC and platform strategy — to data analysis, business insight and the agent\'s answer. The tag under each node points to a course week, module or reading.', 'Example: the store networks of five convenience-store and supermarket brands (7-ELEVEN, FamilyMart, Hi-Life, OK mart, PX Mart), from the government open dataset of the five major chains. Clustering of rival stores carries both competition and co-operation; shared-supplier products, private labels and in-store services map onto added value and platform strategy. Walk, scooter and car rings define the competitive range: Puli, where stores are far apart, uses the rural standard (100 / 500 / 1,000 m); Xitun uses the town standard (50 / 100 / 500 m). The two rows are separate cases, not compared directly.', 'Suggested steps: (1) fill ① with your industry, brands and area; the two default rows are two separate cases, Puli and Xitun, and you can add a third in the Add tab. (2) Choose the source mode in ②: both automatic and semi-automatic are fully acceptable. (3) Work through PARTS, AMC and platform strategy in ③④⑤. (4) State the analysis methods and expected insight in ⑥⑦. (5) Write your analysis questions (AQ) on the links; they are numbered automatically and listed below the diagram.', 'When finished, export SVG or PNG for your W9 proposal.']
     }
+  },
+  tp_bna: {
+    id: 'tp_bna', short: 'TP-BNA',
+    name: { zh: 'TP 期末專案・BNA 1151', en: 'TP Term Project · BNA 1151' },
+    nodeW: 226, columns: 7, gapX: 62, prefix: 'AQ', signs: false, defaultEdgeKind: 'main',
+    legendTitle: { zh: '分析問題（AQ）', en: 'Analysis Questions (AQ)' },
+    title: { zh: '企業商業模式與發展趨勢分析：分析架構圖', en: 'Business Model & Development Trend Analysis: Analysis Framework' },
+    subtitle: { zh: 'BNA-EMI 1151 · 第 __ 組 · TP Proposal（W9）', en: 'BNA-EMI 1151 · Group __ · TP Proposal (W9)' },
+    lanes: { enabled: true, max: 3 },
+    initLanes: 2,
+    laneNames: [
+      { zh: '比較列 A｜漢翔（產品導向・BMC 左側）', en: 'Row A | AIDC (product-oriented · BMC left side)' },
+      { zh: '比較列 B｜寶雅（服務導向・BMC 右側）', en: 'Row B | Poya (service-oriented · BMC right side)' },
+      { zh: '比較列 C', en: 'Row C' }
+    ],
+    roles: [
+      { id: 'scope',   col: 0, badge: '1', perLane: true, color: '#004030', fill: '#E6F0EC', zh: '① 問題與範圍', en: '① Problem & Scope', terms: ['lanes', 'focusside', 'aq'] },
+      { id: 'source',  col: 1, badge: '2', color: '#0F766E', fill: '#E3F4F1', zh: '② 資料來源與法遵', en: '② Data Sources & Compliance', terms: ['news2y', 'reports', 'mops', 'workagent', 'verify', 'citation'] },
+      { id: 'pestel',  col: 2, badge: '3', perLane: true, color: '#1D4ED8', fill: '#EAF1FF', zh: '③ PESTEL 總體環境', en: '③ PESTEL Macro-environment', terms: ['pestel', 'painsgains'] },
+      { id: 'vpta',    col: 3, badge: '4', perLane: true, color: '#B45309', fill: '#FEF3E2', zh: '④ 價值主張與目標客群', en: '④ Value Proposition & Target Audience', terms: ['vp', 'ta', 'persona', 'painsgains'] },
+      { id: 'bmc',     col: 4, badge: '5', perLane: true, color: '#7C3AED', fill: '#F3EEFF', zh: '⑤ BMC 重點側', en: '⑤ BMC Focus Side', terms: ['bmc', 'leftside', 'rightside', 'journey', 'omni', 'intangible'] },
+      { id: 'bi',      col: 5, badge: '6', color: '#9D174D', fill: '#FCEEF4', zh: '⑥ RS／CS 與財務 BI', en: '⑥ RS / CS & Financial BI', terms: ['rscs', 'bi', 'kpi'] },
+      { id: 'da',      col: 5, badge: '7', color: '#0369A1', fill: '#E8F4FB', zh: '⑦ 新聞 DA', en: '⑦ News DA', terms: ['da', 'tagging', 'trend'] },
+      { id: 'insight', col: 6, badge: '8', color: '#A16207', fill: '#FEF9E7', zh: '⑧ 商業模式與發展趨勢洞察', en: '⑧ Business Model & Trend Insight', terms: ['insight'] },
+      { id: 'output',  col: 6, badge: '9', color: '#004030', fill: '#F7F1E8', zh: '⑨ 成果：網頁＋影片', en: '⑨ Output: Web Page + Video', terms: ['deployed', 'video', 'vibecoding', 'aidisclose'] }
+    ],
+    nodes: [
+      { k: 'scope', role: 'scope', lane: 0, tag: 'TP0 · W5',
+        text: T('問題與範圍', ['企業：漢翔（航太與國防）', '類型：產品導向 → BMC 左側為重點', '問題：地緣政治與國防自主下，漢翔的商業模式如何調整？'], 'Problem & Scope', ['Firm: AIDC (aerospace and defence)', 'Type: product-oriented → BMC left-side focus', 'Question: how is AIDC\'s business model changing amid geopolitics?']) },
+      { k: 'scope__L1', role: 'scope', lane: 1, tag: 'TP0 · W5',
+        text: T('問題與範圍', ['企業：寶雅（美妝與生活百貨零售）', '類型：服務導向 → BMC 右側為重點', '問題：電商競爭下，寶雅的門市零售如何留住顧客？'], 'Problem & Scope', ['Firm: Poya (beauty and household retail)', 'Type: service-oriented → BMC right-side focus', 'Question: how does Poya keep store customers as e-commerce grows?']) },
+      { k: 'source', role: 'source', lane: -1, tag: 'TP Proposal · W9', variant: 'auto',
+        variants: {
+          auto: T('資料來源與法遵', ['近兩年新聞 20–30 則（正反面都要有）', '市場／產業／投資分析報告：只引用重點並註明出處', '年報與 MOPS：近 3–5 年財務資料', 'Work／Task Agent 深度研究蒐集，每筆保留連結與日期', 'AI 摘要一律經組員查證'], 'Data Sources & Compliance', ['20–30 news articles, past two years (positive and negative)', 'Industry / investment reports: quote briefly and cite them', 'Annual reports and MOPS: 3–5 years of financial data', 'Work / Task Agent research; keep each link and date', 'Every AI summary is checked by a team member']),
+          semi: T('資料來源與法遵', ['組員分工蒐集新聞與報告，整理在共用 Google Sheets', 'AI 只協助摘要與標註', '年報與 MOPS：近 3–5 年財務資料', '每筆保留連結與日期；報告只引用重點並註明出處'], 'Data Sources & Compliance', ['Members split the collection of news and reports into a shared Google Sheet', 'AI only helps with summaries and tags', 'Annual reports and MOPS: 3–5 years of financial data', 'Keep the link and date of each item; quote reports briefly and cite them'])
+        } },
+      { k: 'pestel', role: 'pestel', lane: 0, tag: 'W10 · PESTEL',
+        text: T('PESTEL 總體環境', ['P 政治：國防自主政策、地緣政治', 'E 經濟：全球航空市場與供應鏈、匯率', 'S 社會：航太工程人才供給', 'T 科技：無人機、先進製造', 'E 環境：航空減碳', 'L 法律：出口管制、國防採購法規', '→ 影響客戶的 pains／gains'], 'PESTEL Macro-environment', ['P political: defence self-reliance policy, geopolitics', 'E economic: global aviation market and supply chain, exchange rates', 'S social: supply of aerospace engineers', 'T technological: drones, advanced manufacturing', 'E environmental: aviation decarbonisation', 'L legal: export controls, defence procurement rules', '→ shapes customers\' pains / gains']) },
+      { k: 'pestel__L1', role: 'pestel', lane: 1, tag: 'W10 · PESTEL',
+        text: T('PESTEL 總體環境', ['P 政治：基本工資調整', 'E 經濟：通膨與消費力', 'S 社會：少子高齡、悅己消費', 'T 科技：電商、行動支付、會員資料', 'E 環境：包裝減量與環保規範', 'L 法律：化粧品衛生安全管理法規', '→ 影響目標客群的 pains／gains'], 'PESTEL Macro-environment', ['P political: minimum-wage increases', 'E economic: inflation and spending power', 'S social: low birth rate, ageing, self-reward spending', 'T technological: e-commerce, mobile payment, member data', 'E environmental: packaging reduction and green rules', 'L legal: cosmetics hygiene and safety regulations', '→ shapes the target audience\'s pains / gains']) },
+      { k: 'vpta', role: 'vpta', lane: 0, tag: 'W3 · VP + TA',
+        text: T('價值主張與目標客群', ['TA：國防部、國際航太大廠（B2G／B2B）', 'Pains：交期、品質認證、國產化要求', 'Gains：穩定供應、長期合作', 'VP：國機國造與高品質航太製造'], 'Value Proposition & Target Audience', ['TA: Ministry of National Defense, aerospace firms (B2G / B2B)', 'Pains: lead times, quality certification, local-content requirements', 'Gains: reliable supply, long-term partnership', 'VP: home-built aircraft and high-quality aerospace manufacturing']) },
+      { k: 'vpta__L1', role: 'vpta', lane: 1, tag: 'W3 · VP + TA',
+        text: T('價值主張與目標客群', ['TA：重視價格與便利的年輕族群與家庭', 'Persona：25 歲上班族，下班順路補貨', 'Pains：比價麻煩、選擇太多', 'Gains：一站購足、常有促銷', 'VP：品項多、價格實惠、就在附近'], 'Value Proposition & Target Audience', ['TA: price- and convenience-minded young adults and families', 'Persona: a 25-year-old office worker restocking on the way home', 'Pains: comparing prices is tiring, too many choices', 'Gains: one-stop shopping, frequent promotions', 'VP: wide range, good prices, close by']) },
+      { k: 'bmc', role: 'bmc', lane: 0, tag: 'W3 · BMC',
+        text: T('BMC 重點側：左側', ['KA：軍機研製、航太零組件製造、維修', 'KR：研發技術、航太品質認證、工程人才', 'KP：國防部、國際航太大廠、國內供應鏈', '另一側基本考量：CR 長期合約；CH 投標與直接銷售'], 'BMC Focus: Left Side', ['KA: military aircraft development, aerospace parts manufacturing, maintenance', 'KR: R&D know-how, aerospace quality certification, engineering talent', 'KP: the Ministry of National Defense, global aerospace firms, local suppliers', 'Other side, basics: CR long-term contracts; CH tenders and direct sales']) },
+      { k: 'bmc__L1', role: 'bmc', lane: 1, tag: 'W3 · BMC',
+        text: T('BMC 重點側：右側', ['TA：依 Persona 描述目標客群', 'CR：顧客旅程（逛店 → 比價 → 購買 → 會員 → 回購）', 'CH：線上（官網、APP、電商）＋線下門市', '另一側基本考量：KA 選品與展店；KR 門市據點與會員資料；KP 品牌供應商'], 'BMC Focus: Right Side', ['TA: describe the target audience through the persona', 'CR: customer journey (browse → compare → buy → join → return)', 'CH: online (website, app, e-commerce) + physical stores', 'Other side, basics: KA merchandising and store openings; KR store network and member data; KP brand suppliers']) },
+      { k: 'bi', role: 'bi', lane: -1, tag: 'TP-BI · W14',
+        text: T('RS／CS 與財務 BI', ['RS：各事業／產品營收占比、收入模式', 'CS：固定與變動成本結構', 'KPI：營收成長、毛利率、營業費用率（近 3–5 年）', 'KPI 卡片與趨勢圖（Chart.js）'], 'RS / CS & Financial BI', ['RS: revenue share by business / product, revenue model', 'CS: fixed and variable cost structure', 'KPIs: revenue growth, gross margin, operating-expense ratio (3–5 years)', 'KPI cards and trend charts (Chart.js)']) },
+      { k: 'da', role: 'da', lane: -1, tag: 'TP-DA · W13',
+        text: T('新聞 DA', ['AI 先標註、組員查證：每則新聞對應 PESTEL 因素與 BMC 區塊', '統計出現次數與按季變化（熱度趨勢）', '對照財務數字變化的時間點'], 'News DA', ['AI tags first, members verify: link each article to PESTEL factors and BMC blocks', 'Count occurrences and quarterly changes (trend of attention)', 'Compare with the timing of changes in the financials']) },
+      { k: 'insight', role: 'insight', lane: -1, tag: 'W16 · Business Insight',
+        text: T('商業模式與發展趨勢洞察', ['商業模式的核心邏輯與關鍵驅動因素（含看不見的流程）', '發展趨勢：未來 1–3 年的機會與風險', '給企業的具體建議'], 'Business Model & Trend Insight', ['The core logic and key drivers of the business model (including unseen processes)', 'Development trends: opportunities and risks over the next 1–3 years', 'Concrete recommendations for the firm']) },
+      { k: 'output', role: 'output', lane: -1, tag: 'TP Final · W15',
+        text: T('成果：網頁＋影片', ['已部署的雙語網頁：KPI 儀表板、BMC 互動圖、新聞時間軸（GitHub Pages）', '2 分鐘雙語動畫簡報影片（Vibe Coding 製作，嵌入網頁）', 'AI 使用揭露與引用來源'], 'Output: Web Page + Video', ['A deployed bilingual web page (GitHub Pages): KPI dashboard, interactive BMC, news timeline', 'A two-minute bilingual animated presentation video (made by vibe coding, embedded in the page)', 'AI-use disclosure and source citations']) }
+    ],
+    edges: [
+      { k: 'f1', from: 'n:scope', to: 'n:source', kind: 'flow' },
+      { k: 'f1b', from: 'n:scope__L1', to: 'n:source', kind: 'flow' },
+      { k: 'f2', from: 'n:source', to: 'n:pestel', kind: 'flow' },
+      { k: 'f2b', from: 'n:source', to: 'n:pestel__L1', kind: 'flow' },
+      { k: 'f5', from: 'n:bmc', to: 'n:bi', kind: 'flow' },
+      { k: 'f5b', from: 'n:bmc__L1', to: 'n:bi', kind: 'flow' },
+      { k: 'f6', from: 'n:bmc', to: 'n:da', kind: 'flow' },
+      { k: 'f6b', from: 'n:bmc__L1', to: 'n:da', kind: 'flow' },
+      { k: 'f7', from: 'n:bi', to: 'n:insight', kind: 'flow' },
+      { k: 'f8', from: 'n:insight', to: 'n:output', kind: 'flow' },
+      { k: 'q1', from: 'n:pestel', to: 'n:vpta', kind: 'main', text: { zh: '國防自主政策、地緣政治（P）與全球航太供應鏈變化（E），如何改變漢翔主要客戶的痛點？漢翔的價值主張因此如何調整？', en: 'How do defence self-reliance, geopolitics (P) and supply-chain shifts (E) change AIDC\'s customer pains and value proposition?' } },
+      { k: 'q2', from: 'n:vpta', to: 'n:bmc', kind: 'main', text: { zh: '漢翔的關鍵活動、關鍵資源與關鍵夥伴如何支撐它的價值主張？哪一項最難被模仿？', en: 'How do AIDC\'s key activities, key resources and key partners support its value proposition, and which is hardest to imitate?' } },
+      { k: 'q3', from: 'n:pestel__L1', to: 'n:vpta__L1', kind: 'main', text: { zh: '少子高齡、消費習慣改變（S）與電商、行動支付（T），如何改變寶雅目標客群的 Persona 與必要需求？', en: 'How do ageing, new habits (S), e-commerce and mobile payment (T) change the persona and must-have needs of Poya\'s customers?' } },
+      { k: 'q4', from: 'n:vpta__L1', to: 'n:bmc__L1', kind: 'main', text: { zh: '寶雅的顧客旅程中，線上與線下通路如何銜接？哪一個接觸點最影響回購？', en: 'Along Poya\'s customer journey, how are online and in-store channels connected, and which touchpoint matters most for repeat purchases?' } },
+      { k: 'q5', from: 'n:bi', to: 'n:insight', kind: 'main', text: { zh: '兩家企業的收入來源與成本結構有何不同？近 3–5 年的毛利率與營業費用率透露出什麼獲利邏輯？', en: 'How do the two firms\' revenue streams and cost structures differ, and what do 3–5 years of margins and expense ratios reveal?' } },
+      { k: 'q6', from: 'n:da', to: 'n:insight', kind: 'main', text: { zh: '近兩年新聞中最常出現哪些 PESTEL 因素與 BMC 區塊？熱度趨勢指向企業未來往哪裡發展？', en: 'Which PESTEL factors and BMC blocks appear most in the past two years of news, and where does the trend point for the firm\'s future?' } }
+    ],
+    glossary: {
+      lanes: { zh: ['比較列', '圖中的一條水平列代表一家企業。範例並列漢翔（產品導向）與寶雅（服務導向）兩個示範；各組只分析一家企業，保留一列、刪除另一列即可。'], en: ['Comparison Row', 'Each horizontal row is one firm. The example shows two demonstrations side by side — AIDC (product-oriented) and Poya (service-oriented); each group analyses one firm, so keep one row and delete the other.'] },
+      focusside: { zh: ['重點側', '產品導向的企業以 BMC 左側（KA、KR、KP）為分析重點；服務導向的企業以右側（CR、CH、TA）為重點。另一側不是重點，但仍要寫出基本考量。'], en: ['Focus Side', 'A product-oriented firm focuses on the BMC left side (KA, KR, KP); a service-oriented firm on the right side (CR, CH, TA). The other side is not the focus, but its basics must still be covered.'] },
+      aq: { zh: ['分析問題 AQ', 'TP 版的「假說」：標在連線上，說明兩個節點之間要回答的問題，並自動編號列在圖下方。'], en: ['Analysis Question (AQ)', 'The TP counterpart of a hypothesis: written on a link, stating what must be answered between two nodes; numbered automatically below the diagram.'] },
+      news2y: { zh: ['近兩年新聞', 'BNA 是時事課：以近兩年的新聞為主要證據，20–30 則，正面與負面報導都要有，每則保留連結與日期。'], en: ['Two Years of News', 'BNA is a current-affairs course: news from the past two years is the main evidence — 20–30 articles, both positive and negative, each with its link and date.'] },
+      reports: { zh: ['市場／產業／投資分析報告', '研究機構、券商或顧問公司的分析報告。受著作權保護：只引用重點、註明出處，不轉貼全文。'], en: ['Market / Industry / Investment Reports', 'Analyses by research institutes, brokers or consultancies. They are copyrighted: quote key points only, cite them, and never repost the full text.'] },
+      mops: { zh: ['MOPS 公開資訊觀測站', '上市櫃公司的財務報表、月營收與年報；是 RS、CS 與財務 KPI 的主要來源。'], en: ['MOPS', "Taiwan's disclosure site for listed companies' financial statements, monthly revenue and annual reports — the main source for RS, CS and financial KPIs."] },
+      workagent: { zh: ['Work／Task Agent', 'ChatGPT、Gemini、Claude 等 AI 平台中能自行搜尋、閱讀並整理資料的代理功能（例如深度研究）。適合蒐集與摘要，但結果一定要查證。'], en: ['Work / Task Agent', 'The agent features of AI platforms such as ChatGPT, Gemini and Claude that search, read and organise material on their own (e.g. deep research). Good for collecting and summarising, but always verify the results.'] },
+      verify: { zh: ['人工查證', 'AI 摘要與數字要回到原始來源確認：新聞看原文、財務數字對照年報或 MOPS。查不到出處的內容不採用。'], en: ['Human Verification', 'Check AI summaries and figures against the original sources: read the article itself, compare figures with the annual report or MOPS. Anything without a source is dropped.'] },
+      citation: { zh: ['引用與著作權', '每則資料註明來源、日期與連結；報告只引用重點；影片與網頁使用的圖片、音樂也要註明來源，限教育合理使用。'], en: ['Citation & Copyright', 'Give the source, date and link for every item; quote reports briefly; credit images and music used in the video and page, within fair educational use.'] },
+      pestel: { zh: ['PESTEL', '總體環境的六個構面：政治、經濟、社會、科技、環境、法律。BNA 的 TP 必做，並要說明它如何影響目標客群的 pains／gains 與價值主張。'], en: ['PESTEL', 'Six dimensions of the macro-environment: political, economic, social, technological, environmental and legal. Required in the BNA TP, and you must explain how it shapes the target audience\'s pains / gains and the value proposition.'] },
+      painsgains: { zh: ['Pains／Gains', '目標客群想避免的困擾（pains）與想得到的好處（gains）。先抓「必要需求」（must-have），不要只列「有更好」（nice-to-have）。'], en: ['Pains / Gains', 'What the target audience wants to avoid (pains) and hopes to gain (gains). Start with must-have needs, not nice-to-haves.'] },
+      vp: { zh: ['價值主張 VP', 'BMC 的中心：企業為目標客群解決什麼痛點、帶來什麼好處。W3 的分析步驟從 VP＋TA 一起開始。'], en: ['Value Proposition (VP)', 'The centre of the BMC: which pains the firm relieves and which gains it creates for the target audience. The W3 procedure starts with VP and TA together.'] },
+      ta: { zh: ['目標客群 TA', 'Target Audience。本課程的 BMC 用 TA 取代 Customer Segment，較精確，也避免和成本結構（CS）混淆。'], en: ['Target Audience (TA)', 'This course uses TA instead of Customer Segment in the BMC: it is more precise and avoids confusion with Cost Structure (CS).'] },
+      persona: { zh: ['Persona 人物誌', '典型使用者的具體描寫（年齡、情境、需求）。Persona 說明「是誰」，顧客旅程說明「他經歷了什麼」。'], en: ['Persona', 'A concrete portrait of a typical user (age, situation, needs). The persona says who the user is; the customer journey says what they go through.'] },
+      bmc: { zh: ['BMC 商業模式圖', '九個區塊：中間 VP、TA；左側 KP、KA、KR（價值創造）；右側 CR、CH（價值傳遞）；底部 RS、CS（價值獲取）。利潤＝RS－CS。'], en: ['Business Model Canvas (BMC)', 'Nine blocks: VP and TA in the centre; KP, KA, KR on the left (value creation); CR and CH on the right (value delivery); RS and CS at the bottom (value appropriation). Profit = RS − CS.'] },
+      leftside: { zh: ['BMC 左側', '關鍵活動 KA、關鍵資源 KR、關鍵夥伴 KP；產品導向企業的分析重點。只列「關鍵」的，不要列出所有活動。'], en: ['BMC Left Side', 'Key activities (KA), key resources (KR), key partners (KP) — the focus for a product-oriented firm. List only what is key, not every activity.'] },
+      rightside: { zh: ['BMC 右側', '顧客關係 CR、通路 CH，並以 TA 的 Persona 為基礎；服務導向企業的分析重點。'], en: ['BMC Right Side', 'Customer relationships (CR) and channels (CH), built on the TA persona — the focus for a service-oriented firm.'] },
+      journey: { zh: ['顧客旅程', '從需求出現、搜尋、比較、購買、使用，到抱怨或回購、成為忠實顧客的完整過程；CR 要依旅程設計。'], en: ['Customer Journey', 'The whole path from need, search, comparison, purchase and use to complaint or repurchase and loyalty; CR is designed along this journey.'] },
+      omni: { zh: ['線上線下並行', '官網、APP、電商平台與實體門市一起運作，例如線上領券、門市取貨、會員點數通用；分析重點是各接觸點如何銜接。'], en: ['Online Mixed with Offline', 'Website, app, marketplaces and physical stores working together — e.g. online coupons, in-store pickup, shared member points; the question is how the touchpoints connect.'] },
+      intangible: { zh: ['看不見的流程', '分析不只看投入與產出，還要看中間的流程；最有價值的洞察常來自看不見的部分（W3 牛肉麵的例子）。'], en: ['Unseen Processes', 'Analysis looks at the process between input and output, not just the two ends; the most valuable insight often lies in what cannot be seen (the W3 beef-noodle example).'] },
+      rscs: { zh: ['RS／CS', '收入來源（Revenue Stream）與成本結構（Cost Structure），BMC 的底部；兩者相減就是企業如何獲利。'], en: ['RS / CS', 'Revenue streams and cost structure — the bottom of the BMC; the difference shows how the firm makes a profit.'] },
+      bi: { zh: ['BI 商業智慧', '把財務資料整理成 KPI 卡片與趨勢圖，讓人一眼看懂企業表現。本課程請 AI 整理數字、用 Vibe Coding 做成網頁圖表。'], en: ['Business Intelligence (BI)', 'Turning financial data into KPI cards and trend charts that show performance at a glance. In this course AI compiles the figures and vibe coding turns them into web charts.'] },
+      kpi: { zh: ['財務 KPI', '例如營收成長率、毛利率、營業費用率、各事業營收占比；至少比較近 3–5 年。'], en: ['Financial KPIs', 'e.g. revenue growth, gross margin, operating-expense ratio, revenue share by business; compare at least 3–5 years.'] },
+      da: { zh: ['DA 資料分析', '本課程的 DA 是新聞內容分析：把每則新聞依 PESTEL 與 BMC 標註，再統計次數與變化。'], en: ['Data Analysis (DA)', 'In this course DA is news content analysis: tag each article by PESTEL and BMC, then count occurrences and changes.'] },
+      tagging: { zh: ['標註', '替每則新聞加上分類標籤：PESTEL 因素、BMC 區塊、正面或負面。AI 先標，組員抽查修正。'], en: ['Tagging', 'Adding category labels to each article: PESTEL factor, BMC block, positive or negative. AI tags first; members check and correct.'] },
+      trend: { zh: ['熱度趨勢', '某一類議題在各季出現的次數變化；次數上升代表這個議題越來越重要，可作為發展趨勢的證據。'], en: ['Trend of Attention', 'How often a type of issue appears each quarter; a rising count signals growing importance and is evidence for a development trend.'] },
+      insight: { zh: ['商業洞察', 'W16 評分占 20%：不只呈現資料，還要說明「所以呢」，並提出可行的建議。'], en: ['Business Insight', 'Worth 20% at W16: not just showing data but explaining "so what" and giving actionable advice.'] },
+      deployed: { zh: ['已部署的網頁', 'TP 的交付物是可以用網址開啟的雙語網頁（GitHub Pages），W15 繳交網址，W16 參加網頁競賽。'], en: ['Deployed Web Page', 'The TP deliverable is a bilingual web page reachable by URL (GitHub Pages): submit the URL in W15 and join the web contest in W16.'] },
+      video: { zh: ['2 分鐘動畫簡報影片', '以 Vibe Coding 做成網頁動畫，再錄製匯出成影片：英文旁白＋中英字幕，上傳 YouTube 後嵌入網頁。'], en: ['Two-minute Animated Video', 'Built as a web animation by vibe coding, then recorded and exported: English narration with Chinese and English subtitles, uploaded to YouTube and embedded in the page.'] },
+      vibecoding: { zh: ['Vibe Coding', '用自然語言請 Coding Agent 寫程式、看結果、再修改，不必自己背語法。'], en: ['Vibe Coding', 'Asking a coding agent in plain language to write the code, checking the result and asking for changes — no memorising syntax.'] },
+      aidisclose: { zh: ['AI 使用揭露', '依 W2 的 AI-Usage Disclosure Policy，在網頁上說明使用了哪些 AI 平台、用在哪些地方，並由組員審閱 AI 產出。'], en: ['AI-use Disclosure', 'Under the W2 AI-Usage Disclosure Policy, state on the page which AI platforms were used and where; AI output is reviewed by the team.'] }
+    },
+    guide: {
+      zh: ['A 圖呈現企業分析的「分析邏輯」：從問題與範圍出發，經 PESTEL 找出影響目標客群 pains／gains 的因素，再到價值主張與目標客群、BMC 重點側、RS／CS 與財務 BI、新聞 DA，最後歸納商業模式與發展趨勢，做成網頁與影片。節點下方的標籤對應 TP 階段或課程週次。', '範例並列漢翔（產品導向，左側重點）與寶雅（服務導向，右側重點）。各組只分析一家企業：保留一列、刪除另一列，另一側仍要寫基本考量。範例中的企業內容只供示範，請以最新年報與新聞查證。', '建議步驟：先改 ① 的企業與問題 → 依資料改 ②–⑦ → 在 ⑧ 寫出洞察 → 用連線寫下你們的 AQ。'],
+      en: ['Diagram A shows the analysis logic of the firm study: from the problem and scope, through PESTEL to the factors behind the target audience\'s pains / gains, then the value proposition and target audience, the BMC focus side, RS / CS with financial BI and news DA, ending with business-model and trend insight delivered as a web page and video. The tag under each node gives the TP stage or course week.', 'The example shows AIDC (product-oriented, left-side focus) next to Poya (service-oriented, right-side focus). Each group analyses one firm: keep one row, delete the other, and still cover the basics of the other side. The firm details are for demonstration only — check them against the latest annual reports and news.', 'Suggested steps: change the firm and question in ① → revise ②–⑦ from your data → write the insight in ⑧ → record your AQs as links.']
+    }
   }
 };
-const TEMPLATE_ORDER = ['rp_quant', 'rp_qual', 'tp_pmcs', 'tp_cdps'];
+const TEMPLATE_ORDER = ['rp_quant', 'rp_qual', 'tp_pmcs', 'tp_cdps', 'tp_bna'];
 
 /* ============================================================
    TEMPLATES_B — Diagram B (flow): same keys as TEMPLATES
@@ -750,6 +862,133 @@ const TEMPLATES_B = {
       zh: ['B 圖呈現競合策略 AI 助理的「系統流程」：左欄 INPUT 整理 M1–M3 的資料並在 Sheets 設計 Agent 邏輯，中欄 PROCESS 在 Cloudflare Workers 上比對、計算與執行 AI，右欄 OUTPUT & LOOP 部署前端、產出報告並定期更新；底部治理層橫貫三欄。', '建議步驟：① 確認資料來源與「品質閘」的比對差異率門檻；② 逐一檢查每個節點的「負責角色」（四個角色，一個角色可由多位組員負責），圖下方會自動產生團隊分工表；③ 回饋迴路（虛線 L1、L2…）要寫明頻率與上限；④ 節點右下角的「→ A②」對應 A 架構圖，兩張圖的內容要一致。', '新增連線預設為流程箭頭；在右側把類型改為「回饋迴路」，就會變成編號的虛線弧形箭頭。'],
       en: ['Diagram B shows the system flow of the co-opetitive strategy AI assistant: INPUT prepares the M1–M3 data and designs the agent logic in Sheets; PROCESS matches, computes and runs the AI on Cloudflare Workers; OUTPUT & LOOP deploys the front end, produces the report and refreshes on a schedule; the governance band cuts across all three.', 'Suggested steps: (1) confirm the data sources and the mismatch-rate threshold at the quality gate; (2) check the team role on every node (four roles; one role may have several members) — the team-role table below updates itself; (3) every feedback loop (dashed L1, L2 …) must state its frequency and limits; (4) the "→ A②" mark links a node to Framework Diagram A, so keep the two diagrams consistent.', 'New links are flow arrows by default; switch the type to Feedback Loop in the side panel to make a numbered dashed arc.']
     }
+  },
+  tp_bna: {
+    id: 'tp_bna', short: 'TP-BNA-B',
+    name: { zh: 'TP 期末專案・BNA 1151', en: 'TP Term Project · BNA 1151' },
+    nodeW: 212, gapX: 30, grid: true, rowGap: 150, topPad: 38, alignTop: true,
+    colShift: [0, 0, 44, 44, 88, 88],
+    prefix: 'L', signs: false, defaultEdgeKind: 'flow', mainStyle: 'loop', xref: true, defaultRole: 'agent',
+    legendTitle: { zh: '回饋迴路（L）', en: 'Feedback Loops (L)' },
+    ownerTitle: { zh: '團隊分工（建議三組、每組兩人；可依組內情況調整）', en: 'Team Roles (suggested: three pairs; adjust to your team)' },
+    title: { zh: '企業商業模式與發展趨勢分析：AI Agent 工作流程圖', en: 'Business Model & Development Trend Analysis: AI Agent Workflow' },
+    subtitle: { zh: 'BNA-EMI 1151 · 第 __ 組 · TP Proposal（W9）', en: 'BNA-EMI 1151 · Group __ · TP Proposal (W9)' },
+    stack: { zh: 'AI 平台：ChatGPT／Gemini／Claude 三選一（至少一人付費方案）；Work／Task Agent 分析，Coding Agent 製作；部署 GitHub Pages', en: 'Platform: ChatGPT / Gemini / Claude (≥ 1 paid plan); Work / Task Agent analyses, Coding Agent builds; GitHub Pages' },
+    lanes: { enabled: false },
+    phaseDir: 'col',
+    phases: [
+      { cols: [0, 1], skipTech: true, color: '#004030', fill: '#F2F7F4', label: { zh: 'INPUT｜選題、資料與 AI 平台（W5–W9）', en: 'INPUT | Topic, Data & AI Platform (W5–W9)' }, out: { zh: '產出：選定的企業、資料表與 AI 專案', en: 'Output: the chosen firm, a data sheet and an AI project' } },
+      { cols: [2, 3], color: '#1D4ED8', fill: '#F3F7FF', label: { zh: 'PROCESS｜Work／Task Agent 分析（W9–W14）', en: 'PROCESS | Work / Task Agent Analysis (W9–W14)' }, out: { zh: '產出：查證過的標註、PESTEL 與 BMC 分析、DA 與 BI 結果', en: 'Output: verified tags, PESTEL and BMC analysis, DA and BI results' } },
+      { cols: [4, 5], color: '#B45309', fill: '#FFF9F0', label: { zh: 'OUTPUT｜Coding Agent 製作與交付（W14–W16）', en: 'OUTPUT | Coding Agent Build & Delivery (W14–W16)' }, out: { zh: '產出：已部署的雙語網頁＋ 2 分鐘影片', en: 'Output: a deployed bilingual page + a two-minute video' } }
+    ],
+    band: { roles: ['gov'], label: { zh: '治理層 Governance（橫貫三欄）', en: 'Governance (cuts across all three columns)' } },
+    owners: [
+      { id: 'news', color: '#0F766E', zh: '資料與新聞', en: 'Data & News' },
+      { id: 'biz', color: '#7C3AED', zh: '商業分析', en: 'Business Analysis' },
+      { id: 'web', color: '#BE185D', zh: '網頁與影片', en: 'Web & Video' }
+    ],
+    roles: [
+      { id: 'start',   col: 0, row: 0, shape: 'terminal', color: '#004030', fill: '#E6F0EC', zh: '起點', en: 'Start', terms: ['tp0'] },
+      { id: 'src',     col: 0, row: 0, shape: 'doc',  color: '#004030', fill: '#E6F0EC', zh: '資料來源', en: 'Data Source', terms: ['news2y', 'reports', 'mops'] },
+      { id: 'setup',   col: 1, row: 0, shape: 'step', color: '#004030', fill: '#E6F0EC', zh: '平台設定', en: 'Platform Setup', terms: ['platform', 'kbmd'] },
+      { id: 'sheet',   col: 1, row: 0, shape: 'doc',  color: '#004030', fill: '#E6F0EC', zh: '資料表', en: 'Data Sheet', terms: ['sheet'] },
+      { id: 'agent',   col: 2, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: 'Agent 步驟', en: 'Agent Step', terms: ['workagent', 'tagging'] },
+      { id: 'gate',    col: 2, row: 0, shape: 'decision', color: '#1D4ED8', fill: '#EAF1FF', zh: '查證判斷', en: 'Verification Check', terms: ['verify'] },
+      { id: 'prompt',  col: 2, row: 0, shape: 'doc',  color: '#1D4ED8', fill: '#EAF1FF', zh: '提示詞與 KB', en: 'Prompts & KB', terms: ['kbmd', 'promptiter'] },
+      { id: 'analysis', col: 3, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: '分析步驟', en: 'Analysis Step', terms: ['pestel', 'bmc', 'focusside'] },
+      { id: 'calc',    col: 3, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: 'DA／BI', en: 'DA / BI', terms: ['da', 'bi', 'kpi'] },
+      { id: 'report',  col: 4, row: 0, shape: 'doc',  color: '#B45309', fill: '#FEF3E2', zh: '洞察', en: 'Insight', terms: ['insight'] },
+      { id: 'build',   col: 4, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: 'Coding Agent 製作', en: 'Coding Agent Build', terms: ['codingagent', 'vibecoding', 'video'] },
+      { id: 'deploy',  col: 5, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: '部署', en: 'Deployment', terms: ['ghpages'] },
+      { id: 'demo',    col: 5, row: 0, shape: 'terminal', color: '#B45309', fill: '#FEF3E2', zh: '競賽', en: 'Contest', terms: ['contest'] },
+      { id: 'gov',     row: 1, col: 0, w: 454, shape: 'step', color: '#475569', fill: '#F1F5F9', zh: '治理原則', en: 'Governance Principle', terms: ['citation', 'aidisclose', 'accounts'] }
+    ],
+    groups: [
+      { id: 'in', roles: ['start', 'src'], color: '#004030', label: { zh: '選題與資料來源', en: 'Topic & Data Sources' } },
+      { id: 'ai', roles: ['setup', 'sheet'], color: '#004030', label: { zh: 'AI 平台與資料表', en: 'AI Platform & Data Sheet' } },
+      { id: 'wa', roles: ['agent', 'gate', 'prompt'], color: '#1D4ED8', label: { zh: 'Work／Task Agent', en: 'Work / Task Agent' } },
+      { id: 'an', roles: ['analysis', 'calc'], color: '#1D4ED8', label: { zh: '分析（TP-DA · TP-BI）', en: 'Analysis (TP-DA · TP-BI)' } },
+      { id: 'ca', roles: ['report', 'build'], color: '#B45309', label: { zh: '洞察與 Coding Agent', en: 'Insight & Coding Agent' } },
+      { id: 'dl', roles: ['deploy', 'demo'], color: '#B45309', label: { zh: '交付（TP Final · W16）', en: 'Delivery (TP Final · W16)' } }
+    ],
+    nodes: [
+      { k: 'topic', role: 'start', owner: 'biz', tag: 'TP0 · W5', xref: 'A①', text: T('TP0 選題', ['企業與重點側（左或右）', 'TA 與 Persona 初稿'], 'TP0 Topic', ['Firm and focus side (left or right)', 'First draft of TA and persona']) },
+      { k: 'news', role: 'src', owner: 'news', xref: 'A②', text: T('近兩年新聞', ['20–30 則，正反面都要有', '財經媒體、公司新聞稿', '保留連結與日期'], 'News (Past Two Years)', ['20–30 articles, both positive and negative', 'Business media, company press releases', 'Keep links and dates']) },
+      { k: 'reports', role: 'src', owner: 'news', xref: 'A②', text: T('市場／產業／投資分析報告', ['研究機構、券商、顧問公司', '只引用重點並註明出處'], 'Industry & Investment Reports', ['Research institutes, brokers, consultancies', 'Quote key points only and cite them']) },
+      { k: 'fin', role: 'src', owner: 'biz', tag: 'MOPS', xref: 'A⑥', text: T('年報與 MOPS 財務資料', ['近 3–5 年營收、毛利率、營業費用率', '各事業／產品營收占比'], 'Annual Reports & MOPS', ['Revenue, gross margin, operating-expense ratio over 3–5 years', 'Revenue share by business / product']) },
+      { k: 'platform', role: 'setup', owner: 'web', text: T('選定 AI 平台', ['ChatGPT／Gemini／Claude 三選一', '組內至少一人使用付費方案', '建立專案，上傳 KB.md 與資料'], 'AI Platform', ['One of ChatGPT / Gemini / Claude', 'At least one member on a paid plan', 'Create a project; upload KB.md and data']) },
+      { k: 'sheet', role: 'sheet', owner: 'news', text: T('共用資料表', ['Google Sheets：每則新聞一列', '欄位：日期、來源、摘要、PESTEL、BMC 區塊、正負面'], 'Shared Data Sheet', ['Google Sheets: one row per article', 'Columns: date, source, summary, PESTEL, BMC block, tone']) },
+      { k: 'summ', role: 'agent', owner: 'news', xref: 'A⑦', text: T('摘要與標註', ['Work／Task Agent 逐則雙語摘要', '依 PESTEL 因素與 BMC 區塊標註'], 'Summarise & Tag', ['The Work / Task Agent summarises each article in both languages', 'Tags each by PESTEL factor and BMC block']) },
+      { k: 'gate', role: 'gate', owner: 'news', xref: 'A②', text: T('人工查證', ['來源可靠？數字與年報一致？', '通過 → 分析；未通過 → 補資料'], 'Human Verification', ['Reliable source? Figures match the annual report?', 'Pass → analysis; fail → add data']) },
+      { k: 'prompt', role: 'prompt', owner: 'biz', text: T('提示詞與 KB.md', ['把分析步驟寫成提示詞', '每次修改都記下版本'], 'Prompts & KB.md', ['Write the analysis steps as prompts', 'Record a version for every change']) },
+      { k: 'pestel', role: 'analysis', owner: 'biz', xref: 'A③④', text: T('PESTEL → VP＋TA', ['找出影響目標客群 pains／gains 的關鍵因素', '修正價值主張與 Persona'], 'PESTEL → VP + TA', ['Find the factors behind the target audience\'s pains / gains', 'Refine the value proposition and persona']) },
+      { k: 'bmc', role: 'analysis', owner: 'biz', xref: 'A⑤', text: T('BMC 重點側分析', ['左側 KA＋KR＋KP 或右側 CR＋CH＋TA', '另一側寫基本考量'], 'BMC Focus Side', ['Left: KA + KR + KP, or right: CR + CH + TA', 'Cover the basics of the other side']) },
+      { k: 'da', role: 'calc', owner: 'news', tag: 'W13', xref: 'A⑦', text: T('TP-DA：新聞統計與趨勢', ['PESTEL 因素與 BMC 區塊的出現次數', '按季變化：熱度趨勢'], 'TP-DA: News Counts & Trends', ['How often each PESTEL factor and BMC block appears', 'Quarterly change: trend of attention']) },
+      { k: 'bi', role: 'calc', owner: 'biz', tag: 'W14', xref: 'A⑥', text: T('TP-BI：財務 KPI 與 RS／CS', ['營收成長、毛利率、營業費用率', '收入來源與成本結構'], 'TP-BI: Financial KPIs & RS / CS', ['Revenue growth, gross margin, operating-expense ratio', 'Revenue streams and cost structure']) },
+      { k: 'insight', role: 'report', owner: 'biz', xref: 'A⑧', text: T('商業模式與發展趨勢洞察', ['核心邏輯與關鍵驅動因素', '未來 1–3 年的機會、風險與建議'], 'Trend Insight', ['Core logic and key drivers', 'Opportunities, risks and advice for the next 1–3 years']) },
+      { k: 'web', role: 'build', owner: 'web', xref: 'A⑨', text: T('雙語網頁', ['KPI 卡片與互動圖表（Chart.js）', 'BMC 互動圖、新聞時間軸', '中英切換、AI 使用揭露'], 'Bilingual Web Page', ['KPI cards and interactive charts (Chart.js)', 'Interactive BMC, news timeline', 'Language toggle, AI-use disclosure']) },
+      { k: 'video', role: 'build', owner: 'web', xref: 'A⑨', text: T('2 分鐘動畫影片', ['網頁動畫＋英文旁白＋中英字幕', '錄製匯出，上傳 YouTube'], '2-min Animated Video', ['Web animation + English narration + Chinese and English subtitles', 'Record, export and upload to YouTube']) },
+      { k: 'deploy', role: 'deploy', owner: 'web', tag: 'TP Final · W15', text: T('部署 GitHub Pages', ['影片嵌入網頁', '繳交網址'], 'Deploy to GitHub Pages', ['Embed the video in the page', 'Submit the URL']) },
+      { k: 'contest', role: 'demo', owner: 'biz', tag: 'W16', text: T('W16 網頁競賽', ['展示網頁與影片', '互評、頒獎'], 'W16 Web Contest', ['Show the page and video', 'Peer evaluation, awards']) },
+      { k: 'gov1', role: 'gov', col: 0, owner: 'news', text: T('引用與著作權', ['新聞保留連結與日期；報告只引用重點', '影片與網頁素材註明來源'], 'Citations', ['Keep links and dates for news; quote reports briefly', 'Credit all media used in the video and page']) },
+      { k: 'gov2', role: 'gov', col: 2, owner: 'biz', text: T('AI 使用揭露', ['標示使用的平台與 AI 協助的範圍', 'AI 產出經組員審閱才發布'], 'AI-use Disclosure', ['State the platforms used and where AI helped', 'AI output is reviewed by the team before release']) },
+      { k: 'gov3', role: 'gov', col: 4, owner: 'web', text: T('帳號與方案', ['組內至少一人使用付費方案', '網頁與 GitHub 不放任何金鑰或密碼'], 'Accounts & Plans', ['At least one member on a paid plan', 'No keys or passwords in the page or on GitHub']) }
+    ],
+    edges: [
+      { k: 'f1', from: 'n:topic', to: 'n:platform', kind: 'flow' },
+      { k: 'f2', from: 'n:news', to: 'n:sheet', kind: 'flow' },
+      { k: 'f3', from: 'n:reports', to: 'n:sheet', kind: 'flow' },
+      { k: 'f4', from: 'n:platform', to: 'n:summ', kind: 'flow' },
+      { k: 'f5', from: 'n:sheet', to: 'n:summ', kind: 'flow' },
+      { k: 'f6', from: 'n:summ', to: 'n:gate', kind: 'flow' },
+      { k: 'f7', from: 'n:gate', to: 'n:pestel', kind: 'flow' },
+      { k: 'f8', from: 'n:gate', to: 'n:da', kind: 'flow' },
+      { k: 'f9', from: 'n:pestel', to: 'n:bmc', kind: 'flow' },
+      { k: 'f10', from: 'n:fin', to: 'n:bi', kind: 'flow' },
+      { k: 'f11', from: 'n:bmc', to: 'n:insight', kind: 'flow' },
+      { k: 'f12', from: 'n:da', to: 'n:insight', kind: 'flow' },
+      { k: 'f13', from: 'n:bi', to: 'n:insight', kind: 'flow' },
+      { k: 'f14', from: 'n:insight', to: 'n:web', kind: 'flow' },
+      { k: 'f15', from: 'n:insight', to: 'n:video', kind: 'flow' },
+      { k: 'f16', from: 'n:web', to: 'n:deploy', kind: 'flow' },
+      { k: 'f17', from: 'n:video', to: 'n:deploy', kind: 'flow' },
+      { k: 'f18', from: 'n:deploy', to: 'n:contest', kind: 'flow' },
+      { k: 'l1', from: 'n:gate', to: 'n:news', kind: 'main', text: { zh: '查證沒通過：補資料或換來源，再重新摘要與標註。', en: 'Verification fails: add data or change the source, then summarise and tag again.' } },
+      { k: 'l2', from: 'n:bmc', to: 'n:prompt', kind: 'main', text: { zh: '提示詞迭代：標註或分析結果不理想時，修正提示詞與 KB.md 後重跑，並記下版本。', en: 'Prompt iteration: when tags or analysis fall short, revise the prompts and KB.md, run again and record the version.' } },
+      { k: 'l3', from: 'n:deploy', to: 'n:web', kind: 'main', text: { zh: '預覽與修改：部署後組員互相檢查網頁與影片（雙語、連結、手機畫面），再請 Coding Agent 修改。', en: 'Preview and revise: after deploying, members check each other\'s work on the page and video (both languages, links, phone view), then ask the Coding Agent for fixes.' } }
+    ],
+    glossary: Object.assign({
+      tp0: { zh: ['TP0 選題（W5）', '各組決定要分析的企業與重點側（產品導向看左側、服務導向看右側），並寫出目標客群與 Persona 初稿。'], en: ['TP0 Topic (W5)', 'Each group picks its firm and focus side (left for product-oriented, right for service-oriented) and drafts the target audience and persona.'] },
+      news2y: { zh: ['近兩年新聞', '以近兩年的新聞為主要證據，20–30 則，正面與負面都要有，每則保留連結與日期。'], en: ['Two Years of News', 'News from the past two years is the main evidence: 20–30 articles, both positive and negative, each with its link and date.'] },
+      reports: { zh: ['市場／產業／投資分析報告', '研究機構、券商或顧問公司的報告；只引用重點並註明出處，不轉貼全文。'], en: ['Market / Industry / Investment Reports', 'Reports by research institutes, brokers or consultancies; quote key points, cite them, never repost the full text.'] },
+      mops: { zh: ['MOPS 公開資訊觀測站', '上市櫃公司的財務報表、月營收與年報；財務 KPI 與 RS／CS 的主要來源。'], en: ['MOPS', "Taiwan's disclosure site for listed companies' statements, monthly revenue and annual reports — the main source for financial KPIs and RS / CS."] },
+      platform: { zh: ['AI 平台', 'ChatGPT、Gemini、Claude 三選一。免費版功能有限，組內至少一人使用付費方案，其他組員可用免費版協作。'], en: ['AI Platform', 'One of ChatGPT, Gemini or Claude. Free tiers are limited, so at least one member uses a paid plan; others can work on free tiers.'] },
+      kbmd: { zh: ['KB.md', '用 Markdown 寫成的小組知識庫：企業背景、分析架構、名詞、決定事項。上傳到 AI 專案，讓每次對話都從同一份脈絡開始。'], en: ['KB.md', 'The group knowledge base written in Markdown: firm background, frameworks, terms and decisions. Uploaded to the AI project so every chat starts from the same context.'] },
+      sheet: { zh: ['共用資料表', 'Google Sheets，一則新聞一列；DA 的次數統計與趨勢都從這張表來。'], en: ['Shared Data Sheet', 'Google Sheets with one row per article; the DA counts and trends all come from this sheet.'] },
+      workagent: { zh: ['Work／Task Agent', 'AI 平台中能自行搜尋、閱讀並整理資料的代理功能（例如深度研究）；結果一定要查證。'], en: ['Work / Task Agent', 'The agent features of an AI platform that search, read and organise material (e.g. deep research); always verify the output.'] },
+      tagging: { zh: ['標註', '替每則新聞加上 PESTEL 因素、BMC 區塊與正負面標籤；AI 先標，組員抽查修正。'], en: ['Tagging', 'Labelling each article with PESTEL factor, BMC block and tone; AI tags first, members check and correct.'] },
+      verify: { zh: ['人工查證', '回到原始來源確認 AI 的摘要與數字；查不到出處的內容不採用。這是 W16「Data Quality」的主要證據。'], en: ['Human Verification', 'Check AI summaries and figures against the original sources; drop anything without a source. This is the main evidence for W16 Data Quality.'] },
+      promptiter: { zh: ['提示詞迭代', '結果不理想時修改提示詞再試，並記下每一版改了什麼；這是 W16「Analysis & AI Utilization」的證據。'], en: ['Prompt Iteration', 'When results fall short, revise the prompt and retry, recording what changed in each version — evidence for W16 Analysis & AI Utilization.'] },
+      pestel: { zh: ['PESTEL', '政治、經濟、社會、科技、環境、法律六個構面；必做，並連到目標客群的 pains／gains 與價值主張。'], en: ['PESTEL', 'Political, economic, social, technological, environmental and legal; required, and linked to the target audience\'s pains / gains and the value proposition.'] },
+      bmc: { zh: ['BMC 商業模式圖', '中間 VP、TA；左側 KP、KA、KR；右側 CR、CH；底部 RS、CS。'], en: ['Business Model Canvas (BMC)', 'VP and TA in the centre; KP, KA, KR on the left; CR and CH on the right; RS and CS at the bottom.'] },
+      focusside: { zh: ['重點側', '產品導向看左側（KA、KR、KP），服務導向看右側（CR、CH、TA）；另一側寫基本考量。'], en: ['Focus Side', 'Product-oriented firms focus on the left (KA, KR, KP), service-oriented firms on the right (CR, CH, TA); cover the basics of the other side.'] },
+      da: { zh: ['DA 資料分析（TP-DA，W13）', '新聞內容分析：依標註統計次數與按季變化，找出熱度趨勢。'], en: ['Data Analysis (TP-DA, W13)', 'News content analysis: count tags and quarterly changes to find trends of attention.'] },
+      bi: { zh: ['BI 商業智慧（TP-BI，W14）', '把財務資料整理成 KPI 卡片與趨勢圖，並說明 RS 與 CS 的結構。'], en: ['Business Intelligence (TP-BI, W14)', 'Turning financial data into KPI cards and trend charts, and explaining the RS and CS structure.'] },
+      kpi: { zh: ['財務 KPI', '營收成長率、毛利率、營業費用率、各事業營收占比；至少比較近 3–5 年。'], en: ['Financial KPIs', 'Revenue growth, gross margin, operating-expense ratio, revenue share by business; compare at least 3–5 years.'] },
+      insight: { zh: ['商業洞察', 'W16 評分占 20%：說明資料的「所以呢」，並提出可行的建議。'], en: ['Business Insight', 'Worth 20% at W16: explain the "so what" of the data and give actionable advice.'] },
+      codingagent: { zh: ['Coding Agent', 'AI 平台中能直接建立與修改程式檔案的代理功能；用來做網頁與動畫影片。'], en: ['Coding Agent', 'The agent feature of an AI platform that creates and edits code files directly; used to build the page and the animated video.'] },
+      vibecoding: { zh: ['Vibe Coding', '用自然語言請 Coding Agent 寫程式、看結果、再修改，不必背語法。'], en: ['Vibe Coding', 'Asking a coding agent in plain language to write code, checking the result and asking for changes — no memorising syntax.'] },
+      video: { zh: ['2 分鐘動畫影片', '以網頁動畫呈現重點，錄製匯出成影片：英文旁白＋中英字幕，上傳 YouTube 後嵌入網頁。'], en: ['Two-minute Animated Video', 'Key points shown as a web animation, recorded and exported: English narration with Chinese and English subtitles, uploaded to YouTube and embedded in the page.'] },
+      ghpages: { zh: ['GitHub Pages', '免費的靜態網站託管；W15 繳交網址。'], en: ['GitHub Pages', 'Free static website hosting; submit the URL in W15.'] },
+      contest: { zh: ['W16 網頁競賽', '各組展示網頁與影片，進行互評並頒獎。'], en: ['W16 Web Contest', 'Groups show their page and video; peer evaluation and awards follow.'] },
+      citation: { zh: ['引用與著作權', '每則資料註明來源、日期與連結；報告只引用重點；影片與網頁的圖片、音樂註明來源，限教育合理使用。'], en: ['Citation & Copyright', 'Source, date and link for every item; quote reports briefly; credit images and music in the video and page, within fair educational use.'] },
+      aidisclose: { zh: ['AI 使用揭露', '依 W2 的 AI-Usage Disclosure Policy，說明使用了哪些 AI 平台、用在哪些地方。'], en: ['AI-use Disclosure', 'Under the W2 AI-Usage Disclosure Policy, state which AI platforms were used and where.'] },
+      accounts: { zh: ['帳號與方案', '付費方案由組內至少一人負責；任何金鑰或密碼都不放進網頁、影片或 GitHub。'], en: ['Accounts & Plans', 'At least one member holds a paid plan; never put keys or passwords in the page, video or GitHub.'] }
+    }, B_SHAPES_GLOSS),
+    guide: {
+      zh: ['B 圖呈現 TP 的「AI Agent 工作流程」：左欄 INPUT 選題、蒐集近兩年新聞與分析報告、財務資料，並設定 AI 平台與共用資料表；中欄 PROCESS 由 Work／Task Agent 摘要與標註，經人工查證後做 PESTEL、BMC 分析與 DA、BI；右欄 OUTPUT 由 Coding Agent 製作雙語網頁與 2 分鐘影片並部署。底部治理層橫貫三欄。', '節點下方的色塊是負責的團隊角色（建議三組、每組兩人），圖下方有分工表；右下角「→ A」對照 A 圖節點。虛線 L1–L3 是回饋迴路。', '建議步驟：先確認三組分工 → 依你們的 AI 平台修改「選定 AI 平台」節點 → 調整資料來源與標註欄位 → 補上你們自己的回饋迴路。'],
+      en: ['Diagram B shows the TP as an AI agent workflow: INPUT picks the topic, gathers two years of news, analysis reports and financials, and sets up the AI platform and shared sheet; PROCESS has the Work / Task Agent summarise and tag, then — after human verification — runs PESTEL, BMC, DA and BI; OUTPUT has the Coding Agent build the bilingual page and two-minute video and deploy them. The governance band cuts across all three columns.', 'The coloured badge under each node is the responsible team role (suggested: three pairs), summarised in the table below; the "→ A" mark points to the matching node in Diagram A. Dashed L1–L3 are feedback loops.', 'Suggested steps: agree on the three pairs → edit the "AI Platform" node for your platform → adjust the sources and tag columns → add your own feedback loops.']
+    }
   }
 };
 
@@ -902,6 +1141,41 @@ const TEMPLATES_C = {
       zh: ['C 圖是 W9 提案的一頁摘要。①–⑤ 依 Syllabus W9 的提案格式排序（Background → Chosen firm/platform → Data sources → Tech architecture → Expected deployed output），⑥–⑨ 是團隊分工與協作、里程碑、W16 評分對照與分析問題。', '標示「自動帶入」的卡片會跟著 A、B 圖更新：②③⑨ 來自 A 圖，④⑥ 來自 B 圖。先把 A、B 圖改好，這裡就會一致。', '建議步驟：① 在右側填入題目、組別與組員；② 逐張點選卡片檢查內容，把 __ 換成你們的網址與資料；③ 在 ⑥ 填入每個角色的組員姓名，並寫下組員如何協作（不只是列出分工）；④ 頂端的「完成 X／9」全部打勾後，匯出 PNG 或「列印／存成 PDF」，搭配 5 分鐘 pitch 使用。'],
       en: ['Diagram C is the one-page summary of the W9 proposal. Cards ①–⑤ follow the syllabus proposal format (Background → Chosen firm/platform → Data sources → Tech architecture → Expected deployed output); ⑥–⑨ cover team roles and collaboration, milestones, the W16 grading map and the analysis questions.', 'Cards marked Auto-filled follow Diagrams A and B: ②③⑨ come from A, ④⑥ from B. Fix A and B first and this page stays consistent.', 'Suggested steps: (1) fill in the title, group and members on the right; (2) click each card, check it and replace every __ with your URL and data; (3) add member names for each role in ⑥ and describe how you work together (not just who does what); (4) when the "Done X/9" counter is complete, export PNG or Print / Save as PDF for your 5-minute pitch.']
     }
+  },
+
+  /* ---------------- TP · BNA 1151 · TP Proposal (W9) ---------------- */
+  tp_bna: {
+    id: 'tp_bna', short: 'TP-BNA-C',
+    name: { zh: 'TP 期末專案・BNA 1151', en: 'TP Term Project · BNA 1151' },
+    pageTitle: { zh: '企業分析 TP：W9 提案摘要', en: 'Firm Analysis TP: W9 Proposal Summary' },
+    title: { zh: '企業商業模式與發展趨勢分析', en: 'Business Model & Development Trend Analysis' },
+    subtitle: { zh: 'BNA-EMI 1151 · 第 __ 組 · 組員：__ · 日期：__', en: 'BNA-EMI 1151 · Group __ · Members: __ · Date: __' },
+    cards: [
+      { id: 'problem', title: L2('問題', 'Problem'), sub: L2('Problem｜企業、目標客群與 Persona、要回答的問題｜W16 Problem Definition 20%', 'Firm, target audience and persona, the question | W16: Problem Definition 20%'), auto: 'bna_problem', src: 'A', limit: 200 },
+      { id: 'data', title: L2('資料來源', 'Data Sources'), sub: L2('Data sources｜近兩年新聞、分析報告、財務資料｜W16 Data Quality 20%', 'Two years of news, reports, financials | W16: Data Quality 20%'), auto: 'bna_sources', src: 'A', limit: 220 },
+      { id: 'methods', title: L2('分析方法', 'Analysis Methods'), sub: L2('Analysis methods｜PESTEL → VP＋TA → BMC 重點側 → RS／CS；DA、BI', 'PESTEL → VP + TA → BMC focus side → RS / CS; DA, BI'), auto: 'bna_methods', src: 'A', limit: 240 },
+      { id: 'agent', title: L2('AI Agent 與工具', 'AI Agent & Tools'), sub: L2('AI Agent & tools｜含 AI 使用揭露｜W16 Analysis & AI Utilization 25%', 'Includes AI-use disclosure | W16: Analysis & AI Utilization 25%'), auto: 'b_tech', src: 'B', limit: 280 },
+      { id: 'output', title: L2('預期部署成果', 'Expected Deployed Output'), sub: L2('Expected deployed output｜W16 Delivery 15%', 'W16: Delivery 15%'), limit: 180,
+        hint: L2('把 __ 換成你們的網址', 'Replace __ with your URL'),
+        def: L2(['網址：https://__.github.io/__/', '雙語網頁：KPI 儀表板、BMC 互動圖、新聞時間軸', '2 分鐘雙語動畫影片（英文旁白＋中英字幕），嵌入網頁', '頁尾：AI 使用揭露與引用來源'], ['URL: https://__.github.io/__/', 'Bilingual page: KPI dashboard, interactive BMC, news timeline', 'Two-minute bilingual animated video (English narration + Chinese and English subtitles), embedded in the page', 'Footer: AI-use disclosure and source citations']) },
+      { id: 'team', title: L2('團隊分工與協作', 'Team Roles & Collaboration'), sub: L2('填入組員姓名與協作方式（建議三組、每組兩人）', 'Add member names and how you work together (suggested: three pairs)'), auto: 'team_collab', src: 'B', people: true, collab: true, limit: 300 },
+      { id: 'milestones', title: L2('里程碑', 'Milestones'), limit: 220,
+        def: L2(['W5 TP0：選題（企業、重點側、TA 與 Persona）', 'W9 TP Proposal：本頁＋ 5 分鐘雙語 pitch', 'W13 TP-DA：新聞標註統計與趨勢', 'W14 TP-BI：財務 KPI、RS／CS 圖表、網頁初版', 'W15 TP Final：繳交網頁＋ 2 分鐘影片', 'W16：網頁競賽、互評、頒獎'], ['W5 TP0: topic (firm, focus side, TA and persona)', 'W9 TP Proposal: this page + a 5-minute bilingual pitch', 'W13 TP-DA: news tag counts and trends', 'W14 TP-BI: financial KPIs, RS / CS charts, page draft', 'W15 TP Final: submit the page + two-minute video', 'W16: web contest, peer evaluation, awards']) },
+      { id: 'grading', title: L2('W16 評分對照', 'W16 Grading Map'), sub: L2('Grading｜每一項評分在本頁的哪裡回應', 'Where this page answers each criterion'), limit: 260,
+        def: L2(['Problem Definition 20% → ① 問題、⑨ 分析問題', 'Data Quality 20% → ② 資料來源（查證與引用）', 'Analysis & AI Utilization 25% → ③ 分析方法、④ AI Agent 與工具', 'Business Insight 20% → ⑨ 分析問題與 A 圖 ⑧ 洞察', 'Delivery 15% → ⑤ 網頁＋影片、⑦ 里程碑'], ['Problem Definition 20% → ① Problem, ⑨ Analysis Questions', 'Data Quality 20% → ② Data Sources (verification and citation)', 'Analysis & AI Utilization 25% → ③ Methods, ④ AI Agent & Tools', 'Business Insight 20% → ⑨ AQs, ⑧ Insight in Diagram A', 'Delivery 15% → ⑤ page + video, ⑦ Milestones']) },
+      { id: 'aq', title: L2('分析問題', 'Analysis Questions'), sub: L2('PESTEL × BMC × 新聞趨勢｜W16 Business Insight 20%', 'PESTEL × BMC × news trends | W16: Business Insight 20%'), auto: 'a_hyp', src: 'A', limit: 360 }
+    ],
+    glossary: {
+      proposal: { zh: ['W9 提案格式（1151 修訂）', 'Problem → Data sources → Analysis methods → AI Agent & tools → Expected deployed output，並做 5 分鐘雙語 pitch。W5 TP0 選題、W9 TP Proposal、W13 TP-DA、W14 TP-BI、W15 TP Final、W16 網頁競賽。'], en: ['W9 Proposal Format (1151 revision)', 'Problem → Data sources → Analysis methods → AI Agent & tools → Expected deployed output, with a 5-minute bilingual pitch. W5 TP0 topic, W9 TP Proposal, W13 TP-DA, W14 TP-BI, W15 TP Final, W16 web contest.'] },
+      grading: { zh: ['W16 評分標準', 'Problem Definition 20%、Data Quality 20%、Analysis & AI Utilization 25%、Business Insight 20%、Delivery 15%（網頁＋影片）。'], en: ['W16 Grading', 'Problem Definition 20%, Data Quality 20%, Analysis & AI Utilization 25%, Business Insight 20%, Delivery 15% (page + video).'] },
+      autofill: { zh: ['自動帶入', '卡片右上角標示「自動帶入：A 圖／B 圖」時，內容會跟著 A、B 圖更新；自己改過之後改為「已手動修改」，可按「重新帶入」還原。'], en: ['Auto-fill', 'A card marked "Auto-filled from A / B" follows those diagrams; once you edit it, it is marked "Edited by hand" and "Refill" restores it.'] },
+      collab: { zh: ['協作方式', '說明組員如何一起工作，而不只是列出誰做什麼：例如每組兩人一技術一商業、共用資料表與 KB.md、每週互相檢查。'], en: ['How We Work Together', 'Describe how members work together, not just who does what: e.g. each pair mixes tech and business, shared sheet and KB.md, weekly cross-checks.'] },
+      paidplan: { zh: ['付費方案', '三大 AI 平台的 Agent 功能多半需要付費方案：組內至少一人使用付費方案，其他組員可用免費版協作。'], en: ['Paid Plan', 'The agent features of the three AI platforms mostly need a paid plan: at least one member uses one; others can work on free tiers.'] }
+    },
+    guide: {
+      zh: ['C 圖是 W9 TP Proposal 的一頁摘要。①–⑤ 依 1151 修訂後的提案格式排序（Problem → Data sources → Analysis methods → AI Agent & tools → Expected deployed output），⑥–⑨ 是團隊分工與協作、里程碑、W16 評分對照與分析問題。', '標示「自動帶入」的卡片會跟著 A、B 圖更新：①②③⑨ 來自 A 圖，④⑥ 來自 B 圖。先把 A、B 圖改好，這裡就會一致。', '建議步驟：① 在右側填入題目、組別與組員；② 逐張點選卡片檢查內容，把 __ 換成你們的網址與資料；③ 在 ⑥ 填入每組的組員姓名，並寫下組員如何協作；④ 頂端的「完成 X／9」全部打勾後，匯出 PNG 或「列印／存成 PDF」，搭配 5 分鐘雙語 pitch 使用。'],
+      en: ['Diagram C is the one-page summary of the W9 TP Proposal. Cards ①–⑤ follow the revised 1151 proposal format (Problem → Data sources → Analysis methods → AI Agent & tools → Expected deployed output); ⑥–⑨ cover team roles and collaboration, milestones, the W16 grading map and the analysis questions.', 'Cards marked Auto-filled follow Diagrams A and B: ①②③⑨ come from A, ④⑥ from B. Fix A and B first and this page stays consistent.', 'Suggested steps: (1) fill in the title, group and members on the right; (2) click each card, check it and replace every __ with your URL and data; (3) add member names for each pair in ⑥ and describe how you work together; (4) when the "Done X/9" counter is complete, export PNG or Print / Save as PDF for your 5-minute bilingual pitch.']
+    }
   }
 };
 
@@ -925,7 +1199,7 @@ const dict = {
     tour_replay: '▶ 播放新手導覽',
     tour_next: '下一步', tour_prev: '上一步', tour_skip: '略過', tour_done: '開始使用',
     tour_steps: [
-      { t: '選擇範本', d: '依你的用途選擇：研究生選 RP 量化或質性；修課同學依課程選 TP（PMCS 或 CDPS）。切換範本會取代目前的 A、B、C 三張圖，建議先儲存 JSON。' },
+      { t: '選擇範本', d: '依你的用途選擇：研究生選 RP 量化或質性；修課同學依課程選 TP（PMCS、CDPS 或 BNA）。切換範本會取代目前的 A、B、C 三張圖，建議先儲存 JSON。' },
       { t: '切換圖別', d: 'A 是架構圖（變數或分析邏輯），B 是流程圖（研究流程或系統流程）。C 是一頁提案摘要（A4），會自動帶入 A、B 圖的內容。三張圖存在同一份檔案，切換不會遺失內容。' },
       { t: '圖中文字', d: '選擇圖上顯示中文、英文或雙語。切換時會自動重新排版。' },
       { t: '畫布', d: '點一下節點或連線即可在右側編輯；按住節點拖曳可移動位置。節點右上角的 ⓘ 會顯示相關術語。' },
@@ -1075,7 +1349,7 @@ const dict = {
     tour_replay: '▶ Play the quick tour',
     tour_next: 'Next', tour_prev: 'Back', tour_skip: 'Skip', tour_done: 'Start',
     tour_steps: [
-      { t: 'Choose a template', d: 'Graduate students choose RP Quantitative or Qualitative; course students choose the TP for their course (PMCS or CDPS). Switching replaces diagrams A, B and C, so save a JSON first.' },
+      { t: 'Choose a template', d: 'Graduate students choose RP Quantitative or Qualitative; course students choose the TP for their course (PMCS, CDPS or BNA). Switching replaces diagrams A, B and C, so save a JSON first.' },
       { t: 'Switch diagrams', d: 'A is the framework (variables or analysis logic); B is the flow (research process or system flow). C is the one-page proposal summary (A4), filled in from A and B. All three live in the same file, so switching loses nothing.' },
       { t: 'Diagram text', d: 'Show Chinese, English or both on the diagram. The layout is refreshed automatically when you switch.' },
       { t: 'Canvas', d: 'Click a node or link to edit it on the right; drag a node to move it. The ⓘ at the top right of a node shows related terms.' },
@@ -1702,7 +1976,28 @@ function autoC(key, tplId, ds, people) {
     const n = A.nodes.find(x => x.role === 'source');
     if (n) { const semi = n.variant === 'semi'; add('模式：' + (semi ? '半自動（組員整理分店清單）' : '自動（開放資料＋地理編碼）'), 'Mode: ' + (semi ? 'semi-automatic (members compile store lists)' : 'automatic (open data + geocoding)'));
       const z = T(n, 'zh').items, e = T(n, 'en').items; z.forEach((s, i) => add(s, e[i] || '')); }
-  } else if (key === 'cdps_tech') {
+  } else if (key === 'bna_problem') {
+    const ns = A.nodes.filter(n => n.role === 'scope').sort((a, b) => a.lane - b.lane);
+    ns.forEach(n => {
+      const lt = ns.length > 1 ? String.fromCharCode(65 + Math.max(0, n.lane)) : '';
+      add((lt ? lt + '｜' : '') + its(n, 'zh'), (lt ? lt + ' | ' : '') + its(n, 'en'));
+      const v = A.nodes.find(x => x.role === 'vpta' && x.lane === n.lane);
+      if (v) { const z = T(v, 'zh').items, en = T(v, 'en').items; const idx = z.map((s, i) => /^(TA|Persona)/.test(s) ? i : -1).filter(i => i >= 0);
+        if (idx.length) add((lt ? lt + '｜' : '') + idx.map(i => z[i]).join('；'), (lt ? lt + ' | ' : '') + idx.map(i => en[i] || '').join('; ')); }
+    });
+  } else if (key === 'bna_sources') {
+    const n = A.nodes.find(x => x.role === 'source');
+    if (n) { const semi = n.variant === 'semi'; add('模式：' + (semi ? '半自動（組員蒐集＋ AI 摘要）' : '自動（Work／Task Agent 深度研究）'), 'Mode: ' + (semi ? 'semi-automatic (members collect + AI summaries)' : 'automatic (Work / Task Agent deep research)'));
+      const z = T(n, 'zh').items, e = T(n, 'en').items; z.forEach((s, i) => add(s, e[i] || '')); }
+  } else if (key === 'bna_methods') {
+    const p = A.nodes.filter(n => n.role === 'pestel');
+    if (p.length) add('PESTEL → VP（pains／gains）＋TA', 'PESTEL → VP (pains / gains) + TA');
+    const bs = A.nodes.filter(n => n.role === 'bmc').sort((a, b) => a.lane - b.lane);
+    const heads = (n, L) => T(n, L).items.filter(Boolean).map(s => s.split(L === 'zh' ? '：' : ': ')[0]).join(L === 'zh' ? '、' : ', ');
+    bs.forEach(n => { const lt = bs.length > 1 ? String.fromCharCode(65 + Math.max(0, n.lane)) : '';
+      add((lt ? lt + '｜' : '') + T(n, 'zh').title + '（' + heads(n, 'zh') + '）', (lt ? lt + ' | ' : '') + T(n, 'en').title + ' (' + heads(n, 'en') + ')'); });
+    ['da', 'bi'].forEach(r => A.nodes.filter(n => n.role === r).forEach(n => add((n.tag ? n.tag + '｜' : '') + T(n, 'zh').title + '：' + (T(n, 'zh').items[0] || ''), (n.tag ? n.tag + ' | ' : '') + T(n, 'en').title + ': ' + (T(n, 'en').items[0] || ''))));
+  } else if (key === 'cdps_tech' || key === 'b_tech') {
     if (tB.stack) add(tB.stack.zh, tB.stack.en);
     (tB.phases || []).filter(ph => !ph.skipTech).forEach(ph => {
       const ns = B.nodes.filter(n => !inBand(tB, n) && ph.cols.includes(colOfN(tB, n))).sort(byY).sort((a, b) => colOfN(tB, a) - colOfN(tB, b));
@@ -1710,6 +2005,8 @@ function autoC(key, tplId, ds, people) {
       const lz = ph.label.zh.split('｜')[0], le = ph.label.en.split(' | ')[0];
       add(`${lz}：${ns.map(n => T(n, 'zh').title).join('、')}`, `${le}: ${ns.map(n => T(n, 'en').title).join(', ')}`);
     });
+    if (key === 'b_tech') { const gs = B.nodes.filter(n => inBand(tB, n)).sort((a, b) => a.x - b.x);
+      if (gs.length) add('治理：' + gs.map(n => T(n, 'zh').title).join('、'), 'Governance: ' + gs.map(n => T(n, 'en').title).join(', ')); }
   } else if (key === 'pmcs_ksa') {
     const lane0 = Math.min(0, ...A.nodes.filter(n => ['k', 's', 'a', 'ai'].includes(n.role)).map(n => n.lane));
     ['k', 's', 'a', 'ai'].forEach(r => {
