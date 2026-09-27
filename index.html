@@ -161,7 +161,7 @@ const TEMPLATES = {
     nodeW: 226, columns: 7, gapX: 62, prefix: 'AQ', signs: false, defaultEdgeKind: 'main',
     legendTitle: { zh: '分析問題（AQ）', en: 'Analysis Questions (AQ)' },
     title: { zh: 'PM／PjM 職缺 K/S/A 分析晨報 Agent：分析架構圖', en: 'PM/PjM Job K/S/A Morning-Brief Agent: Analysis Framework' },
-    subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · W9 提案', en: 'PMCS-EMI 1151 · Group __ · W9 Proposal' },
+    subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · TP Proposal（W9）', en: 'PMCS-EMI 1151 · Group __ · TP Proposal (W9)' },
     lanes: { enabled: true, max: 3 },
     laneNames: [
       { zh: '比較列 A｜台灣・半導體', en: 'Row A | Taiwan · Semiconductors' },
@@ -540,7 +540,7 @@ const TEMPLATES_B = {
     legendTitle: { zh: '回饋迴路（L）', en: 'Feedback Loops (L)' },
     ownerTitle: { zh: '團隊角色分工（建議，可依組內分工調整）', en: 'Team Roles (suggested; adjust to your team)' },
     title: { zh: 'PM／PjM 職缺 K/S/A 分析晨報 Agent：系統流程圖（I-P-O 藍圖）', en: 'PM/PjM Job K/S/A Morning-Brief Agent: System Flow (I-P-O Blueprint)' },
-    subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · W9 提案', en: 'PMCS-EMI 1151 · Group __ · W9 Proposal' },
+    subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · TP Proposal（W9）', en: 'PMCS-EMI 1151 · Group __ · TP Proposal (W9)' },
     lanes: { enabled: false },
     phaseDir: 'col',
     phases: [
@@ -1053,21 +1053,23 @@ const TEMPLATES_C = {
       { id: 'runtime', title: L2('執行期架構', 'Runtime Architecture'), sub: L2('免費額度估算、降級模式設計', 'Free-tier quota estimate, graceful degradation'), limit: 180,
         hint: L2('把 __ 換成你們的估算數字', 'Replace __ with your own estimates'),
         def: L2(['每日執行 1 次；每次約 __ 筆職缺、__ 次模型呼叫', '免費額度：每月約 __ 次呼叫，占上限 __%', '降級：主要來源失敗 → 依序改用備援 → 全部失敗仍照常出刊並標示「今日來源不可用」', '重試上限 __ 次；QA 未通過重寫上限 2–3 次'], ['One run per day; about __ postings and __ model calls per run', 'Free tier: about __ calls per month, __% of the cap', 'Degradation: primary source fails → fallbacks in order → if all fail, still publish, labelled "source unavailable today"', 'Retry cap __; rewrite cap after a failed QA check: 2–3']) },
-      { id: 'team', title: L2('團隊五角色分工', 'Team Roles'), sub: L2('填入組員姓名', 'Add member names'), auto: 'pmcs_team', src: 'B', people: true, limit: 240 },
-      { id: 'milestones', title: L2('里程碑', 'Milestones'), limit: 120,
+      { id: 'team', title: L2('團隊五角色分工與協作', 'Team Roles & Collaboration'), sub: L2('填入組員姓名與協作方式（超過五人可兩人分擔同一角色）', 'Add member names and how you work together (groups over five may share a role)'), auto: 'team_collab', src: 'B', people: true, collab: true, limit: 300 },
+      { id: 'milestones', title: L2('里程碑', 'Milestones'), limit: 220,
         hint: L2('填入 D day 的日期', 'Fill in the D-day date'),
-        def: L2(['W9：提案（本規格書）', 'W12：可運行版', 'D day：__ 月 __ 日（最晚 W15 上課日），之後 D+1～D+3 連續無人值守執行', 'W16：期末驗收'], ['W9: proposal (this specification)', 'W12: running version', 'D day: __ (no later than the W15 class), then D+1 to D+3 unattended', 'W16: final acceptance']) }
+        def: L2(['W8 TP0：主題（產業／企業 × PM/PjM 關鍵字 × K/S/A 構面）', 'W9 TP Proposal：本規格書', 'W10 TP-KB：repo 骨架與 KB 初版；W11 TP-Data：K/S/A 資料與晨報初稿', 'W12 TP-Run：可運行版上線', 'D day（W15 TP Final）：__ 月 __ 日，之後 D+1～D+3 連續無人值守執行', 'W16：網頁競賽、期末驗收、頒獎、期末互評'], ['W8 TP0: theme (industry / company × PM/PjM keywords × K/S/A)', 'W9 TP Proposal: this specification', 'W10 TP-KB: repo skeleton and first KB; W11 TP-Data: K/S/A data and draft brief', 'W12 TP-Run: running version live', 'D day (W15 TP Final): __, then D+1 to D+3 unattended', 'W16: web contest, final acceptance, awards, final peer review']) }
     ],
     glossary: {
       spec: { zh: ['W9 規格書', '依 I-P-O 藍圖的 INPUT／INTENTION 欄撰寫的晨報 Agent 規格，共九項必填。'], en: ['W9 Specification', 'The morning-brief agent specification written along the INPUT / INTENTION column of the I-P-O blueprint; nine required items.'] },
       autofill: { zh: ['自動帶入', '卡片右上角標示「自動帶入：A 圖／B 圖」時，內容會跟著 A、B 圖更新；自己改過之後改為「已手動修改」，可按「重新帶入」還原。'], en: ['Auto-fill', 'A card marked "Auto-filled from A / B" follows those diagrams; once you edit it, it is marked "Edited by hand" and "Refill" restores it.'] },
       quota: { zh: ['免費額度估算', '估算每月模型呼叫與資料抓取次數，確認低於免費方案上限；本課程 TP 不得使用付費 API。'], en: ['Free-tier Quota Estimate', 'Estimate monthly model calls and fetches and confirm they stay under the free-tier cap; paid APIs are not allowed in this TP.'] },
       degradation: { zh: ['降級模式', '主要來源失敗時依序改用備援；全部失敗仍照常出刊並誠實標示缺漏，不整份停發、不無限重試。'], en: ['Graceful Degradation', 'Fall back source by source; if all fail, still publish and label what is missing — no skipped brief, no endless retries.'] },
-      dday: { zh: ['D day', '晨報 Agent 第一次正式無人值守執行的日子，最晚在 W15 上課日；之後 D+1～D+3 連續執行並留下紀錄。'], en: ['D day', 'The first unattended production run, no later than the W15 class; D+1 to D+3 follow with records kept.'] }
+      dday: { zh: ['D day', '晨報 Agent 第一次正式無人值守執行的日子，也是 TP Final，最晚在 W15 上課日；之後 D+1～D+3 連續執行並留下紀錄。'], en: ['D day', 'The first unattended production run and the TP Final, no later than the W15 class; D+1 to D+3 follow with records kept.'] },
+      contest: { zh: ['W16 網頁競賽', '各組已部署的晨報網頁就是競賽作品：週六 D+3 執行後的週末（W16 前）開放全班與教師線上評分；W16 課堂各組約 5 分鐘現場驗收，再公布結果、頒獎並完成期末互評。'], en: ['W16 Web Contest', "Each group's deployed morning-brief page is its contest entry: online evaluation by the class and instructor opens the weekend before W16, right after the D+3 run on Saturday; in W16 each group has about five minutes of live acceptance, then results, awards and the final peer review."] },
+      collab: { zh: ['協作方式', '說明組員如何一起工作，而不只是列出誰做什麼：例如技術角色與其他組員如何交接、共用 KB 與 repo、每週互相檢查。'], en: ['How We Work Together', 'Describe how members work together, not just who does what: e.g. hand-offs between technical and other roles, a shared KB and repo, weekly cross-checks.'] }
     },
     guide: {
-      zh: ['C 圖是 W9 提案的一頁摘要，九張卡片對應 Syllabus W9 的九項必填，依循 I-P-O 藍圖的 INPUT／INTENTION 欄。', '標示「自動帶入」的卡片會跟著 A、B 圖更新：②④⑤ 來自 A 圖，③⑧ 來自 B 圖。先把 A、B 圖改好，這裡就會一致。', '建議步驟：① 在右側填入題目、組別與組員；② 逐張點選卡片檢查內容，把 __ 換成你們的數字與日期；③ 在 ⑧ 填入每個角色的組員姓名；④ 頂端的「完成 X／9」全部打勾後，匯出 PNG 或「列印／存成 PDF」。'],
-      en: ['Diagram C is the one-page summary of the W9 proposal: nine cards for the nine required items in the syllabus, following the INPUT / INTENTION column of the I-P-O blueprint.', 'Cards marked Auto-filled follow Diagrams A and B: ②④⑤ come from A, ③⑧ from B. Fix A and B first and this page stays consistent.', 'Suggested steps: (1) fill in the title, group and members on the right; (2) click each card, check it and replace every __ with your numbers and dates; (3) add member names for each role in ⑧; (4) when the "Done X/9" counter is complete, export PNG or Print / Save as PDF.']
+      zh: ['C 圖是 W9 提案的一頁摘要，九張卡片對應 Syllabus W9 的九項必填，依循 I-P-O 藍圖的 INPUT／INTENTION 欄。', '標示「自動帶入」的卡片會跟著 A、B 圖更新：②④⑤ 來自 A 圖，③⑧ 來自 B 圖。先把 A、B 圖改好，這裡就會一致。', '建議步驟：① 在右側填入題目、組別與組員；② 逐張點選卡片檢查內容，把 __ 換成你們的數字與日期；③ 在 ⑧ 填入每個角色的組員姓名，並寫下組員如何協作（不只是列出分工）；④ 頂端的「完成 X／9」全部打勾後，匯出 PNG 或「列印／存成 PDF」。'],
+      en: ['Diagram C is the one-page summary of the W9 proposal: nine cards for the nine required items in the syllabus, following the INPUT / INTENTION column of the I-P-O blueprint.', 'Cards marked Auto-filled follow Diagrams A and B: ②④⑤ come from A, ③⑧ from B. Fix A and B first and this page stays consistent.', 'Suggested steps: (1) fill in the title, group and members on the right; (2) click each card, check it and replace every __ with your numbers and dates; (3) add member names for each role in ⑧ and describe how you work together (not just who does what); (4) when the "Done X/9" counter is complete, export PNG or Print / Save as PDF.']
     }
   },
 
