@@ -160,7 +160,7 @@ const TEMPLATES = {
     name: { zh: 'TP 期末專案・PMCS 1151', en: 'TP Term Project · PMCS 1151' },
     nodeW: 226, columns: 7, gapX: 62, prefix: 'AQ', signs: false, defaultEdgeKind: 'main',
     legendTitle: { zh: '分析問題（AQ）', en: 'Analysis Questions (AQ)' },
-    title: { zh: 'PM／PjM 職缺 K/S/A 分析晨報 Agent：分析架構圖', en: 'PM/PjM Job K/S/A Morning-Brief Agent: Analysis Framework' },
+    title: { zh: 'PM／PjM 職缺 K/S/A 分析 Agent：分析架構圖', en: 'PM/PjM Job K/S/A Analysis Agent: Analysis Framework' },
     subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · TP Proposal（W9）', en: 'PMCS-EMI 1151 · Group __ · TP Proposal (W9)' },
     lanes: { enabled: true, max: 3 },
     laneNames: [
@@ -170,7 +170,7 @@ const TEMPLATES = {
     ],
     roles: [
       { id: 'scope',  col: 0, badge: '1', perLane: true, color: '#004030', fill: '#E6F0EC', zh: '① 可設定範圍', en: '① Configurable Scope', terms: ['theme_config', 'lanes', 'pmvariants', 'aq'] },
-      { id: 'source', col: 1, badge: '2', color: '#0F766E', fill: '#E3F4F1', zh: '② 資料來源與法遵', en: '② Sources & Compliance', terms: ['sources', 'robots', 'ratelimit', 'pii'] },
+      { id: 'source', col: 1, badge: '2', color: '#0F766E', fill: '#E3F4F1', zh: '② 資料來源與法遵', en: '② Sources & Compliance', terms: ['sources', 'jdform', 'robots', 'pii'] },
       { id: 'jd',     col: 2, badge: '3', color: '#1D4ED8', fill: '#EAF1FF', zh: '③ JD 解析', en: '③ JD Parsing', terms: ['jd', 'fields104'] },
       { id: 'axes',   col: 2, badge: '4', color: '#1D4ED8', fill: '#EAF1FF', zh: '④ 兩軸判斷', en: '④ Two-Axis Judgement', terms: ['pm', 'pjm', 'seniority'] },
       { id: 'k',      col: 3, badge: 'K', perLane: true, color: '#B45309', fill: '#FEF3E2', zh: '⑤ 知識 K', en: '⑤ Knowledge K', terms: ['ksa', 'k'] },
@@ -179,7 +179,7 @@ const TEMPLATES = {
       { id: 'ai',     col: 3, badge: '★', perLane: true, color: '#7C3AED', fill: '#F3EEFF', zh: '⑤ ★ AI 職能', en: '⑤ ★ AI Competency', terms: ['aicf'] },
       { id: 'role6',  col: 4, badge: '6', perLane: true, color: '#9D174D', fill: '#FCEEF4', zh: '⑥ 職位與職能對照', en: '⑥ Role & Competency Mapping', terms: ['po', 'pl', 'pcc', 'pdma', 'npd'] },
       { id: 'pay',    col: 5, badge: '7', perLane: true, color: '#A16207', fill: '#FEF9E7', zh: '⑦ 薪酬與職涯', en: '⑦ Pay & Career', terms: ['salary'] },
-      { id: 'brief',  col: 6, badge: '8', color: '#004030', fill: '#F7F1E8', zh: '⑧ 晨報輸出', en: '⑧ Morning-Brief Output', terms: ['business_rules', 'degradation', 'heartbeat'] },
+      { id: 'brief',  col: 6, badge: '8', color: '#004030', fill: '#F7F1E8', zh: '⑧ 分析網頁', en: '⑧ Analysis Page', terms: ['business_rules', 'trend', 'ghpages'] },
       { id: 'perf',   col: 6, badge: '9', color: '#64748B', fill: '#F8FAFC', zh: '⑨（選配）企業／產業績效', en: '⑨ (Optional) Firm / Industry Performance', terms: ['etf'] }
     ],
     groups: [
@@ -190,10 +190,10 @@ const TEMPLATES = {
     nodes: [
       { k: 'scope', role: 'scope', lane: 0, tag: 'theme_config.md',
         text: T('可設定範圍', ['產業／企業：半導體・聯發科', '職務關鍵字：PM、PdM、PjM、PCC、TPM', '地區：台灣・新竹'], 'Configurable Scope', ['Industry / company: Semiconductors · MediaTek', 'Job keywords: PM, PdM, PjM, PCC, TPM', 'Region: Taiwan · Hsinchu']) },
-      { k: 'source', role: 'source', lane: -1, tag: 'sources.md', variant: 'auto',
+      { k: 'source', role: 'source', lane: -1, tag: 'sources.md', variant: 'semi',
         variants: {
-          auto: T('資料來源與法遵', ['台灣就業通職缺開放資料（data.gov.tw）', '允許擷取的企業徵才頁', 'robots.txt／服務條款檢查', '速率限制＋退避重試', '個資遮蔽'], 'Sources & Compliance', ['Taiwan Jobs open data (data.gov.tw)', 'Company career pages that permit crawling', 'robots.txt / Terms of Service check', 'Rate limiting + exponential backoff', 'PII masking']),
-          semi: T('資料來源與法遵', ['組員將 JD 貼入共用表單', '每則保留原始連結', 'Agent 每日彙整與分析', '個資遮蔽'], 'Sources & Compliance', ['Members paste JDs into a shared form', 'Original link kept for every entry', 'Agent consolidates and analyses daily', 'PII masking'])
+          auto: T('資料來源與法遵', ['（選配）程式自動抓取職缺', 'robots.txt／服務條款檢查', '速率限制＋退避重試', '個資遮蔽'], 'Sources & Compliance', ['(Optional) automatic fetching of postings', 'robots.txt / Terms of Service check', 'Rate limiting + exponential backoff', 'PII masking']),
+          semi: T('資料來源與法遵', ['組員以 Google 表單貼入 104／LinkedIn 的 JD', '每則附原始連結與網站日期；蒐集日期自動記錄', '原始 JD 只留在組內，公開頁不全文複製', '個資遮蔽'], 'Sources & Compliance', ['Members paste JDs from 104 / LinkedIn into a Google Form', 'Original link and site date for each; collection date recorded automatically', 'Raw JDs stay in the group; no verbatim copies on the public page', 'PII masking'])
         } },
       { k: 'jd', role: 'jd', lane: -1, tag: '104 · JDKS M4',
         text: T('JD 解析', ['結構化 6 欄 → 規則對應：年資、學歷、科系、語言、工具、技能', '自由文字 2 欄 → 語意判讀：其他條件、工作內容', '管理責任欄 → 預測「對下」象限'], 'JD Parsing', ['6 structured fields → rule mapping: experience, education, major, language, tools, skills', '2 free-text fields → semantic reading: other conditions, job duties', 'Management-responsibility field → predicts the "downward" quadrant']) },
@@ -207,8 +207,8 @@ const TEMPLATES = {
         text: T('職位與職能對照', ['角色辨識：PM／PO／PL／PCC', 'PDMA 七大領域：策略 20%、PI 管理 20%、PI 流程 15%、PDD 工具 15%、產品組合 10%、市場研究 10%、文化團隊領導 10%', 'NPD Stage-Gate：3 階段 6 步驟'], 'Role & Competency Mapping', ['Role identification: PM / PO / PL / PCC', 'PDMA 7 areas: Strategy 20%, PI Management 20%, PI Process 15%, PDD Tools 15%, Portfolio 10%, Market Research 10%, Culture, Teams & Leadership 10%', 'NPD Stage-Gate: 3 phases, 6 stages']) },
       { k: 'pay', role: 'pay', lane: 0, tag: 'W8 CSA',
         text: T('薪酬與職涯', ['薪酬區間（月薪／年薪）', '福利型態：股權分紅／彈性遠距／穩定保障', '職涯路徑：依軸二層級晉升'], 'Pay & Career', ['Pay range (monthly / annual)', 'Benefit type: equity & bonus / flexible & remote / stability', 'Career path: progression along Axis 2']) },
-      { k: 'brief', role: 'brief', lane: -1, tag: 'business_rules.md',
-        text: T('晨報輸出', ['新增職缺（今日）', '累積統計：職缺數、K/S/A 出現頻率', '趨勢變化：週／月比較', '400–600 字，每則附原始連結', '降級時標示「今日來源不可用」'], 'Morning-Brief Output', ['New postings (today)', 'Cumulative stats: posting count, K/S/A frequency', 'Trend changes: week / month comparison', '400–600 words, original link for every item', 'Degraded runs labelled "source unavailable today"']) },
+      { k: 'brief', role: 'brief', lane: -1, tag: 'business_rules.md · TP-Web',
+        text: T('分析網頁', ['K/S/A 累積統計：出現頻率', '趨勢：依蒐集週／月比較', '最新新增職缺，每則附原始連結', '部署於 GitHub Pages'], 'Analysis Page', ['Cumulative K/S/A statistics: frequency', 'Trends: by collection week / month', 'Latest postings, each with its original link', 'Deployed on GitHub Pages']) },
       { k: 'perf', role: 'perf', lane: -1, tag: 'W17–18', optional: true,
         text: T('（選配）企業／產業績效', ['個股與相關 ETF', '與職缺數量、薪酬水準的關聯'], '(Optional) Firm / Industry Performance', ['Shares and related ETFs', 'Link to posting volume and pay levels']) }
     ],
@@ -232,7 +232,8 @@ const TEMPLATES = {
       aq: { zh: ['分析問題 AQ', 'TP 版的「假說」：標在連線上，說明兩個節點之間要回答的問題，並自動編號列在圖下方。'], en: ['Analysis Question (AQ)', 'The TP counterpart of a hypothesis: written on a link, stating what the two nodes should answer, auto-numbered below the diagram.'] },
       sources: { zh: ['sources.md 來源清單', '記錄資料來源、存取方式與備援來源；可以用 vibe coding 增減來源，不必改寫程式。'], en: ['sources.md', 'Lists data sources, access methods and fallbacks; sources can be added or removed by vibe coding without rewriting code.'] },
       robots: { zh: ['robots.txt／服務條款', '網站宣告自動存取規則的檔案與使用條款；明確禁止時改用備援來源，不以技術手段規避。'], en: ['robots.txt / Terms of Service', "A site's declared rules for automated access; where access is forbidden, switch to a fallback source rather than circumvent it."] },
-      ratelimit: { zh: ['速率限制與退避重試', '控制請求頻率，失敗時逐步拉長等待時間，避免造成對方網站負擔。'], en: ['Rate Limiting & Backoff', 'Controls request frequency and lengthens the wait after each failure, so the source server is not burdened.'] },
+      jdform: { zh: ['JD 蒐集表單', 'Google 表單＋試算表：組員自 W8 起陸續貼入 JD（原始連結、網站日期、內文），蒐集日期自動記錄；只分享給組員與教學團隊。'], en: ['JD Collection Form', 'A Google Form with a sheet: from W8 members paste JDs (original link, site date, text), and the collection date is recorded automatically; shared only with the group and the teaching team.'] },
+      ratelimit: { zh: ['速率限制與退避重試', '只在選配的自動抓取時需要：控制請求頻率，失敗時逐步拉長等待時間，避免造成對方網站負擔。'], en: ['Rate Limiting & Backoff', 'Needed only for optional automatic fetching: control request frequency and lengthen the wait after each failure, so the source server is not burdened.'] },
       pii: { zh: ['個資遮蔽', '不蒐集、不儲存、不呈現個人資料；來源若含聯絡人姓名、電話、Email，須先遮蔽。'], en: ['PII Masking', 'Do not collect, store or display personal data; mask contact names, phone numbers and emails before processing.'] },
       jd: { zh: ['JD 職務說明', '企業刊登職缺時對工作內容、條件與待遇的描述，是 K/S/A 抽取的原始資料。'], en: ['Job Description (JD)', 'The posted description of duties, requirements and pay; the raw data for K/S/A extraction.'] },
       fields104: { zh: ['104 欄位結構', '6 個結構化欄位可用規則對應，2 個自由文字欄位需要語意判讀；欄位結構本身就是半套抽取規則。'], en: ['104 Field Structure', 'Six structured fields map by rule; two free-text fields need semantic reading. The field structure is itself half a rule set.'] },
@@ -250,14 +251,14 @@ const TEMPLATES = {
       pdma: { zh: ['PDMA 知識體系', '產品開發與管理協會的七大知識領域；本課程以 Coggle 圖的權重為唯一依據。'], en: ['PDMA Body of Knowledge', "The seven knowledge areas of the Product Development and Management Association; this course uses the Coggle map's weightings as its sole source."] },
       npd: { zh: ['NPD Stage-Gate 階段－關卡', '新產品開發分 3 階段 6 步驟（行銷、可行性、產品設計、工具、工程、上市），每一步都要通過關卡審查才能前進。'], en: ['NPD Stage-Gate', 'New product development in 3 phases and 6 stages (marketing, feasibility, product design, tooling, engineering, launch); each stage must pass a gate review.'] },
       salary: { zh: ['薪酬與福利', '比較月薪區間與福利型態，例如股權分紅、彈性遠距或穩定保障。'], en: ['Pay & Benefits', 'Compare monthly pay ranges and benefit types, such as equity and bonuses, flexibility and remote work, or stability.'] },
-      business_rules: { zh: ['business_rules.md 呈現規範', '規定晨報字數、每則欄位與引用方式等輸出規則。'], en: ['business_rules.md', 'Sets the output rules: word count, fields per item and how sources are cited.'] },
-      degradation: { zh: ['降級模式', '主要來源失敗時改用備援；全部失敗仍照常出刊，並誠實標示「今日來源不可用」。'], en: ['Graceful Degradation', 'Falls back when the primary source fails; if all fail, the brief still ships, honestly labelled "source unavailable today".'] },
-      heartbeat: { zh: ['心跳排程', '每天固定時間（含時區）自動喚醒 Agent 執行；W16 驗收 D+1～D+3 連續三天無人值守的執行結果。'], en: ['Heartbeat Trigger', 'Wakes the agent at a fixed time each day (with time zone); W16 checks three unattended runs, D+1 to D+3.'] },
+      business_rules: { zh: ['business_rules.md 呈現規範', '規定分析網頁的輸出規則：統計表格式、趨勢圖的時間單位、每則引用方式。'], en: ['business_rules.md', 'Sets the output rules for the analysis page: table format, the time unit of trend charts and how sources are cited.'] },
+      trend: { zh: ['趨勢', '依蒐集日期分週或分月統計 K/S/A 的出現次數；104 多半只顯示更新日期、LinkedIn 只顯示相對時間，所以以蒐集日期為時間軸。'], en: ['Trend', 'K/S/A counts by collection week or month; 104 mostly shows an update date and LinkedIn a relative time, so the collection date is the time axis.'] },
+      ghpages: { zh: ['GitHub Pages', '免費的靜態網站託管；以瀏覽器上傳檔案即可部署，W12 初版上線、W15 完成版。'], en: ['GitHub Pages', 'Free static website hosting; files are uploaded through the browser. First version live in W12, final version in W15.'] },
       etf: { zh: ['企業績效與 ETF', '選配構面：職務 → 企業 → 薪酬 → 經營績效 → 個股與 ETF 的推論鏈（W17–18）。'], en: ['Firm Performance & ETFs', 'Optional dimension: the chain job → firm → pay → operating performance → shares and ETFs (W17–18).'] }
     },
     guide: {
-      zh: ['A 圖呈現晨報 Agent 的「分析邏輯」：從範圍設定一路到晨報輸出。節點下方的標籤對應 KB 檔案或課程週次。', '建議步驟：① 在①填入你們鎖定的產業、企業、職務關鍵字與地區；需要比較時，到「新增」分頁加入比較列（最多 3 列）。② 在②選擇資料來源模式：自動與半自動都是正式合格做法。③ 依 JDKS 教材完成③④⑤的 JD 拆解。④ 在⑥⑦對照職位、PDMA 與薪酬。⑤ 在⑧定義晨報內容，包含新增職缺、累積統計與趨勢變化。⑥ 在連線上寫出你們的分析問題（AQ），系統會自動編號並列在圖下方。', '完成後匯出 SVG 或 PNG，放進 W9 提案。'],
-      en: ['Diagram A shows the analysis logic of the morning-brief agent, from scope to output. The tag under each node points to a KB file or course week.', 'Suggested steps: (1) fill ① with your industry, company, job keywords and region; to compare, add comparison rows in the Add tab (up to three). (2) Choose the source mode in ②: both automatic and semi-automatic are fully acceptable. (3) Break the JD down through ③④⑤ following the JDKS material. (4) Map roles, PDMA and pay in ⑥⑦. (5) Define the brief in ⑧: new postings, cumulative stats and trends. (6) Write your analysis questions (AQ) on the links; they are numbered automatically and listed below the diagram.', 'When finished, export SVG or PNG for your W9 proposal.']
+      zh: ['A 圖呈現分析 Agent 的「分析邏輯」：從範圍設定一路到分析網頁。節點下方的標籤對應 KB 檔案或課程週次。', '建議步驟：① 在①填入你們鎖定的產業、企業、職務關鍵字與地區；需要比較時，到「新增」分頁加入比較列（最多 3 列）。② 在②確認資料來源：預設半自動（Google 表單），自動抓取為選配。③ 依 JDKS 教材完成③④⑤的 JD 拆解。④ 在⑥⑦對照職位、PDMA 與薪酬。⑤ 在⑧定義分析網頁內容：累積統計、趨勢與最新職缺。⑥ 在連線上寫出你們的分析問題（AQ），系統會自動編號並列在圖下方。', '完成後匯出 SVG 或 PNG，放進 W9 提案。'],
+      en: ['Diagram A shows the analysis logic of the analysis agent, from scope to the analysis page. The tag under each node points to a KB file or course week.', 'Suggested steps: (1) fill ① with your industry, company, job keywords and region; to compare, add comparison rows in the Add tab (up to three). (2) Check the source in ②: semi-automatic (a Google Form) by default; automatic fetching is optional. (3) Break the JD down through ③④⑤ following the JDKS material. (4) Map roles, PDMA and pay in ⑥⑦. (5) Define the analysis page in ⑧: cumulative statistics, trends and the latest postings. (6) Write your analysis questions (AQ) on the links; they are numbered automatically and listed below the diagram.', 'When finished, export SVG or PNG for your W9 proposal.']
     }
   },
 
@@ -530,125 +531,117 @@ const B_SHAPES_GLOSS = {
 };
 
 const TEMPLATES_B = {
-  /* ---------------- TP · PMCS 1151 · I-P-O system blueprint ---------------- */
+  /* ---------------- TP · PMCS 1151 · AI agent workflow (accumulation model) ---------------- */
   tp_pmcs: {
     id: 'tp_pmcs', short: 'TP-PMCS-B',
     name: { zh: 'TP 期末專案・PMCS 1151', en: 'TP Term Project · PMCS 1151' },
     nodeW: 212, gapX: 30, grid: true, rowGap: 150, topPad: 38, alignTop: true,
     colShift: [0, 0, 44, 44, 88, 88],
-    prefix: 'L', signs: false, defaultEdgeKind: 'flow', mainStyle: 'loop', xref: true, defaultRole: 'subagent',
+    prefix: 'L', signs: false, defaultEdgeKind: 'flow', mainStyle: 'loop', xref: true, defaultRole: 'agent',
     legendTitle: { zh: '回饋迴路（L）', en: 'Feedback Loops (L)' },
-    ownerTitle: { zh: '團隊角色分工（建議，可依組內分工調整）', en: 'Team Roles (suggested; adjust to your team)' },
-    title: { zh: 'PM／PjM 職缺 K/S/A 分析晨報 Agent：系統流程圖（I-P-O 藍圖）', en: 'PM/PjM Job K/S/A Morning-Brief Agent: System Flow (I-P-O Blueprint)' },
+    ownerTitle: { zh: '團隊五角色分工（建議；超過五人可兩人分擔同一角色）', en: 'Team Roles (suggested; groups over five may share a role)' },
+    title: { zh: 'PM／PjM 職缺 K/S/A 分析 Agent：AI Agent 工作流程圖', en: 'PM/PjM Job K/S/A Analysis Agent: AI Agent Workflow' },
     subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · TP Proposal（W9）', en: 'PMCS-EMI 1151 · Group __ · TP Proposal (W9)' },
+    stack: { zh: 'AI 平台：ChatGPT／Claude／Gemini 三選一（每組至少一人付費方案）；Work／Task Agent 分析 JD，Coding Agent 製作網頁；部署 GitHub Pages；不使用付費 API', en: 'Platform: ChatGPT / Claude / Gemini (≥ 1 paid plan per group); Work / Task Agent analyses JDs, Coding Agent builds the page; GitHub Pages; no paid API' },
     lanes: { enabled: false },
     phaseDir: 'col',
     phases: [
-      { cols: [0, 1], color: '#004030', fill: '#F2F7F4', label: { zh: 'INPUT／INTENTION｜意圖與脈絡', en: 'INPUT / INTENTION | Intent & Context' }, out: { zh: '產出：高資訊密度的需求草稿', en: 'Output: a high-density requirements draft' } },
-      { cols: [2, 3], color: '#1D4ED8', fill: '#F3F7FF', label: { zh: 'PROCESS｜資料與工具', en: 'PROCESS | Data & Tools' }, out: { zh: '產出：結構化資料與初步晨報文案', en: 'Output: structured data and a first-draft brief' } },
-      { cols: [4, 5], color: '#B45309', fill: '#FFF9F0', label: { zh: 'OUTPUT & LOOP｜成果與心跳', en: 'OUTPUT & LOOP | Results & Heartbeat' }, out: { zh: '產出：自動運行且良好維護的 Agent', en: 'Output: an agent that runs itself and is well maintained' } }
+      { cols: [0, 1], skipTech: true, color: '#004030', fill: '#F2F7F4', label: { zh: 'INPUT｜範圍、JD 與 AI 平台（W8–W10）', en: 'INPUT | Scope, JDs & AI Platform (W8–W10)' }, out: { zh: '產出：累積中的 JD 表與設定好的 AI 專案', en: 'Output: a growing JD sheet and a configured AI project' } },
+      { cols: [2, 3], color: '#1D4ED8', fill: '#F3F7FF', label: { zh: 'PROCESS｜Work／Task Agent 分析（W10–W15）', en: 'PROCESS | Work / Task Agent Analysis (W10–W15)' }, out: { zh: '產出：抽查過的 K/S/A 標註、統計與趨勢（TP-Data）', en: 'Output: spot-checked K/S/A tags, counts and trends (TP-Data)' } },
+      { cols: [4, 5], color: '#B45309', fill: '#FFF9F0', label: { zh: 'OUTPUT｜Coding Agent 網頁與交付（W12–W16）', en: 'OUTPUT | Coding Agent Page & Delivery (W12–W16)' }, out: { zh: '產出：已部署的分析網頁（TP-Web → TP Final）', en: 'Output: a deployed analysis page (TP-Web → TP Final)' } }
     ],
-    band: { roles: ['gov'], label: { zh: '治理層 Governance & Best Practices（橫貫三欄）', en: 'Governance & Best Practices (cuts across all three columns)' } },
+    band: { roles: ['gov'], label: { zh: '治理層 Governance（橫貫三欄）', en: 'Governance (cuts across all three columns)' } },
     owners: [
       { id: 'butler', color: '#0F766E', zh: 'Butler 管家', en: 'Butler' },
       { id: 'coach', color: '#7C3AED', zh: 'Coach 教練', en: 'Coach' },
       { id: 'fetcher', color: '#0369A1', zh: 'Data Fetcher', en: 'Data Fetcher' },
       { id: 'summarizer', color: '#BE185D', zh: 'AI Summarizer', en: 'AI Summarizer' },
-      { id: 'qadevops', color: '#A16207', zh: 'QA & DevOps', en: 'QA & DevOps' }
+      { id: 'qaweb', color: '#A16207', zh: 'QA & Web', en: 'QA & Web' }
     ],
     roles: [
-      { id: 'airole',  col: 0, row: 0, shape: 'step', color: '#004030', fill: '#E6F0EC', zh: 'AI 角色', en: 'AI Role', terms: ['butler', 'coach'] },
-      { id: 'intent',  col: 1, row: 0, shape: 'step', color: '#004030', fill: '#E6F0EC', zh: '意圖工程', en: 'Intent Engineering', terms: ['sysprompt', 'dyncontext', 'context'] },
+      { id: 'start',   col: 0, row: 0, shape: 'terminal', color: '#004030', fill: '#E6F0EC', zh: '起點', en: 'Start', terms: ['tp0'] },
+      { id: 'src',     col: 0, row: 0, shape: 'doc',  color: '#004030', fill: '#E6F0EC', zh: 'JD 來源', en: 'JD Source', terms: ['jdsite', 'jdform'] },
+      { id: 'setup',   col: 1, row: 0, shape: 'step', color: '#004030', fill: '#E6F0EC', zh: '平台設定', en: 'Platform Setup', terms: ['platform', 'tpsetup'] },
       { id: 'kb',      col: 1, row: 0, shape: 'doc',  color: '#004030', fill: '#E6F0EC', zh: 'KB 檔案', en: 'KB Files', terms: ['kb', 'nocode'] },
-      { id: 'subagent', col: 2, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: 'Subagent', en: 'Subagent', terms: ['subagent', 'degradation'] },
-      { id: 'secret',  col: 2, row: 0, shape: 'doc',  color: '#1D4ED8', fill: '#EAF1FF', zh: '金鑰隔離', en: 'Key Isolation', terms: ['envkey'] },
-      { id: 'filter',  col: 3, row: 0, shape: 'decision', color: '#1D4ED8', fill: '#EAF1FF', zh: '輸入過濾', en: 'Input Filter', terms: ['injection'] },
-      { id: 'harness', col: 3, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: 'Harness 護欄', en: 'Harness Guardrail', terms: ['harness', 'sandbox', 'guardrails'] },
-      { id: 'gate',    col: 4, row: 0, shape: 'decision', color: '#B45309', fill: '#FEF3E2', zh: '品質閘', en: 'Quality Gate', terms: ['qa'] },
-      { id: 'deliver', col: 4, row: 0, shape: 'terminal', color: '#B45309', fill: '#FEF3E2', zh: '交付', en: 'Delivery', terms: ['push', 'degradation'] },
-      { id: 'handbook', col: 4, row: 0, shape: 'doc', color: '#B45309', fill: '#FEF3E2', zh: '說明檔', en: 'Handbook', terms: ['skillmd'] },
-      { id: 'ops',     col: 4, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: '部署維運', en: 'Operations', terms: ['devops'] },
-      { id: 'loopeng', col: 5, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: 'Loop 機制', en: 'Loop Mechanism', terms: ['heartbeat', 'react', 'qc', 'loop'] },
+      { id: 'agent',   col: 2, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: 'Agent 步驟', en: 'Agent Step', terms: ['workagent', 'tagging'] },
+      { id: 'gate',    col: 2, row: 0, shape: 'decision', color: '#1D4ED8', fill: '#EAF1FF', zh: '抽查判斷', en: 'Spot Check', terms: ['spotcheck'] },
+      { id: 'analysis', col: 3, row: 0, shape: 'step', color: '#1D4ED8', fill: '#EAF1FF', zh: '分析步驟', en: 'Analysis Step', terms: ['mapping', 'trend'] },
+      { id: 'report',  col: 4, row: 0, shape: 'doc',  color: '#B45309', fill: '#FEF3E2', zh: '洞察', en: 'Insight', terms: ['insight'] },
+      { id: 'build',   col: 4, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: 'Coding Agent 製作', en: 'Coding Agent Build', terms: ['codingagent', 'vibecoding'] },
+      { id: 'deploy',  col: 5, row: 0, shape: 'step', color: '#B45309', fill: '#FEF3E2', zh: '部署', en: 'Deployment', terms: ['ghpages', 'gas'] },
+      { id: 'demo',    col: 5, row: 0, shape: 'terminal', color: '#B45309', fill: '#FEF3E2', zh: '競賽', en: 'Contest', terms: ['contest'] },
       { id: 'gov',     row: 1, col: 0, w: 454, shape: 'step', color: '#475569', fill: '#F1F5F9', zh: '治理原則', en: 'Governance Principle', terms: ['injection', 'copyright', 'nocode'] }
     ],
     groups: [
-      { id: 'ai', roles: ['airole'], color: '#004030', label: { zh: 'AI 角色', en: 'AI Roles' } },
-      { id: 'pce', roles: ['intent', 'kb'], color: '#004030', label: { zh: '意圖工程三層', en: 'Prompt & Context Engineering' } },
-      { id: 'sub', roles: ['subagent'], color: '#1D4ED8', label: { zh: 'Subagent 團隊（併發分工）', en: 'Subagent Team (parallel)' } },
-      { id: 'har', roles: ['harness', 'filter'], color: '#1D4ED8', label: { zh: 'Harness 工程', en: 'Harness Engineering' } },
-      { id: 'qd', roles: ['gate'], color: '#B45309', label: { zh: '把關：QA', en: 'Quality Check' } },
-      { id: 'dl', roles: ['deliver', 'handbook'], color: '#B45309', label: { zh: '交付', en: 'Delivery' } },
-      { id: 'op', roles: ['ops'], color: '#B45309', label: { zh: '把關：DevOps', en: 'Operations' } },
-      { id: 'lp', roles: ['loopeng'], color: '#B45309', label: { zh: 'Loop Engineering', en: 'Loop Engineering' } }
+      { id: 'in', roles: ['start', 'src'], color: '#004030', label: { zh: '範圍與 JD 蒐集', en: 'Scope & JD Collection' } },
+      { id: 'ai', roles: ['setup', 'kb'], color: '#004030', label: { zh: 'AI 平台專案（TP-Setup）', en: 'AI Platform Project (TP-Setup)' } },
+      { id: 'wa', roles: ['agent', 'gate'], color: '#1D4ED8', label: { zh: 'Work／Task Agent', en: 'Work / Task Agent' } },
+      { id: 'an', roles: ['analysis'], color: '#1D4ED8', label: { zh: '分析（TP-Data）', en: 'Analysis (TP-Data)' } },
+      { id: 'ca', roles: ['report', 'build'], color: '#B45309', label: { zh: '洞察與 Coding Agent', en: 'Insight & Coding Agent' } },
+      { id: 'dl', roles: ['deploy', 'demo'], color: '#B45309', label: { zh: '交付（TP Final · W16）', en: 'Delivery (TP Final · W16)' } }
     ],
     nodes: [
-      { k: 'butler', role: 'airole', owner: 'butler', text: T('管家 Butler', ['維護專案骨架、KB/ 與版本控管', '價值：一致性與可追溯性'], 'Butler', ['Maintains the project skeleton, KB/ and version control', 'Value: consistency and traceability']) },
-      { k: 'coach', role: 'airole', owner: 'coach', text: T('教練 Coach', ['確認商業意圖、引導思考邊界', '把模糊需求逼問成可驗收的規格'], 'Coach', ['Confirms business intent and sets thinking boundaries', 'Turns vague needs into testable specs']) },
-      { k: 'sysprompt', role: 'intent', owner: 'coach', text: T('System Prompt', ['第一層：穩定不變的角色', '例：「你是一位晨報總編輯」'], 'System Prompt', ['Layer 1: a stable role', 'e.g. "You are the editor-in-chief of a morning brief"']) },
-      { k: 'dyncontext', role: 'intent', owner: 'coach', text: T('Dynamic Context', ['第二層：每次不同的即時資訊', '今日日期、時區、當日檢索範圍'], 'Dynamic Context', ['Layer 2: live information that changes each run', "Today's date, time zone, today's search scope"]) },
-      { k: 'kb', role: 'kb', owner: 'butler', tag: 'KB/', xref: 'A①', text: T('Long-term KB', ['第三層：長期規範（改 .md 即可換主題）', 'theme_config.md：可設定範圍', 'business_rules.md：呈現規範', 'sources.md：來源清單與備援', 'ksa_taxonomy.md：K/S/A 分類'], 'Long-term KB', ['Layer 3: long-term rules (edit the .md to switch topic)', 'theme_config.md: configurable scope', 'business_rules.md: output rules', 'sources.md: sources and fallbacks', 'ksa_taxonomy.md: K/S/A taxonomy']) },
-      { k: 'fetcher', role: 'subagent', owner: 'fetcher', xref: 'A②', variant: 'auto',
-        variants: {
-          auto: T('Data Fetcher', ['併發抓取免費、合規的多源資料', '逾時、重試（有上限）、格式轉換', '主要來源失敗 → 依序改用備援來源'], 'Data Fetcher', ['Fetches free, compliant sources in parallel', 'Timeouts, capped retries, format conversion', 'Primary source fails → try fallbacks in order']),
-          semi: T('Data Fetcher', ['讀取組員貼入共用表單的 JD', '每則保留原始連結', '格式轉換、去除重複'], 'Data Fetcher', ['Reads the JDs members paste into a shared form', 'Original link kept for every entry', 'Format conversion and de-duplication'])
-        } },
-      { k: 'summarizer', role: 'subagent', owner: 'summarizer', xref: 'A③–⑦', text: T('AI Summarizer', ['JD 解析、兩軸判斷、K/S/A 抽取', '提煉觀點，撰寫 400–600 字晨報'], 'AI Summarizer', ['JD parsing, two-axis judgement, K/S/A extraction', 'Distils insights and writes a 400–600-word brief']) },
-      { k: 'envkey', role: 'secret', owner: 'fetcher', tag: '.env', text: T('.env 金鑰隔離', ['只放 .env（已加入 .gitignore）或平台 Secrets', '絕不放前端、Git、Prompt、Memory、KB', '本課程 TP 不得使用付費 API'], '.env Key Isolation', ['Only in .env (listed in .gitignore) or platform Secrets', 'Never in front-end code, Git, prompts, Memory or KB', 'Paid APIs are not allowed in this TP']) },
-      { k: 'toolapi', role: 'harness', owner: 'fetcher', text: T('Tool API Binding', ['以受控方式接上外部能力', '明確定義能呼叫什麼、不能呼叫什麼'], 'Tool API Binding', ['Connects external capabilities in a controlled way', 'States exactly what may and may not be called']) },
-      { k: 'sandbox', role: 'harness', owner: 'qadevops', text: T('Execution Sandbox', ['隔離的執行環境', '出錯或被誘導也波及不到主系統'], 'Execution Sandbox', ['An isolated runtime', 'Errors or manipulation cannot reach the main system']) },
-      { k: 'guardrails', role: 'harness', owner: 'qadevops', text: T('Security Guardrails', ['PII 個資遮蔽', '防暴卡槽：速率限制與資源上限'], 'Security Guardrails', ['PII masking', 'Circuit breakers: rate limits and resource caps']) },
-      { k: 'sanitize', role: 'filter', owner: 'fetcher', text: T('Input Sanitization', ['外部內容一律視為「資料」，不當作「指令」', '過濾指令式語句，防範 Prompt Injection'], 'Input Sanitization', ['External content is data, never instructions', 'Filters instruction-like text to block prompt injection']) },
-      { k: 'qa', role: 'gate', owner: 'qadevops', xref: 'A⑤', text: T('QA Tester', ['字數、格式、出處與原連結', '是否全文複製', '通過 → 送出；未通過 → QC Feedback'], 'QA Tester', ['Length, format, sources and original links', 'Any verbatim copying?', 'Pass → send; fail → QC Feedback']) },
-      { k: 'devops', role: 'ops', owner: 'qadevops', text: T('DevOps', ['部署雲端、託管 Cron 定時任務', '檢查排程觸發、憑證效期、日誌'], 'DevOps', ['Cloud deployment and hosted cron jobs', 'Checks triggers, credential expiry and logs']) },
-      { k: 'push', role: 'deliver', owner: 'summarizer', xref: 'A⑧', text: T('推播通知：晨報送達', ['每天 07:00 送達手機', '例如 LINE Messaging API、Email、Telegram', '降級時標示「今日來源不可用」'], 'Push Notification: Brief Delivered', ['Arrives on the phone at 07:00 daily', 'e.g. LINE Messaging API, email, Telegram', 'When degraded, labelled "source unavailable today"']) },
-      { k: 'skillmd', role: 'handbook', owner: 'butler', tag: 'SKILL.md', text: T('SKILL.md 自動化說明檔', ['把整套流程封裝成可重複執行的說明', '接手者不必重讀程式碼即可維護'], 'SKILL.md Automation Handbook', ['Packages the whole workflow as repeatable instructions', 'Successors can maintain it without rereading the code']) },
-      { k: 'qc', role: 'loopeng', owner: 'qadevops', text: T('QC Feedback', ['格式或字數未通過 → 自動退回重寫', '重寫上限 2–3 次，超過即降級輸出'], 'QC Feedback', ['Format or length fails → sent back for rewriting', '2–3 rewrites at most, then degrade the output']) },
-      { k: 'react', role: 'loopeng', owner: 'summarizer', text: T('ReAct Loop', ['思考 → 呼叫工具 → 觀察修正', '資料不足就再走一輪'], 'ReAct Loop', ['Think → call a tool → observe and adjust', 'Another round if the data are insufficient']) },
-      { k: 'heartbeat', role: 'loopeng', owner: 'qadevops', text: T('Heartbeat Trigger', ['每天 07:00 自動喚醒（含時區）', '重試有上限，並發送失敗通知', 'W16 驗收 D+1～D+3 無人值守'], 'Heartbeat Trigger', ['Wakes up at 07:00 daily (time zone set)', 'Capped retries with failure alerts', 'W16 checks D+1 to D+3, unattended']) },
-      { k: 'gov1', role: 'gov', col: 0, owner: 'fetcher', text: T('Prompt Injection 防禦', ['在 Harness 層過濾惡意指令', '每新增一個來源，同步檢視風險'], 'Prompt Injection Defence', ['Filter malicious instructions at the Harness layer', 'Review the risk every time a source is added']) },
-      { k: 'gov2', role: 'gov', col: 2, owner: 'qadevops', text: T('Copyright Claim 防衛', ['禁止全文複製，只做衍生摘要', '附出處與原連結；遵守 robots.txt 與服務條款', 'AI 生成內容須經人工審閱才發布'], 'Copyright Claim Defence', ['No verbatim copying; derivative summaries only', 'Cite sources with links; respect robots.txt and ToS', 'AI output is human-reviewed before release']) },
-      { k: 'gov3', role: 'gov', col: 4, owner: 'butler', text: T('無 Code 維護性', ['業務邏輯與程式解耦', '改 .md 即可維護；換產業只改 theme_config.md'], 'No-Code Maintainability', ['Business logic decoupled from code', 'Maintain by editing .md; switch industry via theme_config.md']) }
+      { k: 'theme', role: 'start', owner: 'coach', tag: 'TP0 · W8', xref: 'A①', text: T('TP0 主題', ['產業／企業 × PM/PjM 關鍵字 × 地區', '寫成 theme_config.md'], 'TP0 Theme', ['Industry / company × PM/PjM keywords × region', 'Written into theme_config.md']) },
+      { k: 'jdsite', role: 'src', owner: 'fetcher', xref: 'A②', text: T('104／LinkedIn 職缺', ['依 theme_config 的關鍵字搜尋', '開啟符合範圍的職缺'], '104 / LinkedIn Postings', ['Search with the theme_config keywords', 'Open the postings that fit the scope']) },
+      { k: 'form', role: 'src', owner: 'fetcher', tag: 'W8 起', xref: 'A②', text: T('JD 蒐集表單＋試算表', ['原始連結、網站日期、JD 內文', '蒐集日期自動記錄', '先遮蔽個資再貼上'], 'JD Form + Sheet', ['Original link, site date, JD text', 'Collection date recorded automatically', 'Mask personal data before pasting']) },
+      { k: 'platform', role: 'setup', owner: 'butler', tag: 'TP-Setup · W10', text: T('AI 平台專案', ['ChatGPT Project／Claude Project／Gemini Gem', '由付費方案組員建立', '5 則 JD 試跑'], 'AI Platform Project', ['ChatGPT Project / Claude Project / Gemini Gem', 'Created by the member with the paid plan', 'Test run on 5 JDs']) },
+      { k: 'kb', role: 'kb', owner: 'butler', tag: 'KB/', xref: 'A①', text: T('KB 四檔', ['theme_config.md：可設定範圍', 'sources.md：來源與法遵', 'ksa_taxonomy.md：K/S/A 分類', 'business_rules.md：呈現規範'], 'Four KB Files', ['theme_config.md: configurable scope', 'sources.md: sources and compliance', 'ksa_taxonomy.md: K/S/A taxonomy', 'business_rules.md: output rules']) },
+      { k: 'tag', role: 'agent', owner: 'summarizer', xref: 'A③–⑤', text: T('JD 解析與 K/S/A 標註', ['匯出 CSV 上傳專案', '兩軸判斷：PM／PjM、層級', '標註 K、S、A 與 ★ AI 職能'], 'JD Parsing & K/S/A Tagging', ['Export the sheet as CSV into the project', 'Two axes: PM / PjM, seniority', 'Tag K, S, A and ★ AI competencies']) },
+      { k: 'check', role: 'gate', owner: 'qaweb', xref: 'A⑤', text: T('人工抽查', ['抽查標註是否正確', '「無法判定」> 30%？', '通過 → 分析；未通過 → 改規則'], 'Human Spot Check', ['Check a sample of tags', '"Undecidable" > 30%?', 'Pass → analysis; fail → revise the rules']) },
+      { k: 'map', role: 'analysis', owner: 'coach', xref: 'A⑥⑦', text: T('職位、職能與薪酬對照', ['PM／PO／PL／PCC；PDMA 七大領域', '薪酬區間與職涯路徑'], 'Role, Competency & Pay', ['PM / PO / PL / PCC; the seven PDMA areas', 'Pay ranges and career paths']) },
+      { k: 'stats', role: 'analysis', owner: 'summarizer', tag: 'TP-Data · W11', xref: 'A⑧', text: T('K/S/A 統計與趨勢', ['各項 K/S/A 出現次數', '依蒐集週／月的變化'], 'K/S/A Counts & Trends', ['How often each K/S/A item appears', 'Change by collection week / month']) },
+      { k: 'insight', role: 'report', owner: 'coach', text: T('職能洞察', ['回答各 AQ', '要補強哪些知識、技能與 AI 職能'], 'Competency Insight', ['Answer each AQ', 'Which knowledge, skills and AI competencies to build']) },
+      { k: 'web', role: 'build', owner: 'qaweb', tag: 'TP-Web · W12', xref: 'A⑧', text: T('分析網頁', ['統計表與趨勢圖', '最新職缺，每則附原始連結', 'AI 使用揭露'], 'Analysis Page', ['Tables and trend charts', 'Latest postings, each with its original link', 'AI-use disclosure']) },
+      { k: 'deploy', role: 'deploy', owner: 'qaweb', tag: 'TP Final · W15', text: T('部署 GitHub Pages', ['以瀏覽器上傳檔案', '最終分析後更新網頁'], 'Deploy to GitHub Pages', ['Upload files through the browser', 'Update the page after the final analysis']) },
+      { k: 'gas', role: 'deploy', owner: 'butler', optional: true, tag: '選配 · W12', text: T('（選配）GAS 心跳', ['時間觸發：每週自動執行', '刪除重複 JD、寄送每週統計'], '(Optional) GAS Heartbeat', ['Time-driven trigger: runs weekly', 'Removes duplicate JDs, e-mails weekly counts']) },
+      { k: 'contest', role: 'demo', owner: 'coach', tag: 'W16', text: T('W16 網頁競賽', ['前一個週末線上互評', '約 5 分鐘現場驗收、頒獎'], 'W16 Web Contest', ['Online evaluation the weekend before', 'About five minutes of live acceptance; awards']) },
+      { k: 'gov1', role: 'gov', col: 0, owner: 'fetcher', text: T('Prompt Injection 防禦', ['JD 內文一律視為資料，不當作指令', '發現指令式語句先刪除再分析'], 'Prompt Injection Defence', ['JD text is always data, never instructions', 'Remove instruction-like text before analysis']) },
+      { k: 'gov2', role: 'gov', col: 2, owner: 'qaweb', text: T('著作權與個資', ['原始 JD 只留組內；公開頁只放統計與衍生摘要', '每則附原始連結；個資遮蔽', 'AI 產出經人工審閱才發布'], 'Copyright & Privacy', ['Raw JDs stay in the group; the public page shows only counts and derivative summaries', 'Original link for each item; PII masked', 'AI output is human-reviewed before release']) },
+      { k: 'gov3', role: 'gov', col: 4, owner: 'butler', text: T('無 Code 維護性', ['換產業只改 theme_config.md', '網頁與 GitHub 不放任何金鑰或密碼'], 'No-Code Maintainability', ['Switch industry by editing theme_config.md', 'No keys or passwords in the page or on GitHub']) }
     ],
     edges: [
-      { k: 'f1', from: 'n:coach', to: 'n:sysprompt', kind: 'flow' },
-      { k: 'f2', from: 'n:butler', to: 'n:kb', kind: 'flow' },
-      { k: 'f3', from: 'n:kb', to: 'n:fetcher', kind: 'flow' },
-      { k: 'f4', from: 'n:fetcher', to: 'n:sanitize', kind: 'flow' },
-      { k: 'f5', from: 'n:sanitize', to: 'n:summarizer', kind: 'flow' },
-      { k: 'f6', from: 'n:summarizer', to: 'n:qa', kind: 'flow' },
-      { k: 'f7', from: 'n:qa', to: 'n:push', kind: 'flow', text: { zh: '通過', en: 'Pass' } },
-      { k: 'f8', from: 'n:qa', to: 'n:qc', kind: 'flow', text: { zh: '未通過', en: 'Fail' } },
-      { k: 'l1', from: 'n:heartbeat', to: 'n:fetcher', kind: 'main', text: { zh: 'Heartbeat：每天 07:00 喚醒 Agent，重新走一次完整流程；排程要寫明時區、重試上限與失敗通知。', en: 'Heartbeat: wakes the agent at 07:00 every day to run the whole flow again; state the time zone, retry cap and failure alerts.' } },
-      { k: 'l2', from: 'n:toolapi', to: 'n:summarizer', kind: 'main', text: { zh: 'ReAct：AI Summarizer 呼叫工具取得資料，觀察結果後判斷是否足夠，不足就再走一輪。', en: 'ReAct: the AI Summarizer calls a tool, observes the result, and runs another round if the data are insufficient.' } },
-      { k: 'l3', from: 'n:qc', to: 'n:summarizer', kind: 'main', text: { zh: 'Self-Correction：QA 未通過就退回重寫，上限 2–3 次；仍未通過則降級輸出並誠實標示缺漏，不整份停發。', en: 'Self-correction: a failed QA check sends the brief back for rewriting, 2–3 times at most; after that, degrade the output and label what is missing rather than skipping the brief.' } }
+      { k: 'f1', from: 'n:theme', to: 'n:kb', kind: 'flow' },
+      { k: 'f2', from: 'n:jdsite', to: 'n:form', kind: 'flow' },
+      { k: 'f3', from: 'n:kb', to: 'n:platform', kind: 'flow' },
+      { k: 'f4', from: 'n:form', to: 'n:tag', kind: 'flow' },
+      { k: 'f5', from: 'n:platform', to: 'n:tag', kind: 'flow' },
+      { k: 'f6', from: 'n:tag', to: 'n:check', kind: 'flow' },
+      { k: 'f7', from: 'n:check', to: 'n:map', kind: 'flow', text: { zh: '通過', en: 'Pass' } },
+      { k: 'f8', from: 'n:check', to: 'n:stats', kind: 'flow' },
+      { k: 'f9', from: 'n:map', to: 'n:insight', kind: 'flow' },
+      { k: 'f10', from: 'n:stats', to: 'n:insight', kind: 'flow' },
+      { k: 'f11', from: 'n:insight', to: 'n:web', kind: 'flow' },
+      { k: 'f12', from: 'n:web', to: 'n:deploy', kind: 'flow' },
+      { k: 'f13', from: 'n:deploy', to: 'n:contest', kind: 'flow' },
+      { k: 'l1', from: 'n:check', to: 'n:kb', kind: 'main', text: { zh: '修改分類規則：抽查沒通過或「無法判定」> 30%，修改 ksa_taxonomy.md 後重跑。', en: 'Revise the rules: if the spot check fails or "undecidable" exceeds 30%, edit ksa_taxonomy.md and run again.' } },
+      { k: 'l2', from: 'n:stats', to: 'n:jdsite', kind: 'main', text: { zh: '補蒐集 JD：趨勢太單薄或某週沒有資料時，組員補貼 JD，下次分析一併納入。', en: 'Collect more JDs: when a trend is thin or a week has no data, members add JDs for the next analysis.' } },
+      { k: 'l3', from: 'n:deploy', to: 'n:web', kind: 'main', text: { zh: '預覽與修改：部署後組員互相檢查網頁（連結、數字、手機畫面），再請 Coding Agent 修改。', en: 'Preview and revise: after deploying, members check the page (links, figures, phone view), then ask the Coding Agent for fixes.' } }
     ],
     glossary: Object.assign({
-      butler: { zh: ['管家 Butler', '負責維護專案骨架、KB/ 知識庫與版本控管的 AI 角色，價值在於一致性與可追溯性。'], en: ['Butler', 'The AI role that maintains the project skeleton, the KB/ folder and version control; its value is consistency and traceability.'] },
-      coach: { zh: ['教練 Coach', '負責確認商業意圖、引導思考邊界的 AI 角色，把模糊需求逼問成明確且可驗收的規格。'], en: ['Coach', 'The AI role that confirms business intent and sets thinking boundaries, turning vague needs into clear, testable specs.'] },
-      context: { zh: ['Context Window', '語言模型單次回應時看得見的內容範圍；模型並非「記得」過往對話，而是有人把內容重新放進本次輸入。'], en: ['Context Window', 'What the model can see in a single response; it does not "remember" past chats — the content is put back into this input.'] },
-      sysprompt: { zh: ['System Prompt', '意圖工程第一層，定義穩定不變的角色與輸出基調，例如「你是一位晨報總編輯」。'], en: ['System Prompt', 'Layer 1 of intent engineering: a stable role and tone, e.g. "You are the editor-in-chief of a morning brief".'] },
-      dyncontext: { zh: ['Dynamic Context', '意圖工程第二層，注入每次都不同的即時資訊，例如日期、時區、當日範圍與偏好。'], en: ['Dynamic Context', 'Layer 2 of intent engineering: live information that changes each run, such as date, time zone, scope and preferences.'] },
-      kb: { zh: ['Long-term KB', '意圖工程第三層，載入長期規範檔案；本 TP 共四個：theme_config、business_rules、sources、ksa_taxonomy。'], en: ['Long-term KB', 'Layer 3 of intent engineering: long-term rule files; this TP uses four — theme_config, business_rules, sources, ksa_taxonomy.'] },
-      subagent: { zh: ['Subagent 併發分工', 'Data Fetcher 專責抓資料，AI Summarizer 專責提煉與撰寫；分開後，出錯時能立刻判斷是抓錯還是摘壞。'], en: ['Subagents in Parallel', 'The Data Fetcher only fetches; the AI Summarizer only distils and writes. Splitting them shows at once whether an error came from fetching or summarising.'] },
-      harness: { zh: ['Harness Engineering', '源自「馬具」的比喻：讓模型能力被安全導引的裝置，包含工具綁定、執行沙箱與安全護欄三層。'], en: ['Harness Engineering', 'From the image of a horse harness: the gear that guides model power safely — tool binding, an execution sandbox and security guardrails.'] },
-      sandbox: { zh: ['Execution Sandbox', '隔離的執行環境，程式碼在受限空間中執行，即使出錯或被惡意誘導，也波及不到主系統與本機檔案。'], en: ['Execution Sandbox', 'An isolated runtime: code runs in a restricted space, so errors or manipulation cannot reach the main system or local files.'] },
-      guardrails: { zh: ['Security Guardrails', '包含 PII 個資遮蔽與防暴卡槽（速率限制與資源上限），避免個資外流，也避免失控的迴圈燒光額度。'], en: ['Security Guardrails', 'PII masking plus circuit breakers (rate limits and resource caps), preventing data leaks and runaway loops that burn through quotas.'] },
-      injection: { zh: ['Prompt Injection', '外部內容夾帶指令式語句、誘使模型忽略原有指示的攻擊；防禦關鍵是把抓回的內容一律視為資料，而非指令。'], en: ['Prompt Injection', 'An attack where external content carries instructions that make the model ignore its own; the defence is to treat fetched content as data, never as instructions.'] },
-      envkey: { zh: ['.env 金鑰隔離', 'API 金鑰只放本機 .env（已加入 .gitignore）或平台環境變數、Repo Secrets；一旦外洩，立刻撤銷並重新產生。'], en: ['.env Key Isolation', 'API keys live only in a local .env (listed in .gitignore) or platform variables / repo secrets; if leaked, revoke and regenerate at once.'] },
-      qa: { zh: ['QA Tester', '檢查內容本身：字數、排版、商業啟示、出處與原連結，以及是否有全文複製。'], en: ['QA Tester', 'Checks the content itself: length, layout, business insight, sources and links, and any verbatim copying.'] },
-      devops: { zh: ['DevOps', '檢查運行條件：部署是否成功、排程是否觸發、憑證是否過期、日誌是否有紀錄。'], en: ['DevOps', 'Checks the running conditions: deployment, scheduled triggers, credential expiry and logs.'] },
-      heartbeat: { zh: ['Heartbeat Trigger 心跳排程', '每天固定時間自動喚醒系統；要想清楚三件事：時區、有上限的重試、失敗通知。'], en: ['Heartbeat Trigger', 'Wakes the system at a fixed time each day; decide three things: time zone, capped retries and failure alerts.'] },
-      react: { zh: ['ReAct Loop', '思考 → 呼叫工具 → 觀察修正的循環，讓模型依觀察結果決定要不要再走一輪。'], en: ['ReAct Loop', 'The think → call a tool → observe cycle that lets the model decide whether another round is needed.'] },
-      qc: { zh: ['QC Feedback 與 Self-Correction', '格式或字數未達標就自動退回重寫，形成自我校正的閉迴路；必須設定重寫上限，避免死循環。'], en: ['QC Feedback & Self-Correction', 'Output that fails format or length checks is sent back for rewriting, closing the self-correction loop; a rewrite cap prevents endless loops.'] },
-      degradation: { zh: ['優雅降級', '來源失效時依序改用備援；全部失敗仍照常出刊，並誠實標示缺漏。不得無限重試，也不得整份停發。'], en: ['Graceful Degradation', 'When a source fails, try fallbacks in order; if all fail, still publish and label what is missing. No endless retries, no skipped brief.'] },
-      push: { zh: ['推播通知', '把「使用者主動去看」變成「成果主動抵達」。註：LINE Notify 已於 2025 年 3 月 31 日終止服務，可改用 LINE Messaging API、Email 或 Telegram。'], en: ['Push Notification', 'Turns "go and look" into "the result arrives". Note: LINE Notify ended on 31 March 2025; use the LINE Messaging API, email or Telegram instead.'] },
-      skillmd: { zh: ['SKILL.md', '把整套流程封裝成可重複執行的說明檔，功能像作業手冊，讓接手者不必重讀程式碼即可維護與重新部署。'], en: ['SKILL.md', 'Packages the whole workflow as repeatable instructions — an operations manual that lets successors maintain and redeploy without rereading the code.'] },
-      copyright: { zh: ['Copyright Claim 防衛', '禁止全文複製，只做衍生摘要並附出處與原連結；遵守 robots.txt 與服務條款，AI 生成內容須經人工審閱。'], en: ['Copyright Claim Defence', 'No verbatim copying: derivative summaries with sources and links; respect robots.txt and terms of service; AI output is human-reviewed.'] },
-      nocode: { zh: ['無 Code 維護性', '業務邏輯與程式解耦，改 .md 即可維護；它決定了「誰有權力改變這個系統」——懂業務的人。'], en: ['No-Code Maintainability', 'Business logic is decoupled from code, so editing .md maintains the system; it decides who can change the system — the people who know the business.'] }
+      tp0: { zh: ['TP0 主題（W8）', '各組定下目標產業或企業 × PM/PjM 關鍵字 × 地區，寫成 theme_config.md，並開始蒐集 JD。'], en: ['TP0 Theme (W8)', 'Each group sets its target industries or companies × PM/PjM keywords × region, writes theme_config.md and starts collecting JDs.'] },
+      jdsite: { zh: ['104／LinkedIn', '組員手動搜尋與開啟職缺頁；104 多半顯示更新日期，LinkedIn 顯示相對時間，照抄即可。'], en: ['104 / LinkedIn', 'Members search and open postings by hand; 104 mostly shows an update date and LinkedIn a relative time — copy them as shown.'] },
+      jdform: { zh: ['JD 蒐集表單', 'Google 表單＋試算表：原始連結、企業、職稱、地區、薪資、網站日期、JD 內文、蒐集者；蒐集日期自動記錄。只分享給組員與教學團隊。'], en: ['JD Collection Form', 'A Google Form with a sheet: original link, company, title, region, pay, site date, JD text, collector; the collection date is recorded automatically. Shared only with the group and the teaching team.'] },
+      platform: { zh: ['AI 平台', 'ChatGPT、Claude、Gemini 三選一；Agent 功能多半需要付費方案，每組至少一人使用付費方案，其他組員可用免費版協作。'], en: ['AI Platform', 'One of ChatGPT, Claude or Gemini; agent features mostly need a paid plan, so at least one member per group holds one while others work on free tiers.'] },
+      tpsetup: { zh: ['TP-Setup（W10）', '在 AI 平台建立專案空間，上傳依填空範本完成的 KB 四檔，並用 5 則 JD 試跑；可先用 SDL 學習夥伴的 TP 模式討論怎麼填。'], en: ['TP-Setup (W10)', 'Create the project workspace on the AI platform, upload the four KB files filled in from the templates and test on five JDs; the SDL partner in TP mode can help think the settings through.'] },
+      kb: { zh: ['KB 四檔', '給 Agent 讀的長期規範：theme_config（範圍）、sources（來源與法遵）、ksa_taxonomy（K/S/A 分類）、business_rules（呈現規範）。每次分析都從同一份脈絡開始。'], en: ['Four KB Files', 'Long-term rules the agent reads: theme_config (scope), sources (sources and compliance), ksa_taxonomy (K/S/A taxonomy), business_rules (output rules). Every analysis starts from the same context.'] },
+      workagent: { zh: ['Work／Task Agent', 'AI 平台中能自行閱讀並整理資料的代理功能；結果一定要抽查。'], en: ['Work / Task Agent', 'The agent features of an AI platform that read and organise material; always spot-check the output.'] },
+      tagging: { zh: ['K/S/A 標註', '把每則 JD 拆成知識、技能、態度與 ★ AI 職能，依 ksa_taxonomy.md 分類並計數。'], en: ['K/S/A Tagging', 'Breaking each JD into knowledge, skills, attitude and ★ AI competencies, classified by ksa_taxonomy.md and counted.'] },
+      spotcheck: { zh: ['人工抽查', '回到原始 JD 核對 AI 的標註；「無法判定」超過 30% 代表分類規則要改。這是 W16「Data Quality & Compliance」的證據。'], en: ['Human Spot Check', 'Check the AI tags against the original JDs; over 30% "undecidable" means the rules need revising. This is evidence for W16 Data Quality & Compliance.'] },
+      mapping: { zh: ['職位與職能對照', '辨識 PM／PO／PL／PCC，對照 PDMA 七大領域與 NPD Stage-Gate，並比較薪酬區間。'], en: ['Role & Competency Mapping', 'Identify PM / PO / PL / PCC, map to the seven PDMA areas and NPD Stage-Gate, and compare pay ranges.'] },
+      trend: { zh: ['趨勢', '依蒐集日期分週或分月統計 K/S/A 的出現次數，所以要從 W8 起每週都有人蒐集。'], en: ['Trend', 'K/S/A counts by collection week or month — which is why someone should collect every week from W8.'] },
+      insight: { zh: ['職能洞察', 'W16 評分 Analysis Insight 占 20%：說明統計的「所以呢」，回答 AQ，並指出要補強的職能。'], en: ['Competency Insight', 'Worth 20% (Analysis Insight) at W16: explain the "so what" of the counts, answer the AQs and name the competencies to build.'] },
+      codingagent: { zh: ['Coding Agent', 'AI 平台中能直接建立與修改程式檔案的代理功能；用來做分析網頁。'], en: ['Coding Agent', 'The agent feature of an AI platform that creates and edits code files directly; used to build the analysis page.'] },
+      vibecoding: { zh: ['Vibe Coding', '用自然語言請 Coding Agent 寫程式、看結果、再修改，不必背語法。'], en: ['Vibe Coding', 'Asking a coding agent in plain language to write code, checking the result and asking for changes — no memorising syntax.'] },
+      ghpages: { zh: ['GitHub Pages', '免費的靜態網站託管；以瀏覽器上傳檔案，W12 初版上線、W15 完成版。'], en: ['GitHub Pages', 'Free static website hosting; files are uploaded through the browser. First version in W12, final version in W15.'] },
+      gas: { zh: ['Google Apps Script（選配）', '寫在 Google 試算表裡的小程式；設定時間觸發後每週自動執行，例如刪除重複 JD、寄送每週統計，是輕量版的心跳排程。第一次執行需按 Google 授權。'], en: ['Google Apps Script (optional)', 'A small script inside the Google Sheet; with a time-driven trigger it runs weekly, e.g. removing duplicate JDs and e-mailing counts — a lightweight heartbeat. The first run asks for Google authorisation.'] },
+      contest: { zh: ['W16 網頁競賽', '已部署的分析網頁即競賽作品；W16 前的週末開放全班與教師線上評分，W16 課堂各組約 5 分鐘現場驗收，再公布結果、頒獎。'], en: ['W16 Web Contest', 'The deployed analysis page is the contest entry; the class and instructor evaluate online from the weekend before W16, and in W16 each group has about five minutes of live acceptance before results and awards.'] },
+      injection: { zh: ['Prompt Injection', '外部內容夾帶指令式語句、誘使模型忽略原有指示的攻擊；防禦關鍵是把 JD 內文一律視為資料，而非指令。'], en: ['Prompt Injection', 'An attack where external content carries instructions that make the model ignore its own; the defence is to treat JD text as data, never as instructions.'] },
+      copyright: { zh: ['著作權與個資', '原始 JD 只留在組內；公開網頁只放統計與衍生摘要並附原始連結；聯絡人姓名、電話、Email 一律遮蔽；AI 產出經人工審閱才發布。'], en: ['Copyright & Privacy', 'Raw JDs stay in the group; the public page shows only counts and derivative summaries with original links; contact names, phones and e-mails are masked; AI output is human-reviewed before release.'] },
+      nocode: { zh: ['無 Code 維護性', '業務邏輯寫在 KB 檔案，改 .md 即可維護；換產業只改 theme_config.md，這也是 W16 可設定性驗收的內容。'], en: ['No-Code Maintainability', 'Business logic lives in the KB files, so editing .md maintains the system; switching industry means editing theme_config.md — the W16 configurability check.'] }
     }, B_SHAPES_GLOSS),
     guide: {
-      zh: ['B 圖呈現晨報 Agent 的「系統流程」，骨架取自 IPOB 藍圖：左欄 INPUT／INTENTION 收斂意圖，中欄 PROCESS 處理資料與工具，右欄 OUTPUT & LOOP 把關、交付並每天自動喚醒；底部治理層橫貫三欄。', '建議步驟：① 先確認 KB 四個檔案與資料來源模式（自動／半自動）；② 逐一檢查每個節點的「負責角色」，圖下方會自動產生團隊分工表；③ 回饋迴路（虛線 L1、L2…）要寫明上限：重試幾次、重寫幾次、超過怎麼降級；④ 節點右下角的「→ A②」對應 A 架構圖，兩張圖的內容要一致。', '新增連線預設為流程箭頭；在右側把類型改為「回饋迴路」，就會變成編號的虛線弧形箭頭。'],
-      en: ['Diagram B shows the system flow of the morning-brief agent, built on the IPOB blueprint: INPUT / INTENTION shapes intent, PROCESS handles data and tools, OUTPUT & LOOP checks, delivers and wakes the agent daily; the governance band cuts across all three.', 'Suggested steps: (1) confirm the four KB files and the source mode (automatic / semi-automatic); (2) check the team role on every node — the team-role table below the diagram updates itself; (3) every feedback loop (dashed L1, L2 …) must state its limits: how many retries or rewrites, and how the output degrades after that; (4) the "→ A②" mark links a node to Framework Diagram A, so keep the two diagrams consistent.', 'New links are flow arrows by default; switch the type to Feedback Loop in the side panel to make a numbered dashed arc.']
+      zh: ['B 圖呈現 TP 的「AI Agent 工作流程」：左欄 INPUT 定主題、自 W8 起以表單累積 JD，並在 AI 平台建立專案、上傳 KB 四檔（TP-Setup）；中欄 PROCESS 由 Work／Task Agent 標註 K/S/A，經人工抽查後做職能對照、統計與趨勢（TP-Data）；右欄 OUTPUT 由 Coding Agent 製作分析網頁並部署（TP-Web → TP Final）。底部治理層橫貫三欄。', '節點下方的色塊是負責的團隊角色（五角色；超過五人可兩人分擔），圖下方有分工表；右下角「→ A」對照 A 圖節點。虛線 L1–L3 是回饋迴路，虛線框的 GAS 心跳是選配。', '建議步驟：先確認 JD 表單欄位與 KB 四檔，再逐一檢查每個節點的負責角色，最後寫清楚三個迴路怎麼做。'],
+      en: ['Diagram B shows the TP as an AI agent workflow: INPUT sets the theme, accumulates JDs through a form from W8 and sets up the AI project with the four KB files (TP-Setup); PROCESS has the Work / Task Agent tag K/S/A, then — after a human spot check — maps roles and competencies and computes counts and trends (TP-Data); OUTPUT has the Coding Agent build and deploy the analysis page (TP-Web → TP Final). The governance band cuts across all three columns.', 'The coloured badge under each node is the responsible team role (five roles; groups over five may share one), summarised in the table below; the "→ A" mark points to a node in Diagram A. Dashed L1–L3 are feedback loops; the dashed GAS heartbeat is optional.', 'Suggested steps: confirm the JD form fields and the four KB files, check the role on every node, then spell out how each of the three loops works.']
     }
   },
 
@@ -1031,45 +1024,44 @@ const TEMPLATES_C = {
   tp_pmcs: {
     id: 'tp_pmcs', short: 'TP-PMCS-C',
     name: { zh: 'TP 期末專案・PMCS 1151', en: 'TP Term Project · PMCS 1151' },
-    pageTitle: { zh: '晨報 Agent 規格書：W9 提案摘要', en: 'Morning-Brief Agent Specification: W9 Proposal Summary' },
-    title: { zh: 'PM／PjM 職缺 K/S/A 分析晨報 Agent', en: 'PM/PjM Job K/S/A Morning-Brief Agent' },
+    pageTitle: { zh: '分析 Agent 規格書：W9 TP Proposal 摘要', en: 'Analysis Agent Specification: W9 TP Proposal Summary' },
+    title: { zh: 'PM／PjM 職缺 K/S/A 分析 Agent', en: 'PM/PjM Job K/S/A Analysis Agent' },
     subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · 組員：__ · 日期：__', en: 'PMCS-EMI 1151 · Group __ · Members: __ · Date: __' },
     cards: [
       { id: 'goal', title: L2('目標與讀者', 'Goal and Reader'), limit: 120,
-        hint: L2('晨報要解決什麼問題？給誰看？讀完能做什麼決定？', 'What problem does the brief solve, for whom, and what decision does it support?'),
-        def: L2(['目標：每天 07:00 自動送出一份 PM／PjM 職缺晨報，追蹤新增職缺、K/S/A 需求與趨勢變化', '讀者：想投入 PM／PjM 職涯的本組同學與學弟妹', '讀完能決定：接下來要補強哪些知識、技能與 AI 職能'],
-          ['Goal: an automatic PM/PjM job brief at 07:00 daily, tracking new postings, K/S/A demand and trends', 'Reader: classmates and juniors aiming for PM/PjM careers', 'Decision it supports: which knowledge, skills and AI competencies to build next']) },
+        hint: L2('分析網頁要解決什麼問題？給誰看？讀完能做什麼決定？', 'What problem does the analysis page solve, for whom, and what decision does it support?'),
+        def: L2(['目標：自 W8 起累積 PM／PjM 職缺，定期更新 K/S/A 統計與趨勢，發佈在分析網頁', '讀者：想投入 PM／PjM 職涯的本組同學與學弟妹', '讀完能決定：接下來要補強哪些知識、技能與 AI 職能'],
+          ['Goal: accumulate PM/PjM postings from W8 and keep K/S/A counts and trends up to date on an analysis page', 'Reader: classmates and juniors aiming for PM/PjM careers', 'Decision it supports: which knowledge, skills and AI competencies to build next']) },
       { id: 'scope', title: L2('可設定的檢索範圍', 'Configurable Search Scope'), sub: L2('產業／企業 × 職務關鍵字 × 地區', 'Industry / company × job keywords × region'), auto: 'pmcs_scope', src: 'A', limit: 160 },
       { id: 'kb', title: L2('KB 設計', 'KB Design'), sub: L2('四個 .md 檔案', 'Four .md files'), auto: 'pmcs_kb', src: 'B', limit: 160 },
-      { id: 'sources', title: L2('資料來源清單與法遵聲明', 'Source List and Compliance Statement'), sub: L2('robots.txt／服務條款、速率限制、個資遮蔽', 'robots.txt / ToS, rate limiting, PII masking'), auto: 'pmcs_sources', src: 'A', limit: 160 },
+      { id: 'sources', title: L2('資料來源清單與法遵聲明', 'Source List and Compliance Statement'), sub: L2('JD 蒐集表單、原始連結、個資遮蔽', 'JD form, original links, PII masking'), auto: 'pmcs_sources', src: 'A', limit: 160 },
       { id: 'ksa', title: L2('對應 JD 的 K/S/A 抽取架構', 'K/S/A Extraction Schema against a JD'), auto: 'pmcs_ksa', src: 'A', limit: 180 },
-      { id: 'stack', title: L2('技術棧（二擇一）', 'Technology Stack (choose one)'), limit: 100,
-        choice: [{ id: 'gh', zh: 'GitHub Pages ＋ GitHub Actions', en: 'GitHub Pages + GitHub Actions' }, { id: 'nv', zh: 'Netlify／Vercel ＋ Serverless Functions', en: 'Netlify / Vercel + Serverless Functions' }], choiceDef: 'gh',
-        hint: L2('補充：排程、金鑰放哪裡、部署方式', 'Notes: scheduling, where keys live, deployment'),
+      { id: 'stack', title: L2('AI 平台與 Agent（三擇一）', 'AI Platform & Agent (choose one)'), limit: 140,
+        choice: [{ id: 'chatgpt', zh: 'ChatGPT（Project）', en: 'ChatGPT (Project)' }, { id: 'claude', zh: 'Claude（Project）', en: 'Claude (Project)' }, { id: 'gemini', zh: 'Gemini（Gem）', en: 'Gemini (Gem)' }], choiceDef: 'chatgpt',
+        hint: L2('把 __ 換成付費方案組員的姓名', 'Replace __ with the name of the member on the paid plan'),
         defBy: {
-          gh: L2(['排程：GitHub Actions cron 以 UTC 計時，台灣 07:00 ＝ UTC 23:00（前一天）', '金鑰：只放 Repo Secrets，不進 Git、前端或 KB'], ['Scheduling: GitHub Actions cron runs on UTC; 07:00 in Taiwan = 23:00 UTC the day before', 'Keys: Repo Secrets only — never in Git, the front end or the KB']),
-          nv: L2(['排程：Netlify Scheduled Functions 或 Vercel Cron Jobs，以 UTC 計時，台灣 07:00 ＝ UTC 23:00（前一天）', '金鑰：只放平台的環境變數，不進 Git、前端或 KB'], ['Scheduling: Netlify Scheduled Functions or Vercel Cron Jobs, on UTC; 07:00 in Taiwan = 23:00 UTC the day before', 'Keys: platform environment variables only — never in Git, the front end or the KB'])
+          chatgpt: L2(['專案空間：ChatGPT Project，上傳 KB 四檔', '付費方案：__；其他組員用免費版協作', 'Work／Task Agent 分析 JD；Coding Agent 製作網頁'], ['Workspace: a ChatGPT Project with the four KB files', 'Paid plan: __; others work on free tiers', 'Work / Task Agent analyses JDs; Coding Agent builds the page']),
+          claude: L2(['專案空間：Claude Project，上傳 KB 四檔', '付費方案：__；其他組員用免費版協作', 'Work／Task Agent 分析 JD；Coding Agent 製作網頁'], ['Workspace: a Claude Project with the four KB files', 'Paid plan: __; others work on free tiers', 'Work / Task Agent analyses JDs; Coding Agent builds the page']),
+          gemini: L2(['專案空間：Gemini Gem，上傳 KB 四檔', '付費方案：__；其他組員用免費版協作', 'Work／Task Agent 分析 JD；Coding Agent 製作網頁'], ['Workspace: a Gemini Gem with the four KB files', 'Paid plan: __; others work on free tiers', 'Work / Task Agent analyses JDs; Coding Agent builds the page'])
         } },
-      { id: 'runtime', title: L2('執行期架構', 'Runtime Architecture'), sub: L2('免費額度估算、降級模式設計', 'Free-tier quota estimate, graceful degradation'), limit: 180,
-        hint: L2('把 __ 換成你們的估算數字', 'Replace __ with your own estimates'),
-        def: L2(['每日執行 1 次；每次約 __ 筆職缺、__ 次模型呼叫', '免費額度：每月約 __ 次呼叫，占上限 __%', '降級：主要來源失敗 → 依序改用備援 → 全部失敗仍照常出刊並標示「今日來源不可用」', '重試上限 __ 次；QA 未通過重寫上限 2–3 次'], ['One run per day; about __ postings and __ model calls per run', 'Free tier: about __ calls per month, __% of the cap', 'Degradation: primary source fails → fallbacks in order → if all fail, still publish, labelled "source unavailable today"', 'Retry cap __; rewrite cap after a failed QA check: 2–3']) },
+      { id: 'runtime', title: L2('分析流程與更新紀錄', 'Analysis Workflow & Update Log'), sub: L2('從表單到網頁；GAS 為選配', 'From form to page; GAS optional'), limit: 180,
+        hint: L2('把 __ 換成你們的更新頻率', 'Replace __ with your update interval'),
+        def: L2(['表單 → 試算表 → 匯出 CSV → Agent 標註 → 人工抽查 → 網頁', '更新：W11 第一次，之後每 __ 週一次；W15 做最終分析', '紀錄：每次更新的日期、JD 筆數與修改過的規則', '選配：Google Apps Script 刪除重複 JD、寄送每週統計'], ['Form → sheet → CSV → agent tagging → human spot check → page', 'Updates: first in W11, then every __ weeks; final analysis in W15', 'Log: date, number of JDs and rules changed at each update', 'Optional: a Google Apps Script removes duplicate JDs and e-mails weekly counts']) },
       { id: 'team', title: L2('團隊五角色分工與協作', 'Team Roles & Collaboration'), sub: L2('填入組員姓名與協作方式（超過五人可兩人分擔同一角色）', 'Add member names and how you work together (groups over five may share a role)'), auto: 'team_collab', src: 'B', people: true, collab: true, limit: 300 },
       { id: 'milestones', title: L2('里程碑', 'Milestones'), limit: 220,
-        hint: L2('填入 D day 的日期', 'Fill in the D-day date'),
-        def: L2(['W8 TP0：主題（產業／企業 × PM/PjM 關鍵字 × K/S/A 構面）', 'W9 TP Proposal：本規格書', 'W10 TP-KB：repo 骨架與 KB 初版；W11 TP-Data：K/S/A 資料與晨報初稿', 'W12 TP-Run：可運行版上線', 'D day（W15 TP Final）：__ 月 __ 日，之後 D+1～D+3 連續無人值守執行', 'W16：網頁競賽、期末驗收、頒獎、期末互評'], ['W8 TP0: theme (industry / company × PM/PjM keywords × K/S/A)', 'W9 TP Proposal: this specification', 'W10 TP-KB: repo skeleton and first KB; W11 TP-Data: K/S/A data and draft brief', 'W12 TP-Run: running version live', 'D day (W15 TP Final): __, then D+1 to D+3 unattended', 'W16: web contest, final acceptance, awards, final peer review']) }
+        def: L2(['W8 TP0：主題（產業／企業 × PM/PjM 關鍵字 × K/S/A），開始以表單蒐集 JD', 'W9 TP Proposal：本規格書', 'W10 TP-Setup：AI 平台專案＋KB 四檔試跑；W11 TP-Data：K/S/A 標註與計數', 'W12 TP-Web：分析網頁初版上線', 'W15 TP Final：以全部 JD 做最終分析並發佈網頁', 'W16：網頁競賽、現場驗收、頒獎、期末互評'], ['W8 TP0: theme (industry / company × PM/PjM keywords × K/S/A); start collecting JDs', 'W9 TP Proposal: this specification', 'W10 TP-Setup: AI project + four KB files, test run; W11 TP-Data: K/S/A tags and counts', 'W12 TP-Web: first version of the page live', 'W15 TP Final: final analysis on all JDs, page published', 'W16: web contest, live acceptance, awards, final peer review']) }
     ],
     glossary: {
-      spec: { zh: ['W9 規格書', '依 I-P-O 藍圖的 INPUT／INTENTION 欄撰寫的晨報 Agent 規格，共九項必填。'], en: ['W9 Specification', 'The morning-brief agent specification written along the INPUT / INTENTION column of the I-P-O blueprint; nine required items.'] },
+      spec: { zh: ['W9 規格書', '依 I-P-O 藍圖的 INPUT／INTENTION 欄撰寫的分析 Agent 規格，共九項必填。'], en: ['W9 Specification', 'The analysis agent specification written along the INPUT / INTENTION column of the I-P-O blueprint; nine required items.'] },
       autofill: { zh: ['自動帶入', '卡片右上角標示「自動帶入：A 圖／B 圖」時，內容會跟著 A、B 圖更新；自己改過之後改為「已手動修改」，可按「重新帶入」還原。'], en: ['Auto-fill', 'A card marked "Auto-filled from A / B" follows those diagrams; once you edit it, it is marked "Edited by hand" and "Refill" restores it.'] },
-      quota: { zh: ['免費額度估算', '估算每月模型呼叫與資料抓取次數，確認低於免費方案上限；本課程 TP 不得使用付費 API。'], en: ['Free-tier Quota Estimate', 'Estimate monthly model calls and fetches and confirm they stay under the free-tier cap; paid APIs are not allowed in this TP.'] },
-      degradation: { zh: ['降級模式', '主要來源失敗時依序改用備援；全部失敗仍照常出刊並誠實標示缺漏，不整份停發、不無限重試。'], en: ['Graceful Degradation', 'Fall back source by source; if all fail, still publish and label what is missing — no skipped brief, no endless retries.'] },
-      dday: { zh: ['D day', '晨報 Agent 第一次正式無人值守執行的日子，也是 TP Final，最晚在 W15 上課日；之後 D+1～D+3 連續執行並留下紀錄。'], en: ['D day', 'The first unattended production run and the TP Final, no later than the W15 class; D+1 to D+3 follow with records kept.'] },
-      contest: { zh: ['W16 網頁競賽', '各組已部署的晨報網頁就是競賽作品：週六 D+3 執行後的週末（W16 前）開放全班與教師線上評分；W16 課堂各組約 5 分鐘現場驗收，再公布結果、頒獎並完成期末互評。'], en: ['W16 Web Contest', "Each group's deployed morning-brief page is its contest entry: online evaluation by the class and instructor opens the weekend before W16, right after the D+3 run on Saturday; in W16 each group has about five minutes of live acceptance, then results, awards and the final peer review."] },
+      setup: { zh: ['TP-Setup（W10）', '在 AI 平台建立專案空間（ChatGPT Project／Claude Project／Gemini Gem），上傳 KB 四檔並用 5 則 JD 試跑。'], en: ['TP-Setup (W10)', 'Create the project workspace on the AI platform (ChatGPT Project / Claude Project / Gemini Gem), upload the four KB files and test on five JDs.'] },
+      trend: { zh: ['趨勢', '依蒐集日期分週或分月統計 K/S/A 的出現次數；從 W8 起每週都有人蒐集，趨勢才看得出來。'], en: ['Trend', 'K/S/A counts by collection week or month; someone must collect every week from W8 for a trend to show.'] },
+      contest: { zh: ['W16 網頁競賽', '各組已部署的分析網頁就是競賽作品：W16 前的週末開放全班與教師線上評分；W16 課堂各組約 5 分鐘現場驗收，再公布結果、頒獎並完成期末互評。'], en: ['W16 Web Contest', "Each group's deployed analysis page is its contest entry: online evaluation by the class and instructor opens the weekend before W16; in W16 each group has about five minutes of live acceptance, then results, awards and the final peer review."] },
       collab: { zh: ['協作方式', '說明組員如何一起工作，而不只是列出誰做什麼：例如技術角色與其他組員如何交接、共用 KB 與 repo、每週互相檢查。'], en: ['How We Work Together', 'Describe how members work together, not just who does what: e.g. hand-offs between technical and other roles, a shared KB and repo, weekly cross-checks.'] }
     },
     guide: {
-      zh: ['C 圖是 W9 提案的一頁摘要，九張卡片對應 Syllabus W9 的九項必填，依循 I-P-O 藍圖的 INPUT／INTENTION 欄。', '標示「自動帶入」的卡片會跟著 A、B 圖更新：②④⑤ 來自 A 圖，③⑧ 來自 B 圖。先把 A、B 圖改好，這裡就會一致。', '建議步驟：① 在右側填入題目、組別與組員；② 逐張點選卡片檢查內容，把 __ 換成你們的數字與日期；③ 在 ⑧ 填入每個角色的組員姓名，並寫下組員如何協作（不只是列出分工）；④ 頂端的「完成 X／9」全部打勾後，匯出 PNG 或「列印／存成 PDF」。'],
-      en: ['Diagram C is the one-page summary of the W9 proposal: nine cards for the nine required items in the syllabus, following the INPUT / INTENTION column of the I-P-O blueprint.', 'Cards marked Auto-filled follow Diagrams A and B: ②④⑤ come from A, ③⑧ from B. Fix A and B first and this page stays consistent.', 'Suggested steps: (1) fill in the title, group and members on the right; (2) click each card, check it and replace every __ with your numbers and dates; (3) add member names for each role in ⑧ and describe how you work together (not just who does what); (4) when the "Done X/9" counter is complete, export PNG or Print / Save as PDF.']
+      zh: ['C 圖是 W9 提案的一頁摘要，九張卡片對應 Syllabus W9 的九項必填，依循 I-P-O 藍圖的 INPUT／INTENTION 欄。', '標示「自動帶入」的卡片會跟著 A、B 圖更新：②④⑤ 來自 A 圖，③⑧ 來自 B 圖。先把 A、B 圖改好，這裡就會一致。', '建議步驟：① 在右側填入題目、組別與組員；② 逐張點選卡片檢查內容，在 ⑥ 勾選 AI 平台，把 __ 換成你們的姓名與數字；③ 在 ⑧ 填入每個角色的組員姓名，並寫下組員如何協作（不只是列出分工）；④ 頂端的「完成 X／9」全部打勾後，匯出 PNG 或「列印／存成 PDF」。'],
+      en: ['Diagram C is the one-page summary of the W9 proposal: nine cards for the nine required items in the syllabus, following the INPUT / INTENTION column of the I-P-O blueprint.', 'Cards marked Auto-filled follow Diagrams A and B: ②④⑤ come from A, ③⑧ from B. Fix A and B first and this page stays consistent.', 'Suggested steps: (1) fill in the title, group and members on the right; (2) click each card, tick the AI platform in ⑥ and replace every __ with your names and numbers; (3) add member names for each role in ⑧ and describe how you work together (not just who does what); (4) when the "Done X/9" counter is complete, export PNG or Print / Save as PDF.']
     }
   },
 
