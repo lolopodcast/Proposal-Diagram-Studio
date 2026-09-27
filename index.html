@@ -113,7 +113,7 @@ const TEMPLATES = {
     name: { zh: 'RP 研究提案・質性', en: 'RP Proposal · Qualitative' },
     nodeW: 232, columns: 3, gapX: 100, grid: true, prefix: 'P', signs: false, defaultEdgeKind: 'main',
     legendTitle: { zh: '研究命題', en: 'Propositions' },
-    title: { zh: '概念架構圖', en: 'Conceptual Framework' },
+    title: { zh: '概念架構圖：中小企業導入生成式 AI 的動態能力', en: 'Conceptual Framework: Dynamic Capabilities in Generative AI Adoption' },
     subtitle: { zh: '研究生姓名 · 指導教授 · 日期', en: 'Student · Advisor · Date' },
     lanes: { enabled: false },
     roles: [
@@ -448,7 +448,7 @@ const TEMPLATES_B = {
     nodeW: 258, gapX: 84, grid: true, rowGap: 56, topPad: 0,
     prefix: 'L', signs: false, defaultEdgeKind: 'flow', mainStyle: 'loop', xref: true, readOrder: 'rows', defaultRole: 'step',
     legendTitle: { zh: '回饋迴路（L）', en: 'Feedback Loops (L)' },
-    title: { zh: '研究流程圖', en: 'Research Process' },
+    title: { zh: '研究流程圖：中小企業導入生成式 AI 的動態能力', en: 'Research Process: Dynamic Capabilities in Generative AI Adoption' },
     subtitle: { zh: '研究生姓名 · 指導教授 · 日期', en: 'Student · Advisor · Date' },
     lanes: { enabled: false },
     phaseDir: 'row',
@@ -508,7 +508,123 @@ const TEMPLATES_B = {
   }
 };
 
-const PDS_VAULT = { salt: '9JJu4ng2dpqZUNIuX3323A==', iv: '8jd6lPWeaZkpTqv8', iter: 200000, ct: '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' };
+/* ============================================================
+   TEMPLATES_C — Diagram C (one-page summary on A4 portrait)
+   Each card: id, title, auto (key of a live source in A/B) or def (default lines),
+   limit (suggested characters, zh), choice (tick one), people (names per team role)
+   ============================================================ */
+const L2 = (zh, en) => ({ zh, en });
+
+const TEMPLATES_C = {
+  /* ---------------- TP · PMCS 1151 · W9 specification ---------------- */
+  tp_pmcs: {
+    id: 'tp_pmcs', short: 'TP-PMCS-C',
+    name: { zh: 'TP 期末專案・PMCS 1151', en: 'TP Term Project · PMCS 1151' },
+    pageTitle: { zh: '晨報 Agent 規格書：W9 提案摘要', en: 'Morning-Brief Agent Specification: W9 Proposal Summary' },
+    title: { zh: 'PM／PjM 職缺 K/S/A 分析晨報 Agent', en: 'PM/PjM Job K/S/A Morning-Brief Agent' },
+    subtitle: { zh: 'PMCS-EMI 1151 · 第 __ 組 · 組員：__ · 日期：__', en: 'PMCS-EMI 1151 · Group __ · Members: __ · Date: __' },
+    cards: [
+      { id: 'goal', title: L2('目標與讀者', 'Goal and Reader'), limit: 120,
+        hint: L2('晨報要解決什麼問題？給誰看？讀完能做什麼決定？', 'What problem does the brief solve, for whom, and what decision does it support?'),
+        def: L2(['目標：每天 07:00 自動送出一份 PM／PjM 職缺晨報，追蹤新增職缺、K/S/A 需求與趨勢變化', '讀者：想投入 PM／PjM 職涯的本組同學與學弟妹', '讀完能決定：接下來要補強哪些知識、技能與 AI 職能'],
+          ['Goal: an automatic PM/PjM job brief at 07:00 daily, tracking new postings, K/S/A demand and trends', 'Reader: classmates and juniors aiming for PM/PjM careers', 'Decision it supports: which knowledge, skills and AI competencies to build next']) },
+      { id: 'scope', title: L2('可設定的檢索範圍', 'Configurable Search Scope'), sub: L2('產業／企業 × 職務關鍵字 × 地區', 'Industry / company × job keywords × region'), auto: 'pmcs_scope', src: 'A', limit: 160 },
+      { id: 'kb', title: L2('KB 設計', 'KB Design'), sub: L2('四個 .md 檔案', 'Four .md files'), auto: 'pmcs_kb', src: 'B', limit: 160 },
+      { id: 'sources', title: L2('資料來源清單與法遵聲明', 'Source List and Compliance Statement'), sub: L2('robots.txt／服務條款、速率限制、個資遮蔽', 'robots.txt / ToS, rate limiting, PII masking'), auto: 'pmcs_sources', src: 'A', limit: 160 },
+      { id: 'ksa', title: L2('對應 JD 的 K/S/A 抽取架構', 'K/S/A Extraction Schema against a JD'), auto: 'pmcs_ksa', src: 'A', limit: 180 },
+      { id: 'stack', title: L2('技術棧（二擇一）', 'Technology Stack (choose one)'), limit: 100,
+        choice: [{ id: 'gh', zh: 'GitHub Pages ＋ GitHub Actions', en: 'GitHub Pages + GitHub Actions' }, { id: 'nv', zh: 'Netlify／Vercel ＋ Serverless Functions', en: 'Netlify / Vercel + Serverless Functions' }], choiceDef: 'gh',
+        hint: L2('補充：排程、金鑰放哪裡、部署方式', 'Notes: scheduling, where keys live, deployment'),
+        defBy: {
+          gh: L2(['排程：GitHub Actions cron 以 UTC 計時，台灣 07:00 ＝ UTC 23:00（前一天）', '金鑰：只放 Repo Secrets，不進 Git、前端或 KB'], ['Scheduling: GitHub Actions cron runs on UTC; 07:00 in Taiwan = 23:00 UTC the day before', 'Keys: Repo Secrets only — never in Git, the front end or the KB']),
+          nv: L2(['排程：Netlify Scheduled Functions 或 Vercel Cron Jobs，以 UTC 計時，台灣 07:00 ＝ UTC 23:00（前一天）', '金鑰：只放平台的環境變數，不進 Git、前端或 KB'], ['Scheduling: Netlify Scheduled Functions or Vercel Cron Jobs, on UTC; 07:00 in Taiwan = 23:00 UTC the day before', 'Keys: platform environment variables only — never in Git, the front end or the KB'])
+        } },
+      { id: 'runtime', title: L2('執行期架構', 'Runtime Architecture'), sub: L2('免費額度估算、降級模式設計', 'Free-tier quota estimate, graceful degradation'), limit: 180,
+        hint: L2('把 __ 換成你們的估算數字', 'Replace __ with your own estimates'),
+        def: L2(['每日執行 1 次；每次約 __ 筆職缺、__ 次模型呼叫', '免費額度：每月約 __ 次呼叫，占上限 __%', '降級：主要來源失敗 → 依序改用備援 → 全部失敗仍照常出刊並標示「今日來源不可用」', '重試上限 __ 次；QA 未通過重寫上限 2–3 次'], ['One run per day; about __ postings and __ model calls per run', 'Free tier: about __ calls per month, __% of the cap', 'Degradation: primary source fails → fallbacks in order → if all fail, still publish, labelled "source unavailable today"', 'Retry cap __; rewrite cap after a failed QA check: 2–3']) },
+      { id: 'team', title: L2('團隊五角色分工', 'Team Roles'), sub: L2('填入組員姓名', 'Add member names'), auto: 'pmcs_team', src: 'B', people: true, limit: 240 },
+      { id: 'milestones', title: L2('里程碑', 'Milestones'), limit: 120,
+        hint: L2('填入 D day 的日期', 'Fill in the D-day date'),
+        def: L2(['W9：提案（本規格書）', 'W12：可運行版', 'D day：__ 月 __ 日（最晚 W15 上課日），之後 D+1～D+3 連續無人值守執行', 'W16：期末驗收'], ['W9: proposal (this specification)', 'W12: running version', 'D day: __ (no later than the W15 class), then D+1 to D+3 unattended', 'W16: final acceptance']) }
+    ],
+    glossary: {
+      spec: { zh: ['W9 規格書', '依 I-P-O 藍圖的 INPUT／INTENTION 欄撰寫的晨報 Agent 規格，共九項必填。'], en: ['W9 Specification', 'The morning-brief agent specification written along the INPUT / INTENTION column of the I-P-O blueprint; nine required items.'] },
+      autofill: { zh: ['自動帶入', '卡片右上角標示「自動帶入：A 圖／B 圖」時，內容會跟著 A、B 圖更新；自己改過之後改為「已手動修改」，可按「重新帶入」還原。'], en: ['Auto-fill', 'A card marked "Auto-filled from A / B" follows those diagrams; once you edit it, it is marked "Edited by hand" and "Refill" restores it.'] },
+      quota: { zh: ['免費額度估算', '估算每月模型呼叫與資料抓取次數，確認低於免費方案上限；本課程 TP 不得使用付費 API。'], en: ['Free-tier Quota Estimate', 'Estimate monthly model calls and fetches and confirm they stay under the free-tier cap; paid APIs are not allowed in this TP.'] },
+      degradation: { zh: ['降級模式', '主要來源失敗時依序改用備援；全部失敗仍照常出刊並誠實標示缺漏，不整份停發、不無限重試。'], en: ['Graceful Degradation', 'Fall back source by source; if all fail, still publish and label what is missing — no skipped brief, no endless retries.'] },
+      dday: { zh: ['D day', '晨報 Agent 第一次正式無人值守執行的日子，最晚在 W15 上課日；之後 D+1～D+3 連續執行並留下紀錄。'], en: ['D day', 'The first unattended production run, no later than the W15 class; D+1 to D+3 follow with records kept.'] }
+    },
+    guide: {
+      zh: ['C 圖是 W9 提案的一頁摘要，九張卡片對應 Syllabus W9 的九項必填，依循 I-P-O 藍圖的 INPUT／INTENTION 欄。', '標示「自動帶入」的卡片會跟著 A、B 圖更新：②④⑤ 來自 A 圖，③⑧ 來自 B 圖。先把 A、B 圖改好，這裡就會一致。', '建議步驟：① 在右側填入題目、組別與組員；② 逐張點選卡片檢查內容，把 __ 換成你們的數字與日期；③ 在 ⑧ 填入每個角色的組員姓名；④ 頂端的「完成 X／9」全部打勾後，匯出 PNG 或「列印／存成 PDF」。'],
+      en: ['Diagram C is the one-page summary of the W9 proposal: nine cards for the nine required items in the syllabus, following the INPUT / INTENTION column of the I-P-O blueprint.', 'Cards marked Auto-filled follow Diagrams A and B: ②④⑤ come from A, ③⑧ from B. Fix A and B first and this page stays consistent.', 'Suggested steps: (1) fill in the title, group and members on the right; (2) click each card, check it and replace every __ with your numbers and dates; (3) add member names for each role in ⑧; (4) when the "Done X/9" counter is complete, export PNG or Print / Save as PDF.']
+    }
+  },
+
+  /* ---------------- RP · Quantitative (content encrypted) ---------------- */
+  rp_quant: {
+    id: 'rp_quant', short: 'RP-Quant-C', encrypted: true,
+    name: { zh: 'RP 研究提案・量化', en: 'RP Proposal · Quantitative' },
+    pageTitle: { zh: '研究提案摘要', en: 'Research Proposal Summary' },
+    title: { zh: '研究題目', en: 'Research Title' },
+    subtitle: { zh: '研究生姓名 · 指導教授 · 日期', en: 'Student · Advisor · Date' },
+    cards: [
+      { id: 'bg', title: L2('研究背景與動機', 'Background & Motivation'), limit: 150, hint: L2('為什麼這個問題重要？', 'Why does this question matter?') },
+      { id: 'rq', title: L2('研究問題與目的', 'Research Questions & Purpose'), limit: 150, hint: L2('RQ1、RQ2…', 'RQ1, RQ2 …') },
+      { id: 'hyp', title: L2('研究架構與假說', 'Framework & Hypotheses'), auto: 'a_hyp', src: 'A', limit: 260 },
+      { id: 'vars', title: L2('變數衡量', 'Measurement'), auto: 'a_vars', src: 'A', limit: 200 },
+      { id: 'sample', title: L2('樣本與資料', 'Sample & Data'), limit: 120, hint: L2('樣本範圍、研究期間、資料型態', 'Sample, period, data type') },
+      { id: 'method', title: L2('分析方法', 'Analysis'), limit: 150, hint: L2('統計方法與檢定方式', 'Statistical methods and tests') },
+      { id: 'contrib', title: L2('預期貢獻', 'Expected Contributions'), limit: 120, hint: L2('理論貢獻與實務意涵', 'Theoretical and practical') },
+      { id: 'timeline', title: L2('研究時程', 'Timeline'), auto: 'b_timeline', src: 'B', limit: 160 },
+      { id: 'refs', title: L2('主要參考文獻', 'Key References'), limit: 400, hint: L2('3–5 篇核心文獻，APA 第 7 版', '3–5 core references, APA 7th edition') }
+    ],
+    glossary: {
+      autofill: { zh: ['自動帶入', '「研究架構與假說」「變數衡量」來自 A 圖，「研究時程」來自 B 圖的時程標籤；自己改過之後可按「重新帶入」還原。'], en: ['Auto-fill', 'Framework & Hypotheses and Measurement come from Diagram A; Timeline comes from the tags in Diagram B. After editing, "Refill" restores them.'] },
+      apa: { zh: ['APA 第 7 版', '管理學領域常用的引用格式：作者（年份）。題目。期刊，卷（期），頁碼。'], en: ['APA 7th Edition', 'A citation style common in management: Author (Year). Title. Journal, Volume(Issue), pages.'] }
+    },
+    guide: {
+      zh: ['C 圖是研究提案的一頁摘要，適合口試委員、指導教授快速掌握研究全貌，也可以放進論文計畫書。', '「研究架構與假說」「變數衡量」會跟著 A 圖更新，「研究時程」會跟著 B 圖的時程標籤更新。', '建議步驟：① 在右側填入研究題目與姓名；② 逐張檢查卡片內容；③ 頂端的「完成 X／9」全部打勾後，匯出或「列印／存成 PDF」。'],
+      en: ['Diagram C is a one-page summary of the proposal, letting committee members and advisors grasp the whole study quickly; it also fits into a thesis proposal.', 'Framework & Hypotheses and Measurement follow Diagram A; Timeline follows the tags in Diagram B.', 'Suggested steps: (1) enter the title and names on the right; (2) check each card; (3) when "Done X/9" is complete, export or Print / Save as PDF.']
+    }
+  },
+
+  /* ---------------- RP · Qualitative ---------------- */
+  rp_qual: {
+    id: 'rp_qual', short: 'RP-Qual-C',
+    name: { zh: 'RP 研究提案・質性', en: 'RP Proposal · Qualitative' },
+    pageTitle: { zh: '研究提案摘要', en: 'Research Proposal Summary' },
+    title: { zh: '中小企業導入生成式 AI 的動態能力：南投製造業的多重個案研究', en: 'Dynamic Capabilities in Generative AI Adoption: A Multiple-Case Study of Manufacturing SMEs in Nantou' },
+    subtitle: { zh: '研究生姓名 · 指導教授 · 日期', en: 'Student · Advisor · Date' },
+    cards: [
+      { id: 'bg', title: L2('研究背景與動機', 'Background & Motivation'), limit: 150, hint: L2('為什麼這個現象值得研究？', 'Why is this phenomenon worth studying?'),
+        def: L2(['生成式 AI 快速普及，但中小企業資源有限、導入經驗仍少', '既有研究多以大型企業為對象，較少說明中小企業「如何」一步步導入'], ['Generative AI is spreading fast, but SMEs have limited resources and little experience', 'Most studies look at large firms and say little about how SMEs adopt step by step']) },
+      { id: 'rq', title: L2('研究問題', 'Research Questions'), limit: 150,
+        def: L2(['RQ1 中小企業如何感知並掌握生成式 AI 的機會？', 'RQ2 導入過程中，組織如何重組流程與分工？'], ['RQ1 How do SMEs sense and seize generative AI opportunities?', 'RQ2 How do they reconfigure processes and roles during adoption?']) },
+      { id: 'lens', title: L2('理論視角與命題', 'Theoretical Lens & Propositions'), auto: 'a_lensprop', src: 'A', limit: 220 },
+      { id: 'case', title: L2('個案選擇與抽樣', 'Case Selection & Sampling'), limit: 150,
+        def: L2(['多重個案研究', '立意抽樣：南投地區已試行生成式 AI 的製造業中小企業 3–5 家', '受訪者：負責人、導入專案主管、第一線使用者'], ['Multiple case study', 'Purposive sampling: 3–5 Nantou manufacturers already piloting generative AI', 'Interviewees: owners, project leads and front-line users']) },
+      { id: 'data', title: L2('資料蒐集與分析', 'Data Collection & Analysis'), limit: 150,
+        def: L2(['半結構式訪談、現場觀察、內部文件', '逐字稿 → 開放編碼 → 主題歸納', '邊蒐集邊分析，直到達到理論飽和'], ['Semi-structured interviews, observation, internal documents', 'Transcripts → open coding → themes', 'Collect and analyse together until theoretical saturation']) },
+      { id: 'trust', title: L2('信實度與研究倫理', 'Trustworthiness & Ethics'), limit: 120,
+        def: L2(['知情同意、匿名化與資料保密', '資料三角檢證；成員檢核', '研究者反思紀錄'], ['Informed consent, anonymity and confidentiality', 'Triangulation; member checking', 'Researcher reflexive journal']) },
+      { id: 'contrib', title: L2('預期貢獻', 'Expected Contributions'), limit: 120,
+        def: L2(['理論：以動態能力觀點說明中小企業導入生成式 AI 的過程', '實務：提供中小企業規劃導入步驟的參考'], ['Theory: explains SME adoption of generative AI through the dynamic capabilities view', 'Practice: a reference for SMEs planning their adoption steps']) },
+      { id: 'timeline', title: L2('研究時程', 'Timeline'), auto: 'b_timeline', src: 'B', limit: 160 },
+      { id: 'refs', title: L2('主要參考文獻', 'Key References'), limit: 400, hint: L2('3–5 篇核心文獻，APA 第 7 版', '3–5 core references, APA 7th edition'),
+        def: L2(['Eisenhardt, K. M. (1989). Building theories from case study research. Academy of Management Review, 14(4), 532–550.', 'Teece, D. J. (2007). Explicating dynamic capabilities: The nature and microfoundations of (sustainable) enterprise performance. Strategic Management Journal, 28(13), 1319–1350.', 'Teece, D. J., Pisano, G., & Shuen, A. (1997). Dynamic capabilities and strategic management. Strategic Management Journal, 18(7), 509–533.', 'Yin, R. K. (2018). Case study research and applications: Design and methods (6th ed.). SAGE.'], null) }
+    ],
+    glossary: {
+      autofill: { zh: ['自動帶入', '「理論視角與命題」來自 A 圖，「研究時程」來自 B 圖的時程標籤；自己改過之後可按「重新帶入」還原。'], en: ['Auto-fill', 'Theoretical Lens & Propositions comes from Diagram A; Timeline comes from the tags in Diagram B. After editing, "Refill" restores them.'] },
+      apa: { zh: ['APA 第 7 版', '管理學領域常用的引用格式：作者（年份）。題目。期刊，卷（期），頁碼。'], en: ['APA 7th Edition', 'A citation style common in management: Author (Year). Title. Journal, Volume(Issue), pages.'] }
+    },
+    guide: {
+      zh: ['C 圖是研究提案的一頁摘要，適合口試委員、指導教授快速掌握研究全貌，也可以放進論文計畫書。', '「理論視角與命題」會跟著 A 圖更新，「研究時程」會跟著 B 圖的時程標籤更新。', '建議步驟：① 在右側填入研究題目與姓名；② 逐張檢查卡片內容；③ 頂端的「完成 X／9」全部打勾後，匯出或「列印／存成 PDF」。'],
+      en: ['Diagram C is a one-page summary of the proposal, letting committee members and advisors grasp the whole study quickly; it also fits into a thesis proposal.', 'Theoretical Lens & Propositions follows Diagram A; Timeline follows the tags in Diagram B.', 'Suggested steps: (1) enter the title and names on the right; (2) check each card; (3) when "Done X/9" is complete, export or Print / Save as PDF.']
+    }
+  }
+};
+
+const PDS_VAULT = { salt: 'AIszVnY/H2ZOcWxp8b/SAg==', iv: 'OG/1531f8ubx/R6o', iter: 200000, ct: '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' };
 /* ============================================================
    UI DICTIONARY — zh / en (identical keys)
    ============================================================ */
@@ -528,8 +644,8 @@ const dict = {
     tour_replay: '▶ 播放新手導覽',
     tour_next: '下一步', tour_prev: '上一步', tour_skip: '略過', tour_done: '開始使用',
     tour_steps: [
-      { t: '選擇範本', d: '依你的用途選擇：研究生選 RP 量化或質性，PMCS 課程選 TP。切換範本會取代目前的 A、B 兩張圖，建議先儲存 JSON。' },
-      { t: '切換圖別', d: 'A 是架構圖（變數或分析邏輯），B 是流程圖（研究流程或系統流程）。兩張圖存在同一份檔案，切換不會遺失內容。C 一頁摘要即將推出。' },
+      { t: '選擇範本', d: '依你的用途選擇：研究生選 RP 量化或質性，PMCS 課程選 TP。切換範本會取代目前的 A、B、C 三張圖，建議先儲存 JSON。' },
+      { t: '切換圖別', d: 'A 是架構圖（變數或分析邏輯），B 是流程圖（研究流程或系統流程）。C 是一頁提案摘要（A4），會自動帶入 A、B 圖的內容。三張圖存在同一份檔案，切換不會遺失內容。' },
       { t: '圖中文字', d: '選擇圖上顯示中文、英文或雙語。切換時會自動重新排版。' },
       { t: '畫布', d: '點一下節點或連線即可在右側編輯；按住節點拖曳可移動位置。節點右上角的 ⓘ 會顯示相關術語。' },
       { t: '新增連線', d: '按下後先點起點、再點終點。終點也可以是另一條連線（調節效果）或 ⑤ 的框。編號關係會自動列在圖下方。' },
@@ -540,7 +656,6 @@ const dict = {
     subtitle: 'Proposal Diagram Studio',
     view_label: '圖別',
     view_A: 'A 架構圖', view_B: 'B 流程圖', view_C: 'C 摘要',
-    view_C_soon: 'C 一頁提案摘要（即將推出）',
     toast_view: '已切換到「{name}」',
     f_chapter: '所屬章節',
     f_owner: '負責角色（團隊分工）',
@@ -550,6 +665,27 @@ const dict = {
     f_xref_ph: '例如 A②、A 圖',
     kind_loop: '回饋迴路（{prefix}）',
     f_edge_hint_loop: '回饋迴路以虛線弧形箭頭呈現，敘述會自動列在圖下方；請寫明上限，例如重試或重寫幾次。',
+    c_no_add: 'C 圖由固定的卡片組成，不需要新增節點；點選卡片即可在「編輯」分頁修改。',
+    c_progress: '完成 {n}／{m}',
+    c_over: '內容已超過一頁 A4；請精簡文字，或改用「中文」或「EN」模式。',
+    c_page_end: 'A4 一頁到此為止',
+    c_auto_from: '自動帶入：{src} 圖',
+    c_manual: '已手動修改',
+    c_auto_note: '這張卡片自動帶入 {src} 圖的內容，會跟著 {src} 圖更新。直接修改下方文字後，就改為手動內容。',
+    c_manual_note: '已手動修改，不再跟著 {src} 圖更新。',
+    c_refill: '↻ 重新帶入',
+    c_restore: '↺ 還原預設內容',
+    c_default_note: '這是範本預設內容，請改寫成你的內容。',
+    c_choice: '選擇一項',
+    c_people: '各角色負責組員',
+    c_people_ph: '組員姓名',
+    c_chars: '中文 {n} 字（建議 {m} 字以內）',
+    c_unfilled: '尚未完成：請填寫內容，並把 __ 或括號裡的提示換成實際內容。',
+    c_empty: '（尚未填寫）',
+    c_none_selected: '點選任一張卡片即可編輯。這裡可以修改題目與副標題，並查看九項的完成狀況。',
+    c_f_title_zh: '題目／專案名稱（中文）', c_f_title_en: '題目／專案名稱（英文）',
+    btn_print: '列印／PDF',
+    print_blocked: '瀏覽器封鎖了新視窗，請允許本網站開啟彈出式視窗後再試一次',
     menu_templates: '切換範本',
     menu_tabs: '面板',
     tpl_label: '範本',
@@ -567,9 +703,9 @@ const dict = {
     btn_export_svg: '匯出 SVG', btn_export_png: '匯出 PNG',
     btn_export_json: '儲存 JSON', btn_import_json: '載入 JSON',
     btn_clear: '🗑 清除全部',
-    confirm_clear: '確定要清除 A、B 兩張圖，並還原為範本預設內容嗎？本機暫存的草稿也會一併刪除，此操作無法復原。',
-    confirm_template: '切換到「{name}」會取代目前的 A、B 兩張圖。確定要切換嗎？建議先「儲存 JSON」備份。',
-    confirm_import: '載入「{file}」會取代目前的 A、B 兩張圖。確定要載入嗎？',
+    confirm_clear: '確定要清除 A、B、C 三張圖，並還原為範本預設內容嗎？本機暫存的草稿也會一併刪除，此操作無法復原。',
+    confirm_template: '切換到「{name}」會取代目前的 A、B、C 三張圖。確定要切換嗎？建議先「儲存 JSON」備份。',
+    confirm_import: '載入「{file}」會取代目前的 A、B、C 三張圖。確定要載入嗎？',
     import_error: '無法讀取此檔案：格式不符或內容損毀。',
     toast_restored: '已還原上次暫存的草稿',
     toast_exported: '已匯出 {file}',
@@ -621,7 +757,7 @@ const dict = {
     help_title: '使用方式',
     help_steps: [
       '從上方選擇範本，圖會自動產生預設內容。',
-      '用「圖別」切換 A 架構圖與 B 流程圖；兩張圖存在同一份 JSON，匯出時只匯出目前顯示的那一張。',
+      '用「圖別」切換 A 架構圖、B 流程圖與 C 一頁摘要；三張圖存在同一份 JSON，匯出時只匯出目前顯示的那一張。',
       '點選節點或連線，在右側「編輯」分頁修改文字；拖曳節點可調整位置，「自動排版」可重新整理版面。',
       '按「新增連線」後，先點起點、再點終點；終點也可以是另一條連線（調節效果）或 ⑤ 的框。',
       '「圖中文字」可切換中文、英文或雙語；介面語言由右上角切換。',
@@ -657,8 +793,8 @@ const dict = {
     tour_replay: '▶ Play the quick tour',
     tour_next: 'Next', tour_prev: 'Back', tour_skip: 'Skip', tour_done: 'Start',
     tour_steps: [
-      { t: 'Choose a template', d: 'Graduate students choose RP Quantitative or Qualitative; PMCS students choose TP. Switching replaces both diagrams A and B, so save a JSON first.' },
-      { t: 'Switch diagrams', d: 'A is the framework (variables or analysis logic); B is the flow (research process or system flow). Both live in the same file, so switching loses nothing. C, a one-page summary, is coming soon.' },
+      { t: 'Choose a template', d: 'Graduate students choose RP Quantitative or Qualitative; PMCS students choose TP. Switching replaces diagrams A, B and C, so save a JSON first.' },
+      { t: 'Switch diagrams', d: 'A is the framework (variables or analysis logic); B is the flow (research process or system flow). C is the one-page proposal summary (A4), filled in from A and B. All three live in the same file, so switching loses nothing.' },
       { t: 'Diagram text', d: 'Show Chinese, English or both on the diagram. The layout is refreshed automatically when you switch.' },
       { t: 'Canvas', d: 'Click a node or link to edit it on the right; drag a node to move it. The ⓘ at the top right of a node shows related terms.' },
       { t: 'Connect', d: 'Press it, then click the source and the target. The target can also be another link (moderation) or the ⑤ frame. Numbered relations are listed below the diagram.' },
@@ -669,7 +805,6 @@ const dict = {
     subtitle: '研究提案圖產生器',
     view_label: 'Diagram',
     view_A: 'A Framework', view_B: 'B Flow', view_C: 'C Summary',
-    view_C_soon: 'C One-page proposal summary (coming soon)',
     toast_view: 'Switched to "{name}"',
     f_chapter: 'Chapter',
     f_owner: 'Owner (team role)',
@@ -679,6 +814,27 @@ const dict = {
     f_xref_ph: 'e.g. A②, A',
     kind_loop: 'Feedback loop ({prefix})',
     f_edge_hint_loop: 'Feedback loops are drawn as dashed arcs and their statements are listed below the diagram; state the limits, e.g. how many retries or rewrites.',
+    c_no_add: 'Diagram C is a fixed set of cards, so there is nothing to add; click a card to edit it in the Edit tab.',
+    c_progress: 'Done {n}/{m}',
+    c_over: 'The content is longer than one A4 page; shorten it or switch to 中文 or EN.',
+    c_page_end: 'End of one A4 page',
+    c_auto_from: 'Auto-filled from {src}',
+    c_manual: 'Edited by hand',
+    c_auto_note: 'This card is filled in from Diagram {src} and follows it. Editing the text below turns it into your own content.',
+    c_manual_note: 'Edited by hand; it no longer follows Diagram {src}.',
+    c_refill: '↻ Refill',
+    c_restore: '↺ Restore default',
+    c_default_note: 'Template default content — rewrite it for your own study.',
+    c_choice: 'Choose one',
+    c_people: 'Team member for each role',
+    c_people_ph: 'Member name',
+    c_chars: '{n} Chinese characters (suggested ≤ {m})',
+    c_unfilled: 'Not done yet: fill in the card and replace every __ or bracketed prompt with real content.',
+    c_empty: '(not filled in yet)',
+    c_none_selected: 'Click any card to edit it. Here you can change the title and subtitle and see the status of all nine items.',
+    c_f_title_zh: 'Title / project name (Chinese)', c_f_title_en: 'Title / project name (English)',
+    btn_print: 'Print / PDF',
+    print_blocked: 'The browser blocked the new window; allow pop-ups for this site and try again',
     menu_templates: 'Templates',
     menu_tabs: 'Panels',
     tpl_label: 'Template',
@@ -696,9 +852,9 @@ const dict = {
     btn_export_svg: 'Export SVG', btn_export_png: 'Export PNG',
     btn_export_json: 'Save JSON', btn_import_json: 'Load JSON',
     btn_clear: '🗑 Clear all',
-    confirm_clear: 'Clear both diagrams A and B and restore the template defaults? The draft saved in this browser will also be deleted. This cannot be undone.',
-    confirm_template: 'Switching to "{name}" will replace both diagrams A and B. Continue? Consider saving a JSON backup first.',
-    confirm_import: 'Loading "{file}" will replace both diagrams A and B. Continue?',
+    confirm_clear: 'Clear diagrams A, B and C and restore the template defaults? The draft saved in this browser will also be deleted. This cannot be undone.',
+    confirm_template: 'Switching to "{name}" will replace diagrams A, B and C. Continue? Consider saving a JSON backup first.',
+    confirm_import: 'Loading "{file}" will replace diagrams A, B and C. Continue?',
     import_error: 'This file could not be read: wrong format or damaged content.',
     toast_restored: 'Your last saved draft has been restored',
     toast_exported: 'Exported {file}',
@@ -750,7 +906,7 @@ const dict = {
     help_title: 'How to use',
     help_steps: [
       'Choose a template at the top; the diagram fills in with default content.',
-      'Use Diagram to switch between A Framework and B Flow; both are kept in one JSON, and SVG/PNG export covers the diagram on screen.',
+      'Use Diagram to switch between A Framework, B Flow and the C Summary; all three are kept in one JSON, and SVG/PNG export covers the diagram on screen.',
       'Click a node or link and edit it in the Edit tab; drag nodes to reposition them, or press Auto layout to tidy up.',
       'Press Connect, then click the source and the target; the target may also be another link (moderation) or the ⑤ frame.',
       'Diagram text switches between Chinese, English and bilingual; the interface language is switched at the top right.',
@@ -1147,8 +1303,9 @@ const uid = (p) => p + '_' + Date.now().toString(36) + Math.random().toString(36
 const stamp = () => { const d = new Date(), z = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}_${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}`; };
 const deep = (o) => JSON.parse(JSON.stringify(o));
 
-const VIEWS = ['A', 'B'];
-function tplOf(tplId, view) { return view === 'B' ? TEMPLATES_B[tplId] : TEMPLATES[tplId]; }
+const VIEWS = ['A', 'B', 'C'];
+const NODE_VIEWS = ['A', 'B'];
+function tplOf(tplId, view) { return view === 'C' ? TEMPLATES_C[tplId] : view === 'B' ? TEMPLATES_B[tplId] : TEMPLATES[tplId]; }
 function instantiate(tplId, mode, view) {
   const tpl = tplOf(tplId, view || 'A');
   const d = {
@@ -1165,7 +1322,7 @@ function instantiate(tplId, mode, view) {
   return d;
 }
 function newDoc(tplId, mode, view) {
-  return { templateId: tplId, view: view || 'A', diagrams: { A: instantiate(tplId, mode, 'A'), B: instantiate(tplId, mode, 'B') } };
+  return { templateId: tplId, view: view || 'A', diagrams: { A: instantiate(tplId, mode, 'A'), B: instantiate(tplId, mode, 'B'), C: instantiateC(tplId) } };
 }
 
 /* Strip any markup from imported strings (DOMPurify → textContent). */
@@ -1210,8 +1367,164 @@ function sanitizeDoc(obj, mode) {
   const src = obj.diagrams && typeof obj.diagrams === 'object' ? obj.diagrams : { A: obj.diagram };
   if (!src.A && !src.B) throw new Error('bad');
   const diagrams = {};
-  VIEWS.forEach(v => { diagrams[v] = src[v] ? sanitizeDiagram(src[v], tplOf(id, v)) : instantiate(id, mode || 'en', v); });
+  NODE_VIEWS.forEach(v => { diagrams[v] = src[v] ? sanitizeDiagram(src[v], tplOf(id, v)) : instantiate(id, mode || 'en', v); });
+  diagrams.C = src.C ? sanitizeC(src.C, id) : instantiateC(id);
   return { templateId: id, view: VIEWS.includes(obj.view) ? obj.view : 'A', diagrams };
+}
+
+/* ============================================================
+   Diagram C — one-page summary (A4 portrait, cards)
+   ============================================================ */
+const PAGE = { W: 1190, H: 1684, PAD: 44, GAP: 22 };
+function instantiateC(tplId) { const tc = TEMPLATES_C[tplId]; return { title: deep(tc.title), subtitle: deep(tc.subtitle), cards: {} }; }
+
+/* Live content pulled from Diagrams A and B */
+function autoC(key, tplId, ds, people) {
+  const A = ds.A || { nodes: [], edges: [], lanes: [] }, B = ds.B || { nodes: [], edges: [] };
+  const tA = TEMPLATES[tplId], tB = TEMPLATES_B[tplId];
+  const out = { zh: [], en: [] };
+  const add = (zh, en) => { out.zh.push(zh); out.en.push(en); };
+  const T = (n, L) => (getText(n)[L] || { title: '', items: [] });
+  const its = (n, L) => T(n, L).items.filter(Boolean).join(L === 'zh' ? '；' : '; ');
+  const byY = (a, b) => (a.y - b.y) || (a.x - b.x);
+  const mains = (tpl) => A.edges.filter(e => e.kind === 'main').map((e, i) => {
+    const sign = tpl.signs && e.sign ? ` (${e.sign === '-' ? '−' : '+'})` : '';
+    return { code: tpl.prefix + (i + 1) + sign, e };
+  });
+  if (key === 'pmcs_scope') {
+    A.nodes.filter(n => n.role === 'scope').sort((a, b) => a.lane - b.lane).forEach(n => {
+      const ln = (A.lanes[n.lane] && A.lanes[n.lane].text) || { zh: '', en: '' };
+      add((ln.zh ? ln.zh + '：' : '') + its(n, 'zh'), (ln.en ? ln.en + ': ' : '') + its(n, 'en'));
+    });
+  } else if (key === 'pmcs_kb') {
+    const n = B.nodes.find(x => x.role === 'kb');
+    if (n) { const z = T(n, 'zh').items, e = T(n, 'en').items; const idx = z.map((s, i) => /^\S+\.md/.test(s) ? i : -1).filter(i => i >= 0); (idx.length ? idx : z.map((_, i) => i)).forEach(i => add(z[i] || '', e[i] || '')); }
+  } else if (key === 'pmcs_sources') {
+    const n = A.nodes.find(x => x.role === 'source');
+    if (n) { const semi = n.variant === 'semi'; add('模式：' + (semi ? '半自動（組員貼入 JD）' : '自動（程式抓取）'), 'Mode: ' + (semi ? 'semi-automatic (members paste JDs)' : 'automatic (programmatic fetching)'));
+      const z = T(n, 'zh').items, e = T(n, 'en').items; z.forEach((s, i) => add(s, e[i] || '')); }
+  } else if (key === 'pmcs_ksa') {
+    const lane0 = Math.min(0, ...A.nodes.filter(n => ['k', 's', 'a', 'ai'].includes(n.role)).map(n => n.lane));
+    ['k', 's', 'a', 'ai'].forEach(r => {
+      const role = roleOf(tA, r);
+      A.nodes.filter(n => n.role === r && (n.lane === lane0 || n.lane === 0)).slice(0, 1).forEach(n => add(`${role.badge} ${T(n, 'zh').title}：${its(n, 'zh')}`, `${role.badge} ${T(n, 'en').title}: ${its(n, 'en')}`));
+    });
+    const g = (tA.groups || [])[0]; if (g && g.note) add(g.note.zh, g.note.en);
+  } else if (key === 'pmcs_team') {
+    (tB.owners || []).forEach(o => {
+      const ns = B.nodes.filter(n => n.owner === o.id);
+      const nm = (people && people[o.id]) || '＿＿';
+      add(`${o.zh}（${nm}）：${ns.map(n => T(n, 'zh').title).join('、')}`, `${o.en} (${nm}): ${ns.map(n => T(n, 'en').title).join(', ')}`);
+    });
+  } else if (key === 'a_hyp') {
+    mains(tA).forEach(({ code, e }) => add(`${code}：${e.text.zh || e.text.en}`, `${code}: ${e.text.en || e.text.zh}`));
+  } else if (key === 'a_vars') {
+    tA.roles.forEach(r => {
+      const ns = A.nodes.filter(n => n.role === r.id); if (!ns.length) return;
+      const f = (n, L) => (T(n, L).title === r[L] ? '' : T(n, L).title) + (T(n, L).items.filter(Boolean).length ? (L === 'zh' ? '（' + T(n, L).items.filter(Boolean).join('、') + '）' : ' (' + T(n, L).items.filter(Boolean).join(', ') + ')') : '');
+      const g = (n, L) => f(n, L).replace(/^（(.*)）$/, '$1').replace(/^ \((.*)\)$/, '$1');
+      add(`${r.zh}：${ns.map(n => g(n, 'zh')).join('；')}`, `${r.en}: ${ns.map(n => g(n, 'en')).join('; ')}`);
+    });
+  } else if (key === 'a_lensprop') {
+    A.nodes.filter(n => n.role === 'lens').forEach(n => add(`${T(n, 'zh').title}：${its(n, 'zh')}`, `${T(n, 'en').title}: ${its(n, 'en')}`));
+    mains(tA).forEach(({ code, e }) => add(`${code}：${e.text.zh || e.text.en}`, `${code}: ${e.text.en || e.text.zh}`));
+  } else if (key === 'b_timeline') {
+    [...B.nodes].filter(n => n.tag).sort(byY).forEach(n => add(`${n.tag}｜${T(n, 'zh').title}`, `${n.tag} | ${T(n, 'en').title}`));
+  }
+  return out;
+}
+
+/* Current content of a card: live (auto), edited, or template default */
+function cardState(dC, id) { return (dC.cards && dC.cards[id]) || {}; }
+function cardContent(tplId, card, dC, ds) {
+  const st = cardState(dC, card.id);
+  if (card.auto && !st.manual) return { lines: autoC(card.auto, tplId, ds, st.people), mode: 'auto' };
+  if (st.text) return { lines: { zh: st.text.zh || [], en: st.text.en || [] }, mode: card.auto ? 'manual' : 'edited' };
+  const def = (card.defBy && card.defBy[st.choice || card.choiceDef]) || card.def || { zh: [], en: [] };
+  return { lines: { zh: def.zh || [], en: def.en || def.zh || [] }, mode: 'default' };
+}
+const PLACEHOLDER_RE = /__|＿＿|^（.*）$|^\(.*\)$/;
+function cardFilled(card, content, st) {
+  const z = content.lines.zh.map(s => String(s).trim()).filter(Boolean);
+  if (!z.length) return false;
+  if (z.some(s => PLACEHOLDER_RE.test(s))) return false;
+  if (card.people) { const owners = (TEMPLATES_B.tp_pmcs.owners || []); if (owners.some(o => !((st.people || {})[o.id] || '').trim())) return false; }
+  return true;
+}
+
+function layoutC(dC, tplId, mode, ds) {
+  const tc = TEMPLATES_C[tplId];
+  const W = PAGE.W, P = PAGE.PAD, G2 = PAGE.GAP;
+  const prim = mode === 'en' ? 'en' : 'zh';
+  const pick = (bi) => (bi ? (mode === 'en' ? (bi.en || bi.zh) : (bi.zh || bi.en)) : '');
+  // header
+  const head = { lines: [] }; let y = 44;
+  head.page = pick(tc.pageTitle); head.pageEn = mode === 'both' ? tc.pageTitle.en : '';
+  y += 22;
+  wrapText(pick(dC.title), W - 2 * P, 26).forEach(t => { y += 34; head.lines.push({ t, y, fs: 26, fw: 700, serif: true, fill: '#004030' }); });
+  if (mode === 'both' && dC.title.en) wrapText(dC.title.en, W - 2 * P, 15).forEach(t => { y += 21; head.lines.push({ t, y, fs: 15, fi: 'italic', fill: '#475569' }); });
+  y += 24; head.lines.push({ t: mode === 'both' ? [dC.subtitle.zh, dC.subtitle.en].filter(Boolean).join('  ·  ') : pick(dC.subtitle), y, fs: 13.5, fill: '#64748b' });
+  y += 16; head.rule = y; y += 24;
+  // cards
+  const cw2 = (W - 2 * P - G2) / 2;
+  const box = (card, idx, w) => {
+    const st = cardState(dC, card.id); const content = cardContent(tplId, card, dC, ds);
+    const inner = w - 36 - 18; const L = [];
+    let yy = 18;
+    const tLines = wrapText(pick(card.title), inner - 4, 17.5);
+    tLines.forEach(t => { yy += 23; L.push({ t, x: 54, y: yy, fs: 17.5, fw: 700, fill: '#0f172a' }); });
+    if (mode === 'both') wrapText(card.title.en, inner, 11.5).forEach(t => { yy += 15; L.push({ t, x: 54, y: yy, fs: 11.5, fi: 'italic', fill: '#475569' }); });
+    if (card.sub) wrapText(pick(card.sub), inner, 11.5).forEach(t => { yy += 16; L.push({ t, x: 54, y: yy, fs: 11.5, fill: '#64748b' }); });
+    yy += 10;
+    const checks = [];
+    if (card.choice) {
+      const cur = st.choice || card.choiceDef;
+      card.choice.forEach(o => { yy += 24; checks.push({ y: yy, on: cur === o.id }); L.push({ t: mode === 'en' ? o.en : o.zh, x: 44, y: yy, fs: 14.5, fw: cur === o.id ? 700 : 400, fill: cur === o.id ? '#0f172a' : '#94a3b8' }); });
+      yy += 6;
+    }
+    const bullets = [];
+    const n = Math.max(content.lines.zh.length, mode === 'both' ? content.lines.en.length : 0);
+    for (let i = 0; i < n; i++) {
+      const a = String((mode === 'en' ? (content.lines.en[i] || content.lines.zh[i]) : content.lines.zh[i]) || '').trim();
+      const b = String(content.lines.en[i] || '').trim();
+      if (!a && !(mode === 'both' && b)) continue;
+      bullets.push(yy + (a ? 21.5 : 17));
+      if (a) wrapText(a, w - 44 - 22, 14.5).forEach(t => { yy += 21.5; L.push({ t, x: 44, y: yy, fs: 14.5, fill: '#1f2937' }); });
+      if (mode === 'both' && b && b !== a) wrapText(b, w - 44 - 22, 12).forEach(t => { yy += 17; L.push({ t, x: 44, y: yy, fs: 12, fi: 'italic', fill: '#64748b' }); });
+      yy += 5;
+    }
+    const empty = !bullets.length;
+    if (empty) yy += 26;
+    yy += 16;
+    const chars = content.lines.zh.join('').replace(/\s/g, '').length;
+    return { card, idx, w, h: Math.max(yy, 110), lines: L, bullets, checks, empty, mode: content.mode, filled: cardFilled(card, content, st), chars, content };
+  };
+  const cards = []; let i = 0;
+  while (i < tc.cards.length) {
+    const single = i === tc.cards.length - 1;
+    const row = single ? [box(tc.cards[i], i, W - 2 * P)] : [box(tc.cards[i], i, cw2), box(tc.cards[i + 1], i + 1, cw2)];
+    const h = Math.max(...row.map(c => c.h));
+    row.forEach((c, k) => { c.x = P + k * (cw2 + G2); c.y = y; c.h = h; cards.push(c); });
+    y += h + G2; i += row.length;
+  }
+  const bottom = y - G2 + 50;
+  return { W, H: Math.max(PAGE.H, Math.ceil(bottom)), over: bottom > PAGE.H, head, cards, done: cards.filter(c => c.filled).length, total: cards.length };
+}
+
+function sanitizeC(d, tplId) {
+  const tc = TEMPLATES_C[tplId]; d = d || {};
+  const cards = {};
+  const src = d.cards && typeof d.cards === 'object' ? d.cards : {};
+  tc.cards.forEach(c => {
+    const s = src[c.id]; if (!s || typeof s !== 'object') return;
+    const o = {};
+    if (s.manual) o.manual = true;
+    if (s.text) o.text = { zh: (Array.isArray(s.text.zh) ? s.text.zh : []).slice(0, 20).map(x => cleanStr(x, 400)), en: (Array.isArray(s.text.en) ? s.text.en : []).slice(0, 20).map(x => cleanStr(x, 400)) };
+    if (c.choice && c.choice.some(x => x.id === s.choice)) o.choice = s.choice;
+    if (c.people && s.people && typeof s.people === 'object') { o.people = {}; (TEMPLATES_B[tplId].owners || []).forEach(ow => { if (s.people[ow.id]) o.people[ow.id] = cleanStr(s.people[ow.id], 40); }); }
+    cards[c.id] = o;
+  });
+  return { title: cleanBi(d.title || tc.title, 200), subtitle: cleanBi(d.subtitle || tc.subtitle, 200), cards };
 }
 
 </script>
@@ -1470,6 +1783,48 @@ const Diagram = ({ doc, dia, tpl, mode, selected, onSelect, onDragNode, onDragEn
   );
 };
 
+/* ---------------- Diagram C: one-page summary ---------------- */
+const CPage = ({ doc, mode, selected, onSelect, zoom, svgRef, t }) => {
+  const dC = doc.diagrams.C;
+  const Lc = useMemo(() => layoutC(dC, doc.templateId, mode, doc.diagrams), [dC, doc.diagrams, doc.templateId, mode]);
+  const { W, H } = Lc; const selColor = '#D97706';
+  const src = (c) => c.mode === 'auto' ? t.c_auto_from.replace('{src}', c.card.src) : c.mode === 'manual' ? t.c_manual : null;
+  return (
+    <svg ref={svgRef} xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${W} ${H}`} width={W * zoom} height={H * zoom}
+      style={{ display: 'block', fontFamily: G.FONT, userSelect: 'none' }} onPointerDown={() => onSelect(null)} data-w={W} data-h={H}>
+      <rect x="0" y="0" width={W} height={H} fill="#ffffff" />
+      <rect x="0" y="0" width={W} height="8" fill="#004030" />
+      <text x={PAGE.PAD} y="46" fontSize="13" fontWeight="700" letterSpacing="1" fill="#92400E">{Lc.head.page}{Lc.head.pageEn ? `  ·  ${Lc.head.pageEn}` : ''}</text>
+      {Lc.head.lines.map((l, i) => <text key={i} x={PAGE.PAD} y={l.y} fontSize={l.fs} fontWeight={l.fw || 400} fontStyle={l.fi || 'normal'} fontFamily={l.serif ? G.SERIF : undefined} fill={l.fill}>{l.t}</text>)}
+      <line x1={PAGE.PAD} y1={Lc.head.rule} x2={W - PAGE.PAD} y2={Lc.head.rule} stroke="#D8C3A5" strokeWidth="2" />
+      <g className="no-export"><rect x={W - PAGE.PAD - 118} y="24" width="118" height="28" rx="14" fill={Lc.done === Lc.total ? '#004030' : '#FEF3E2'} stroke={Lc.done === Lc.total ? 'none' : '#B45309'} />
+        <text x={W - PAGE.PAD - 59} y="43" textAnchor="middle" fontSize="13" fontWeight="700" fill={Lc.done === Lc.total ? '#ffffff' : '#92400E'}>{t.c_progress.replace('{n}', Lc.done).replace('{m}', Lc.total)}</text></g>
+      {Lc.cards.map(c => {
+        const sel = selected && selected.type === 'card' && selected.id === c.card.id; const lb = src(c);
+        return (
+          <g key={c.card.id} transform={`translate(${c.x},${c.y})`} style={{ cursor: 'pointer' }} onPointerDown={(e) => { e.stopPropagation(); onSelect({ type: 'card', id: c.card.id }); }}>
+            <rect x="0" y="0" width={c.w} height={c.h} rx="12" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.3" />
+            <rect x="0" y="0" width={c.w} height="5" rx="2" fill="#004030" />
+            <circle cx="30" cy="34" r="14" fill="#004030" /><text x="30" y="39" textAnchor="middle" fontSize="14" fontWeight="700" fill="#D8C3A5">{c.idx + 1}</text>
+            {c.lines.map((l, i) => <text key={i} x={l.x} y={l.y} fontSize={l.fs} fontWeight={l.fw || 400} fontStyle={l.fi || 'normal'} fill={l.fill}>{l.t}</text>)}
+            {c.bullets.map((y, i) => <circle key={'b' + i} cx="32" cy={y - 4.5} r="2.6" fill="#004030" />)}
+            {c.checks.map((k, i) => <g key={'k' + i}><rect x="22" y={k.y - 12} width="14" height="14" rx="3" fill={k.on ? '#004030' : '#ffffff'} stroke={k.on ? '#004030' : '#94a3b8'} strokeWidth="1.4" />{k.on && <path d={`M25,${k.y - 5} l3.5,3.5 l6,-7`} fill="none" stroke="#ffffff" strokeWidth="2" />}</g>)}
+            {c.empty && <text className="no-export" x="44" y={c.h - 30} fontSize="12.5" fontStyle="italic" fill="#94a3b8">{c.card.hint ? (mode === 'en' ? c.card.hint.en : c.card.hint.zh) : t.c_empty}</text>}
+            <g className="no-export">
+              {lb && (() => { const w = textW(lb, 10.5) + 16; return <g><rect x={c.w - 44 - w} y="16" width={w} height="19" rx="9.5" fill={c.mode === 'auto' ? '#E6F0EC' : '#FEF3E2'} stroke={c.mode === 'auto' ? '#004030' : '#B45309'} strokeWidth="0.8" /><text x={c.w - 44 - w / 2} y="29.5" textAnchor="middle" fontSize="10.5" fontWeight="700" fill={c.mode === 'auto' ? '#004030' : '#92400E'}>{lb}</text></g>; })()}
+              <circle cx={c.w - 24} cy="25" r="10" fill={c.filled ? '#004030' : '#ffffff'} stroke={c.filled ? '#004030' : '#B45309'} strokeWidth="1.5" />
+              {c.filled ? <path d={`M${c.w - 29},25 l3.5,3.5 l6.5,-7`} fill="none" stroke="#ffffff" strokeWidth="2" /> : null}
+            </g>
+            {sel && <rect className="no-export" x="-5" y="-5" width={c.w + 10} height={c.h + 10} rx="15" fill="none" stroke={selColor} strokeWidth="2.5" strokeDasharray="7 4" />}
+          </g>
+        );
+      })}
+      {Lc.over && <g className="no-export"><line x1="0" y1={PAGE.H} x2={W} y2={PAGE.H} stroke="#DC2626" strokeWidth="1.5" strokeDasharray="8 5" /><text x={W - PAGE.PAD} y={PAGE.H - 8} textAnchor="end" fontSize="12" fontWeight="700" fill="#DC2626">{t.c_page_end}</text></g>}
+      <text x={W - 24} y={H - 16} textAnchor="end" fontSize="9.5" fill="#94a3b8">Proposal Diagram Studio · Prof. Shihmin Lo, NCNU IBS</text>
+    </svg>
+  );
+};
+
 /* ---------------- Small UI helpers ---------------- */
 const Btn = ({ children, onClick, active, danger, disabled, title, className = '' }) => (
   <button type="button" title={title} disabled={disabled} onClick={onClick}
@@ -1484,15 +1839,76 @@ const Field = ({ label, children }) => (
 const inputCls = 'w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#004030] dark:focus:ring-[#D8C3A5]';
 const H3 = ({ children }) => <h3 className="font-serif font-bold text-[#004030] dark:text-[#D8C3A5] mb-3 text-base">{children}</h3>;
 
+/* ---------------- Side panel: Diagram C cards ---------------- */
+const CardPanel = ({ t, lang, doc, selected, api, mode }) => {
+  const L = lang; const tc = TEMPLATES_C[doc.templateId]; const dC = doc.diagrams.C;
+  const Lc = layoutC(dC, doc.templateId, mode, doc.diagrams);
+  const cid = selected && selected.type === 'card' ? selected.id : null;
+  const c = cid ? Lc.cards.find(x => x.card.id === cid) : null;
+  if (!c) return (
+    <div className="animate-fade-in">
+      <p className="text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">{t.c_none_selected}</p>
+      <H3>{t.panel_diagram}</H3>
+      <Field label={t.c_f_title_zh}><input className={inputCls} value={dC.title.zh} onFocus={api.snap} onChange={e => api.setDiagram({ title: { ...dC.title, zh: e.target.value.slice(0, 200) } })} /></Field>
+      <Field label={t.c_f_title_en}><input className={inputCls} value={dC.title.en} onFocus={api.snap} onChange={e => api.setDiagram({ title: { ...dC.title, en: e.target.value.slice(0, 200) } })} /></Field>
+      <Field label={t.f_subtitle_zh}><input className={inputCls} value={dC.subtitle.zh} onFocus={api.snap} onChange={e => api.setDiagram({ subtitle: { ...dC.subtitle, zh: e.target.value.slice(0, 200) } })} /></Field>
+      <Field label={t.f_subtitle_en}><input className={inputCls} value={dC.subtitle.en} onFocus={api.snap} onChange={e => api.setDiagram({ subtitle: { ...dC.subtitle, en: e.target.value.slice(0, 200) } })} /></Field>
+      <H3>{t.c_progress.replace('{n}', Lc.done).replace('{m}', Lc.total)}</H3>
+      {Lc.over && <p className="text-sm text-red-600 dark:text-red-400 mb-3">{t.c_over}</p>}
+      <ul className="space-y-1.5">
+        {Lc.cards.map(x => (
+          <li key={x.card.id}><button onClick={() => api.selectCard(x.card.id)} className="w-full flex items-center gap-2 text-left px-2 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+            <span className={`w-5 h-5 shrink-0 rounded-full flex items-center justify-center text-xs font-bold ${x.filled ? 'bg-[#004030] text-white' : 'border-2 border-[#B45309] text-[#B45309]'}`}>{x.filled ? '✓' : ''}</span>
+            <span className="text-sm">{x.idx + 1}. {x.card.title[L]}</span></button></li>
+        ))}
+      </ul>
+    </div>
+  );
+  const st = cardState(dC, c.card.id);
+  const lines = c.content.lines;
+  const setLines = (lng, v) => api.setCard(c.card.id, { ...(c.card.auto ? { manual: true } : {}), text: { zh: lines.zh, en: lines.en, [lng]: v.split('\n').slice(0, 20) } });
+  const owners = c.card.people ? (TEMPLATES_B[doc.templateId].owners || []) : [];
+  return (
+    <div className="animate-fade-in">
+      <H3>{c.idx + 1}. {c.card.title[L]}</H3>
+      {c.card.sub && <p className="text-xs text-slate-500 dark:text-slate-400 -mt-2 mb-3">{c.card.sub[L]}</p>}
+      <div className="mb-4 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-sm leading-relaxed">
+        {c.mode === 'auto' && <p>{t.c_auto_note.split('{src}').join(c.card.src)}</p>}
+        {c.mode === 'manual' && <><p className="mb-2">{t.c_manual_note.split('{src}').join(c.card.src)}</p><Btn onClick={() => api.resetCard(c.card.id)}>{t.c_refill}</Btn></>}
+        {c.mode === 'edited' && <Btn onClick={() => api.resetCard(c.card.id)}>{t.c_restore}</Btn>}
+        {c.mode === 'default' && <p>{c.card.hint ? c.card.hint[L] : t.c_default_note}</p>}
+      </div>
+      {c.card.choice && (
+        <Field label={t.c_choice}>
+          <div className="flex flex-col gap-2">{c.card.choice.map(o => <label key={o.id} className="flex items-center gap-2 cursor-pointer"><input type="radio" name="cchoice" checked={(st.choice || c.card.choiceDef) === o.id} onChange={() => api.setCard(c.card.id, { choice: o.id }, true)} /> <span>{o[L]}</span></label>)}</div>
+        </Field>
+      )}
+      {owners.length > 0 && (
+        <Field label={t.c_people}>
+          <div className="space-y-2">{owners.map(o => (
+            <div key={o.id} className="flex items-center gap-2"><span className="w-28 shrink-0 text-xs font-bold" style={{ color: o.color }}>{o[L]}</span>
+              <input className={inputCls} value={(st.people || {})[o.id] || ''} placeholder={t.c_people_ph} onFocus={api.snap} onChange={e => api.setCard(c.card.id, { people: { ...(st.people || {}), [o.id]: e.target.value.slice(0, 40) } })} /></div>))}</div>
+        </Field>
+      )}
+      <Field label={t.f_items_zh}><textarea rows={7} className={inputCls} value={lines.zh.join('\n')} onFocus={api.snap} onChange={e => setLines('zh', e.target.value)} /></Field>
+      <p className={`text-xs -mt-2 mb-3 ${c.card.limit && c.chars > c.card.limit ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-400'}`}>{t.c_chars.replace('{n}', c.chars).replace('{m}', c.card.limit || '—')}</p>
+      <Field label={t.f_items_en}><textarea rows={7} className={inputCls} value={lines.en.join('\n')} onFocus={api.snap} onChange={e => setLines('en', e.target.value)} /></Field>
+      {!c.filled && <p className="text-xs text-amber-700 dark:text-amber-300">{t.c_unfilled}</p>}
+    </div>
+  );
+};
+
 /* ---------------- Side panel ---------------- */
 const Panel = ({ t, lang, tab, setTab, doc, dia, tpl, selected, api, mode }) => {
   const d = dia;
   const node = selected && selected.type === 'node' ? d.nodes.find(n => n.id === selected.id) : null;
   const edge = selected && selected.type === 'edge' ? d.edges.find(e => e.id === selected.id) : null;
   const L = lang;
-  const [addRole, setAddRole] = useState(tpl.defaultRole || tpl.roles[0].id);
+  const firstRole = () => tpl.roles ? (tpl.defaultRole || tpl.roles[0].id) : '';
+  const [addRole, setAddRole] = useState(firstRole);
   const [addLane, setAddLane] = useState(0);
-  useEffect(() => { setAddRole(tpl.defaultRole || tpl.roles[0].id); setAddLane(0); }, [tpl]);
+  useEffect(() => { setAddRole(firstRole()); setAddLane(0); }, [tpl]);
+  const isC = doc.view === 'C';
   const refName = (ref) => {
     if (ref.startsWith('n:')) { const n = d.nodes.find(x => 'n:' + x.id === ref); return n ? getText(n)[L === 'en' ? 'en' : 'zh'].title || n.id : '?'; }
     if (ref.startsWith('g:')) { const [, gid, l] = ref.split(':'); const g = tpl.groups.find(x => x.id === gid); return g ? g.label[L].split(' · ')[0] + (laneOn(tpl) ? ` [${String.fromCharCode(65 + +l)}]` : '') : '?'; }
@@ -1510,7 +1926,8 @@ const Panel = ({ t, lang, tab, setTab, doc, dia, tpl, selected, api, mode }) => 
         ))}
       </div>
       <div className="p-4 overflow-y-auto flex-1 min-h-0 text-sm">
-        {tab === 'edit' && !node && !edge && (
+        {tab === 'edit' && isC && <CardPanel t={t} lang={lang} doc={doc} selected={selected} api={api} mode={mode} />}
+        {tab === 'edit' && !isC && !node && !edge && (
           <div className="animate-fade-in">
             <p className="text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">{t.none_selected}</p>
             <H3>{t.panel_diagram}</H3>
@@ -1610,7 +2027,8 @@ const Panel = ({ t, lang, tab, setTab, doc, dia, tpl, selected, api, mode }) => 
           </div>
         )}
 
-        {tab === 'add' && (
+        {tab === 'add' && isC && <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{t.c_no_add}</p>}
+        {tab === 'add' && !isC && (
           <div className="animate-fade-in">
             <H3>{t.panel_add_node}</H3>
             <Field label={t.f_role}>
@@ -1707,6 +2125,7 @@ function applyVault(p) {
   Object.assign(tq.glossary, p.glossary);
   tq.roles.forEach(r => { if (p.roleTerms[r.id]) r.terms = p.roleTerms[r.id]; });
   tq.encrypted = false;
+  if (p.C) { const tc = TEMPLATES_C.rp_quant; tc.title = p.C.title; tc.subtitle = p.C.subtitle; tc.cards.forEach(c => { if (p.C.cards[c.id]) c.def = p.C.cards[c.id]; }); tc.encrypted = false; }
   if (p.B) { const tb = TEMPLATES_B.rp_quant; tb.title = p.B.title; tb.subtitle = p.B.subtitle; tb.nodes = p.B.nodes; tb.edges = p.B.edges; tb.encrypted = false; }
 }
 const LS_CODE = 'PDS_code_v1';
@@ -1848,6 +2267,7 @@ function App({ onLogout }) {
   const view = doc.view;
   const tpl = tplOf(doc.templateId, view);
   const dia = doc.diagrams[view];
+  const isC = view === 'C';
 
   const showToast = (msg) => { setToast(msg); clearTimeout(window.__pdsToast); window.__pdsToast = setTimeout(() => setToast(null), 2400); };
   window.__pdsCopyright = () => showToast(t.copyright_msg);
@@ -1876,7 +2296,7 @@ function App({ onLogout }) {
   const modeRef = useRef(mode); modeRef.current = mode;
   const fit = useCallback(() => {
     const w = wrapRef.current ? wrapRef.current.clientWidth - 24 : 900;
-    const geoW = computeGeometry(curDia(), curTpl(), modeRef.current).W;
+    const geoW = docRef.current.view === 'C' ? PAGE.W : computeGeometry(curDia(), curTpl(), modeRef.current).W;
     setZoom(Math.max(0.3, Math.min(1.2, w / geoW)));
   }, [mode]);
   useEffect(() => { fit(); }, [doc.templateId, doc.view]);
@@ -1902,8 +2322,11 @@ function App({ onLogout }) {
       if (i < 0 || j < 0 || j >= mains.length) return d;
       const a = d.edges.indexOf(mains[i]), b = d.edges.indexOf(mains[j]); const arr = [...d.edges];[arr[a], arr[b]] = [arr[b], arr[a]]; return { ...d, edges: arr };
     }, true),
+    setCard: (id, patch, record) => setD(d => ({ ...d, cards: { ...d.cards, [id]: { ...((d.cards || {})[id] || {}), ...patch } } }), record),
+    resetCard: (id) => setD(d => { const o = { ...((d.cards || {})[id] || {}) }; delete o.manual; delete o.text; return { ...d, cards: { ...d.cards, [id]: o } }; }, true),
+    selectCard: (id) => setSelected({ type: 'card', id }),
     deleteSel: () => {
-      if (!selected) return;
+      if (!selected || selected.type === 'card') return;
       if (selected.type === 'node') {
         const ref = 'n:' + selected.id;
         setD(d => {
@@ -1973,13 +2396,13 @@ function App({ onLogout }) {
     setConnect(null); setSelected({ type: 'edge', id: e.id }); setTab('edit');
   };
 
-  const layout = () => setD(d => ({ ...d, nodes: autoLayout(d, tpl, mode) }), true);
+  const layout = () => { if (!isC) setD(d => ({ ...d, nodes: autoLayout(d, tpl, mode) }), true); };
   const changeMode = (k) => {
     if (k === mode) return;
     setMode(k);
     const cur = docRef.current; const ds = {};
-    VIEWS.forEach(v => { const dd = cur.diagrams[v]; ds[v] = { ...dd, nodes: autoLayout(dd, tplOf(cur.templateId, v), k) }; });
-    commit({ ...cur, diagrams: ds });
+    NODE_VIEWS.forEach(v => { const dd = cur.diagrams[v]; ds[v] = { ...dd, nodes: autoLayout(dd, tplOf(cur.templateId, v), k) }; });
+    commit({ ...cur, diagrams: { ...cur.diagrams, ...ds } });
     showToast(t.toast_relayout);
     setTimeout(fit, 30);
   };
@@ -2026,6 +2449,13 @@ function App({ onLogout }) {
     };
     img.src = url;
   };
+  const printView = () => {
+    const { xml } = svgString(); const w = window.open('', '_blank');
+    if (!w) { showToast(t.print_blocked); return; }
+    const portrait = docRef.current.view === 'C';
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${base()}</title><style>@page{size:A4 ${portrait ? 'portrait' : 'landscape'};margin:${portrait ? '0' : '8mm'}}html,body{margin:0;background:#fff}svg{width:100%;height:auto;display:block}</style></head><body>${xml.replace(/^<\?xml[^>]*>\s*/, '')}</body></html>`);
+    w.document.close(); w.focus(); setTimeout(() => { try { w.print(); } catch (e) { } }, 500);
+  };
   const exportJSON = () => download(new Blob([JSON.stringify({ app: 'PDS', version: 2, savedAt: new Date().toISOString(), ...doc }, null, 2)], { type: 'application/json' }), base() + '.json');
   const importJSON = (e) => {
     const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -2061,6 +2491,12 @@ function App({ onLogout }) {
     if (action === 'pause') { speechSynthesis.pause(); setTts('paused'); return; }
     if (tts === 'paused') { speechSynthesis.resume(); setTts('playing'); return; }
     const L = mode === 'both' ? lang : mode; const sep = L === 'zh' ? '。 ' : '. ';
+    if (isC) {
+      const Lc = layoutC(dia, doc.templateId, L, doc.diagrams); const tc = TEMPLATES_C[doc.templateId];
+      const tx = [t.tts_intro, tc.pageTitle[L], dia.title[L], dia.subtitle[L]];
+      Lc.cards.forEach(c => { tx.push(`${c.idx + 1}. ${c.card.title[L]}`); (L === 'en' ? c.content.lines.en : c.content.lines.zh).filter(Boolean).forEach(x => tx.push(x)); });
+      speak(joinSay(tx, L), L, () => setTts('idle')); setTts('playing'); return;
+    }
     const d = dia; const geo = computeGeometry(d, tpl, mode);
     const byRows = tpl.readOrder === 'rows';
     const nodes = [...d.nodes].sort((a, b) => byRows ? ((a.y - b.y) || (a.x - b.x)) : ((a.x - b.x) || (a.y - b.y)));
@@ -2146,7 +2582,7 @@ function App({ onLogout }) {
             <div data-tour="view" className="flex items-center gap-2"><span className="text-xs font-semibold text-slate-500 ml-1">{t.view_label}</span>
             <div className="flex" role="tablist" aria-label={t.view_label}>
               {['A', 'B', 'C'].map((k, i) => (
-                <button key={k} role="tab" aria-selected={view === k} disabled={k === 'C'} title={k === 'C' ? t.view_C_soon : t['view_' + k]} onClick={() => switchView(k)}
+                <button key={k} role="tab" aria-selected={view === k} title={t['view_' + k]} onClick={() => switchView(k)}
                   className={`px-2.5 py-1.5 text-xs sm:text-sm border border-slate-300 dark:border-slate-600 ${i === 0 ? 'rounded-l-lg' : ''} ${i === 2 ? 'rounded-r-lg' : ''} ${i > 0 ? '-ml-px' : ''} disabled:opacity-40 disabled:cursor-not-allowed ${view === k ? 'bg-[#004030] text-white dark:bg-[#D8C3A5] dark:text-[#004030] font-bold' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}`}>{t['view_' + k]}</button>
               ))}
             </div></div>
@@ -2157,8 +2593,8 @@ function App({ onLogout }) {
               ))}
             </div></div>
             <span className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block" />
-            <Btn onClick={layout}>{t.btn_layout}</Btn>
-            <span data-tour="connect"><Btn active={!!connect} onClick={() => connect ? setConnect(null) : api.startConnect()}>{t.btn_connect}</Btn></span>
+            <Btn onClick={layout} disabled={isC}>{t.btn_layout}</Btn>
+            <span data-tour="connect"><Btn active={!!connect} disabled={isC} onClick={() => connect ? setConnect(null) : api.startConnect()}>{t.btn_connect}</Btn></span>
             <Btn onClick={undo} disabled={!hist.current.past.length} title="Ctrl+Z">{t.btn_undo}</Btn>
             <Btn onClick={redo} disabled={!hist.current.future.length} title="Ctrl+Y">{t.btn_redo}</Btn>
             <span className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block" />
@@ -2172,6 +2608,7 @@ function App({ onLogout }) {
             <Btn onClick={exportPNG}>{t.btn_export_png}</Btn>
             <Btn onClick={exportJSON}>{t.btn_export_json}</Btn>
             <Btn onClick={() => fileRef.current && fileRef.current.click()}>{t.btn_import_json}</Btn>
+            <Btn onClick={printView}>{t.btn_print}</Btn>
             </span>
             <input ref={fileRef} type="file" accept=".json,application/json" className="hidden" onChange={importJSON} />
             <Btn danger onClick={clearAll}>{t.btn_clear}</Btn>
@@ -2188,10 +2625,11 @@ function App({ onLogout }) {
             onContextMenu={(e) => { e.preventDefault(); showToast(t.copyright_msg); }}
             onScroll={() => info && !info.pin && setInfo(null)}>
             <div className="inline-block shadow-xl rounded-md overflow-hidden ring-1 ring-slate-300 dark:ring-slate-600">
+              {isC ? <CPage doc={doc} mode={mode} selected={selected} onSelect={selectNode} zoom={zoom} svgRef={svgRef} t={t} /> :
               <Diagram doc={doc} dia={dia} tpl={tpl} mode={mode} selected={selected} onSelect={selectNode}
                 onDragNode={(id, x, y) => setD(d => ({ ...d, nodes: d.nodes.map(n => n.id === id ? { ...n, x, y } : n) }))}
                 onDragEnd={(snapshot) => pushHist(snapshot)}
-                connect={connect} onConnectPick={onConnectPick} zoom={zoom} svgRef={svgRef} onInfo={onInfo} />
+                connect={connect} onConnectPick={onConnectPick} zoom={zoom} svgRef={svgRef} onInfo={onInfo} />}
             </div>
           </div>
           <div className="px-4 py-1 text-[11px] text-slate-400 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shrink-0">{t.saved_badge}</div>
